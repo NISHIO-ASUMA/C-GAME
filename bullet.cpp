@@ -147,6 +147,7 @@ void CBullet::Update(void)
 	// 寿命カウント
 	m_nLife--;
 
+	// カラーセット
 	SetCol(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
 
 	// エフェクト生成

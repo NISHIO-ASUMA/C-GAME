@@ -29,8 +29,9 @@ public:
 		TYPE_ACTION,		// アクション
 		TYPE_JUMP,			// ジャンプ
 		TYPE_LANDING,		// 着地
-		TYPE_DAMAGE,		// 吹き飛ばし
 		TYPE_JUMPATTACK,	// SP攻撃
+		TYPE_DAMAGE,		// 吹き飛ばし
+		TYPE_WAKEUP,		// 起き上がり
 		TYPE_MAX
 	};
 

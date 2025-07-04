@@ -187,8 +187,8 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		// モーションカウントを初期化
 		m_nCounterMotion = 0;
 
-		// TYPE_ACTIONで最後のキーで止める
-		if (m_motiontype == TYPE_ACTION)
+		// アクションモーションの時,最後のキーで止める
+		if (m_motiontype == TYPE_ACTION || m_motiontype == TYPE_JUMPATTACK)
 		{
 			if (m_nKey < m_aMotionInfo[m_motiontype].nNumKey - 1)
 			{
@@ -220,7 +220,7 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	}
 
 	// アクションなら
-	if (m_motiontype == TYPE_ACTION)
+	if (m_motiontype == TYPE_ACTION || m_motiontype == TYPE_JUMPATTACK)
 	{
 		m_isFinishMotion = true;
 
@@ -245,8 +245,6 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		// モーションカウントを初期化
 		m_nCounterMotion = 0;
 	}
-
-
 }
 //======================================
 // 現在のモーションの更新関数

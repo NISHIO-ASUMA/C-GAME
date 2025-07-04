@@ -202,8 +202,11 @@ void CPlayer::Update(void)
 	// 角度計算用
 	static float fAngle = NULL;
 
-	// 攻撃中じゃなかったら
-	if (!m_isAttack)
+	//===========================
+	// 移動キー処理
+	//===========================
+	// 攻撃状態じゃなかったら移動を適用
+	if (!m_isAttack && Type != m_pMotion->TYPE_JUMPATTACK)
 	{
 		// Aキー
 		if (pInput->GetPress(DIK_A))
@@ -283,8 +286,8 @@ void CPlayer::Update(void)
 	// プレイヤーの腕のワールドマトリックスを取得
 	D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
 
-	// 攻撃キー かつ 攻撃フラグがfalseなら
-	if (pInput->GetPress(DIK_RETURN))
+	// 攻撃キー かつ モーションがジャンプ攻撃でなければ
+	if (pInput->GetPress(DIK_RETURN) && Type != m_pMotion->TYPE_JUMPATTACK)
 	{
 		// キーフラグをセット
 		isKeyPress = true;
@@ -292,7 +295,7 @@ void CPlayer::Update(void)
 		if (pInput->GetRepeat(DIK_RETURN, 15))
 		{
 			// 腕の武器の部分から弾を発射する
-			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43 + 20.0f), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
 		}
 
 		// 攻撃してない時
@@ -325,6 +328,13 @@ void CPlayer::Update(void)
 		m_isAttack = false;
 	}
 
+	// 攻撃フラグがオン かつ アクションモーションじゃなければ
+	if (m_isAttack && m_pMotion->GetMotionType() != m_pMotion->TYPE_ACTION)
+	{
+		// 攻撃状態を解除
+		m_isAttack = false;
+	}
+
 	//=========================
 	// ジャンプ処理
 	//=========================
@@ -353,6 +363,21 @@ void CPlayer::Update(void)
 		// ジャンプモーションに変更
 		m_pMotion->SetMotion(m_pMotion->TYPE_JUMP);
 
+		// ジャンプしているなら
+		if (pInput->GetPress(DIK_RETURN))
+		{
+			// 弾の発射間隔を調整する
+			if (pInput->GetRepeat(DIK_RETURN, 15))
+			{
+				// 腕の武器の部分から弾を発射する
+				CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43 + 20.0f), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+			}
+
+			// ジャンプ攻撃モーションに変更
+			m_pMotion->SetMotion(m_pMotion->TYPE_JUMPATTACK);
+
+		}
+
 		if (m_isLanding == true)
 		{
 			// 着地モーションに変更
@@ -363,12 +388,25 @@ void CPlayer::Update(void)
 		}
 	}
 
+	// モーションのフラグ
+	bool isJumpAttacking = (m_pMotion->GetMotionType() == m_pMotion->TYPE_JUMPATTACK);
+
+	// RETURN 押してる間は静止
+	if (isJumpAttacking && pInput->GetPress(DIK_RETURN))
+	{
+		m_move.y = 0.0f; // 高さキープ
+	}
+	else
+	{
+		m_move.y -= 0.7f; // 重力適用
+	}
+
 	//=========================
-	// 重力処理
+	// 位置更新
 	//=========================
-	m_move.y -= 0.7f;
 	m_posOld = m_pos;
 	m_pos += m_move;
+
 
 	// 座標が0以下
 	if (m_pos.y <= 0.0f)
