@@ -371,9 +371,6 @@ void CRenderer::Draw(void)
 	D3DVIEWPORT9 viewport;
 	D3DXMATRIX mtxview, mtxprojection;
 
-	// プレイヤー座標取得
-	D3DXVECTOR3 pPos = CManager::GetPlayer()->GetPos();
-
 	// 取得
 	m_pD3DDevice->GetRenderTarget(0, &pRenderDef);
 	m_pD3DDevice->GetDepthStencilSurface(&pZBuffDef);
@@ -387,7 +384,7 @@ void CRenderer::Draw(void)
 
 		if (m_isbuller)
 		{
-			// ターゲット設定
+			// ターゲット設定 ( カメラ座標と同じにする )
 			ChangeTarget(D3DXVECTOR3(0.0f, 500.0f, -250.0f), VECTOR3_NULL, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 
 			// 画面クリア関数

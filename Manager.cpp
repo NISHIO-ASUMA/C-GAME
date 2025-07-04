@@ -18,6 +18,7 @@
 #include "block.h"
 #include "meshdome.h"
 #include "meshfield.h"
+#include "player.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -31,7 +32,6 @@ CEnemymanager* CManager::m_pEnemyManager = nullptr;		// 敵マネージャーへのポイン
 CTexture* CManager::m_pTexture = nullptr;				// テクスチャクラスへのポインタ
 CCamera* CManager::m_pCamera = nullptr;					// カメラクラスへのポインタ
 CLight* CManager::m_pLight = nullptr;					// ライトクラスへのポインタ
-CPlayer* CManager::m_pPlayer = nullptr;					// プレイヤークラスへのポインタ
 CObject3D* CManager::m_pobj = nullptr;
 CBlockManager* CManager::m_pBlockManager = nullptr;
 CBlock* CManager::m_pBlock = nullptr;
@@ -149,7 +149,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pBoss = m_pBoss->Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f),60.0f);
 
 	// プレイヤー生成
-	m_pPlayer = CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 0, "data\\Player100motion.txt");
+	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 0, "data\\Player100motion.txt");
 	// m_pPlayer = CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 1, "data\\Player100motion.txt");
 
 

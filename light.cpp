@@ -44,9 +44,6 @@ HRESULT CLight::Init(void)
 	// ライトの種類を設定
 	for (int nCnt = 0; nCnt < NUM_LIGHT; nCnt++)
 	{
-		// ライトの方向ベクトル
-		m_vecDir[nCnt];
-
 		m_aLight[nCnt].Type = D3DLIGHT_DIRECTIONAL;	// 平行光源
 
 		// ライトの拡散光
@@ -57,7 +54,6 @@ HRESULT CLight::Init(void)
 	m_vecDir[0] = D3DXVECTOR3(0.2f, -0.8f, -0.4f);
 	m_vecDir[1] = D3DXVECTOR3(-0.6f, 0.1f, 0.4f);
 	m_vecDir[2] = D3DXVECTOR3(1.0f, -0.5f, 0.4f);
-
 
 	// 正規化する
 	for (int nCnt1 = 0; nCnt1 < NUM_LIGHT; nCnt1++)
@@ -72,7 +68,6 @@ HRESULT CLight::Init(void)
 
 		// ライトを有効化
 		pDevice->LightEnable(nCnt1, TRUE);
-
 	}
 
 	return S_OK;

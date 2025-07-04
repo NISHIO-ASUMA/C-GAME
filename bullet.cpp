@@ -190,14 +190,14 @@ void CBullet::Draw(void)
 //====================================
 bool CBullet::Collision(D3DXVECTOR3 pos)
 {
-	// ボスオブジェクトを取得する
-	CObject* pObj = CObject::GetObject(CObject::PRIORITY::BOSS, 0);
+	// ボス取得
+	CBoss* pBoss = CManager::GetBoss();
 
 	// 現在のオブジェクトの最大数を取得
 	int nNum = CObject::GetNumAll();
 
 	// オブジェクトが取得できたら
-	if (pObj != nullptr)
+	if (pBoss != nullptr)
 	{
 		// 弾の種類を取得
 		BTYPE Type = GetType();
@@ -205,8 +205,8 @@ bool CBullet::Collision(D3DXVECTOR3 pos)
 		if (Type == BTYPE_PLAYER)
 		{
 			// ボスの座標,サイズ取得
-			D3DXVECTOR3 BossPos = CManager::GetBoss()->GetPos();
-			float fBossSize = CManager::GetBoss()->GetSize(); 
+			D3DXVECTOR3 BossPos = pBoss->GetPos();
+			float fBossSize = pBoss->GetSize();
 
 			// 弾の座標のYをボスのYに合わせる
 			pos.y = BossPos.y;

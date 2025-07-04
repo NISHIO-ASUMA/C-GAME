@@ -14,6 +14,7 @@
 #include "player.h"
 #include "debugproc.h"
 #include "object.h"
+#include "boss.h"
 
 //**********************
 // マクロ定義
@@ -84,10 +85,19 @@ void CCamera::Update(void)
 	CInputMouse* pMouse = CManager::GetMouse();
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
-	//// プレイヤー,ボス取得
-	//CObject* pobject = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER),1);
+	// プレイヤー取得
+	CObject* pObjPlayer = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER), 0);
 
-	CPlayer* pPlayer = CManager::GetPlayer();
+	// 取得失敗時
+	if (pObjPlayer == nullptr)
+	{
+		return;
+	}
+
+	// プレイヤー型にキャストする
+	CPlayer* pPlayer = dynamic_cast<CPlayer*>(pObjPlayer);
+
+	// ボス取得
 	CBoss* pBoss = CManager::GetBoss();
 
 #ifdef _DEBUG
@@ -134,6 +144,7 @@ void CCamera::Update(void)
 
 	case MODE_LOCKON:
 	{
+		
 		// プレイヤーとボスの座標取得
 		D3DXVECTOR3 playerPos = pPlayer->GetPos();
 		D3DXVECTOR3 bossPos = pBoss->GetPos();
@@ -151,7 +162,7 @@ void CCamera::Update(void)
 
 		// カメラ座標計算
 		D3DXVECTOR3 camOffset = -vecToBoss * 280.0f; // プレイヤーの後方へ距離をとる
-		camOffset.y = 150.0f; // カメラの高さ
+		camOffset.y = 160.0f; // カメラの高さ
 
 		// カメラの座標をプレイヤー位置＋オフセットに設定
 		D3DXVECTOR3 desiredPosV = playerPos + camOffset;

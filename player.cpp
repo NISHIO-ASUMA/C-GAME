@@ -207,8 +207,14 @@ void CPlayer::Update(void)
 	// メッシュの座標の取得
 	D3DXVECTOR3 MeshCylinderPos = CManager::GetCylinder()->GetPos();
 
+	// ボスオブジェクトの取得
+	CObject * pObjBoss = CObject::GetObject(CObject::PRIORITY::BOSS, 0);
+
+	// キャストする
+	CBoss* pBoss = CManager::GetBoss();
+
 	// ボスの座標の取得
-	D3DXVECTOR3 BossPos = CManager::GetBoss()->GetPos();
+	D3DXVECTOR3 BossPos = pBoss->GetPos();
 
 	// メッシュの半径の取得
 	float fRadius = CManager::GetCylinder()->GetRadius();
@@ -245,7 +251,7 @@ void CPlayer::Update(void)
 			fAngle -= PLAYER_MOVE;
 
 			// 目的角を計算
-			m_rotDest.y = fAngle + D3DX_PI * 0.5f;// 右
+			m_rotDest.y = fAngle + D3DX_PI * 0.5f; // 右
 
 			// 移動モーション
 			m_pMotion->SetMotion(m_pMotion->TYPE_MOVE);
@@ -261,7 +267,7 @@ void CPlayer::Update(void)
 		}
 	}
 
-	// TODO : テスト
+	// 状態変更
 	if (pInput->GetTrigger(DIK_K))
 	{
 		// 状態変更
@@ -441,6 +447,13 @@ void CPlayer::Update(void)
 
 	// 現在体力の取得
 	int nLife = m_pParameter->GetHp();
+
+	// 体力が0以下
+	if (nLife <= 0)
+	{
+		// 死亡モーションに変更
+		m_pMotion->SetMotion(m_pMotion->TYPE_DAMAGE);
+	}
 
 	// 状態管理クラスの更新
 	m_pState->Update();

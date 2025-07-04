@@ -23,7 +23,6 @@
 #include "texture.h"
 #include "camera.h"
 #include "light.h"
-#include "player.h"
 #include "object3D.h"
 #include "blockManager.h"
 #include "collision.h"
@@ -54,7 +53,6 @@ public:
 	static CTexture* GetTexture(void);
 	static CCamera* GetCamera(void);
 	static CLight* GetLight(void);
-	static CPlayer* GetPlayer(void) { return m_pPlayer; }
 	static CBlockManager* GetBlockManager(void) {return m_pBlockManager;}
 	static CBlock* GetBlock(void) { return m_pBlock; }
 	static CCollision* GetCollision(void) { return m_pCollision; }
@@ -70,7 +68,6 @@ private:
 	static CTexture* m_pTexture;			 // テクスチャクラス
 	static CCamera* m_pCamera;				 // カメラクラス
 	static CLight* m_pLight;				 // ライトクラス
-	static CPlayer* m_pPlayer;				 // プレイヤークラス
 	static CObject3D* m_pobj;
 	static CBlockManager* m_pBlockManager;
 	static CBlock* m_pBlock;
