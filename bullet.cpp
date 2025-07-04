@@ -97,6 +97,7 @@ void CBullet::SetTexture(BTYPE type)
 	// テクスチャポインタ取得
 	CTexture* pTexture = CManager::GetTexture();
 
+	// テクスチャ設定
 	switch (type)
 	{
 	case BTYPE_PLAYER:
