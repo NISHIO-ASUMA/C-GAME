@@ -179,6 +179,7 @@
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
     <ClCompile Include="objectX.cpp" />
+    <ClCompile Include="parameter.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -225,6 +226,7 @@
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
     <ClInclude Include="objectX.h" />
+    <ClInclude Include="parameter.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="player.h" />

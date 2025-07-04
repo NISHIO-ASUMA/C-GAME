@@ -18,6 +18,7 @@
 #include "input.h"
 #include "camera.h"
 #include "state.h"
+#include "parameter.h"
 
 //**********************
 // 定数宣言
@@ -58,6 +59,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_pMotion = nullptr;
 	m_pShadow = nullptr;
 	m_pState = nullptr;
+	m_pParameter = nullptr;
 
 	// フラグメント
 	m_isLanding = false;
@@ -85,6 +87,12 @@ CPlayer* CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,int nLife,const int nI
 	pPlayer->m_rot = rot;
 	pPlayer->m_nIdxPlayer = nIdxParson;
 	pPlayer->m_pFilename = pFilename;
+
+	// パラメータ生成
+	pPlayer->m_pParameter = new CParameter;
+
+	// 体力設定
+	pPlayer->m_pParameter->SetHp(nLife);
 
 	// プレイヤー初期化処理
 	if (FAILED(pPlayer->Init()))
@@ -175,6 +183,14 @@ void CPlayer::Uninit(void)
 
 		// nullptrにする
 		m_pState = nullptr;
+	}
+
+	// パラメーターポインタの破棄
+	if (m_pParameter != nullptr)
+	{
+		delete m_pParameter;
+
+		m_pParameter = nullptr;
 	}
 
 	// オブジェクトの破棄
@@ -271,7 +287,7 @@ void CPlayer::Update(void)
 	m_pos.z = MeshCylinderPos.z - (cosf(fAngle)) * fRadius;		// Z座標
 
 	// 角度を計算
-	m_rot.y += (m_rotDest.y - m_rot.y) - D3DX_PI;
+	m_rot.y += (m_rotDest.y - m_rot.y) + D3DX_PI;
 
 	//=========================
 	// 攻撃処理
@@ -381,6 +397,7 @@ void CPlayer::Update(void)
 
 		}
 
+		// 着地時
 		if (m_isLanding == true)
 		{
 			// 着地モーションに変更
@@ -397,7 +414,7 @@ void CPlayer::Update(void)
 	// モーションのフラグ
 	bool isJumpAttacking = (m_pMotion->GetMotionType() == m_pMotion->TYPE_JUMPATTACK);
 
-	// RETURN 押してる間は静止
+	// 攻撃キー押してる間は静止
 	if (isJumpAttacking && pInput->GetPress(DIK_RETURN))
 	{
 		m_move.y = 0.0f; // 高さキープ
@@ -421,6 +438,9 @@ void CPlayer::Update(void)
 		m_isLanding = true;
 		m_move.y = 0.0f;
 	}
+
+	// 現在体力の取得
+	int nLife = m_pParameter->GetHp();
 
 	// 状態管理クラスの更新
 	m_pState->Update();
@@ -463,11 +483,11 @@ void CPlayer::Draw(void)
 	}
 
 	// デバッグ表示
-	CDebugproc::Print("プレイヤー座標 [ %.2f,%.2f,%.2f ]", m_pos.x, m_pos.y, m_pos.z );
-	CDebugproc::Draw(0, 20);
+	//CDebugproc::Print("プレイヤー座標 [ %.2f,%.2f,%.2f ]", m_pos.x, m_pos.y, m_pos.z );
+	//CDebugproc::Draw(0, 20);
 
-	CDebugproc::Print("プレイヤー向き [ %.2f,%.2f,%.2f ]", m_rot.x, m_rot.y, m_rot.z);
-	CDebugproc::Draw(0, 140);
+	//CDebugproc::Print("プレイヤー向き [ %.2f,%.2f,%.2f ]", m_rot.x, m_rot.y, m_rot.z);
+	//CDebugproc::Draw(0, 140);
 
 }
 //=================================

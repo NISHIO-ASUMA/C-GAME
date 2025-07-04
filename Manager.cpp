@@ -149,7 +149,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pBoss = m_pBoss->Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f),60.0f);
 
 	// プレイヤー生成
-	m_pPlayer = CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 0, 0, "data\\Player100motion.txt");
+	m_pPlayer = CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 0, "data\\Player100motion.txt");
+	// m_pPlayer = CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 1, "data\\Player100motion.txt");
+
 
 	// ブロック配置
 	m_pBlock = m_pBlock->Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);
