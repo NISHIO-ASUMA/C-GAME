@@ -50,7 +50,7 @@ CMeshField::~CMeshField()
 //============================================
 // 生成処理
 //============================================
-CMeshField* CMeshField::Create(D3DXVECTOR3 pos, float nRadius)
+CMeshField* CMeshField::Create(D3DXVECTOR3 pos, float fRadius)
 {
 	// インスタンス生成
 	CMeshField* pMeshField = new CMeshField;
@@ -59,7 +59,7 @@ CMeshField* CMeshField::Create(D3DXVECTOR3 pos, float nRadius)
 	pMeshField->m_pos = pos;
 
 	// 半径代入
-	pMeshField->m_fRadius = nRadius;
+	pMeshField->m_fRadius = fRadius;
 
 	// テクスチャ設定
 	pMeshField->SetTexture();
@@ -89,7 +89,7 @@ void CMeshField::SetTexture(void)
 	CTexture* pTexture = CManager::GetTexture();
 
 	// 割り当て
-	m_nTexIdx = pTexture->Register("data\\TEXTURE\\field100.jpg");
+	m_nTexIdx = pTexture->Register("data\\TEXTURE\\DomeTex.jpg");
 }
 //============================================
 // 初期化処理

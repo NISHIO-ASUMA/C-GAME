@@ -30,7 +30,7 @@ class CEffect;
 class CParticle : public CObject
 {
 public:
-	CParticle(int nPriority = 5);
+	CParticle(int nPriority = 7);
 	~CParticle();
 
 	HRESULT Init(void);

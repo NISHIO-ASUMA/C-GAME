@@ -31,7 +31,7 @@ public:
 		BTYPE_MAX
 	};
 
-	CBullet(int nPriority = 5);
+	CBullet(int nPriority = static_cast<int>(CObject::PRIORITY::BULLET));
 	~CBullet();
 
 	HRESULT Init(D3DXVECTOR3 rot);
@@ -47,16 +47,10 @@ public:
 
 private:
 	bool Collision(D3DXVECTOR3 pos); // 当たり判定用関数
-
 	D3DXVECTOR3 m_move;		// 移動量
 	int m_nLife;			// 体力
 	BTYPE m_Type;			// 種類
-	D3DCOLOR m_col;
-
-	int m_nPriority;
-	int m_nIdxTexture;
-
-	CObject* m_pTarget; // ターゲット（ボスなど）
-	bool m_isHoming;    // 追尾弾かどうか
+	D3DCOLOR m_col;			// 弾のカラー
+	int m_nIdxTexture;		// テクスチャインデックス
 };
 #endif

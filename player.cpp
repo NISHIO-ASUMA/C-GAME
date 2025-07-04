@@ -17,14 +17,15 @@
 #include "meshimpact.h"
 #include "input.h"
 #include "camera.h"
+#include "state.h"
 
 //**********************
-// マクロ定義
+// 定数宣言
 //**********************
-#define PLAYER_MOVE (0.0095f)	 // プレイヤー移動量
-#define PLAYER_JUMPVALUE (17.0f) // ジャンプ量
-#define NUMBER_MAIN (0)			 // メイン操作プレイヤー
-#define NUMBER_SUB (1)			 // 分身操作プレイヤー
+constexpr float PLAYER_MOVE = 0.0095f; // 1フレームの移動量
+constexpr float PLAYER_JUMPVALUE = 20.0f; // ジャンプ量
+constexpr int   NUMBER_MAIN = 0;       // メイン操作プレイヤー番号
+constexpr int   NUMBER_SUB = 1;		   // 分身操作プレイヤー番号
 
 //**********************
 // 静的メンバ変数宣言
@@ -38,7 +39,6 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	m_move = VECTOR3_NULL;
-	m_State = PLAYERSTATE_NONE;
 	m_StateCount = NULL;
 	m_nIdxTexture = NULL;
 	m_rotDest = VECTOR3_NULL;
@@ -46,7 +46,6 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_type = NULL;
 	m_posOld = VECTOR3_NULL;
 	m_size = NULL;
-
 	m_pFilename = {};
 
 	// モデルのポインタのクリア
@@ -55,10 +54,12 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 		m_apModel[nCnt] = nullptr;
 	}
 
+	// クラスポインタ
 	m_pMotion = nullptr;
 	m_pShadow = nullptr;
 	m_pState = nullptr;
 
+	// フラグメント
 	m_isLanding = false;
 	m_isJump = false;
 	m_isAttack = false;
@@ -113,7 +114,7 @@ HRESULT CPlayer::Init(void)
 	m_nNumAll = MAX_MODEL;
 
 	// タイプ代入
-	m_type = CPlayer::TYPE_MAX;
+	m_type = CMotion::TYPE_MAX;
 
 	// フラグを設定
 	m_isJump = false;
@@ -244,6 +245,13 @@ void CPlayer::Update(void)
 		}
 	}
 
+	// TODO : テスト
+	if (pInput->GetTrigger(DIK_K))
+	{
+		// 状態変更
+		m_pState->SetState(m_pState->STATE_DAMAGE);
+	}
+
 	//=========================
 	// 角度を正規化する
 	//=========================
@@ -274,13 +282,13 @@ void CPlayer::Update(void)
 	// ボスの方向へのベクトルを取得
 	D3DXVECTOR3 VecBoss = BossPos - m_pos;
 
-	// Yは水平方向で合わせる（弾が真っすぐ飛ぶように）
-	VecBoss.y = 0.0f;
+	// 水平方向で合わせる
+	VecBoss.y = NULL;
 
 	// ベクトルを正規化
 	D3DXVec3Normalize(&VecBoss, &VecBoss);
 
-	// 弾の移動成分
+	// 弾の移動成分を設定
 	D3DXVECTOR3 BulletMove = VecBoss;
 
 	// プレイヤーの腕のワールドマトリックスを取得
@@ -292,10 +300,11 @@ void CPlayer::Update(void)
 		// キーフラグをセット
 		isKeyPress = true;
 
+		// 15フレームごとに弾を発射
 		if (pInput->GetRepeat(DIK_RETURN, 15))
 		{
 			// 腕の武器の部分から弾を発射する
-			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43 + 20.0f), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
 		}
 
 		// 攻撃してない時
@@ -342,12 +351,6 @@ void CPlayer::Update(void)
 	{// ジャンプしていなくて着地していないとき
 		if (pInput->GetTrigger(DIK_SPACE))
 		{
-			// メッシュインパクト生成
-			CMeshImpact::Create(m_pos, 80, 50.0f, 5.0f, 15.0f);
-
-			// パーティクル生成
-			CParticle::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 10.0f, m_pos.z), D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f),50,150,100,500);
-
 			// フラグを変更
 			m_isJump = true;
 			m_isLanding = false;
@@ -370,7 +373,7 @@ void CPlayer::Update(void)
 			if (pInput->GetRepeat(DIK_RETURN, 15))
 			{
 				// 腕の武器の部分から弾を発射する
-				CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43 + 20.0f), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+				CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
 			}
 
 			// ジャンプ攻撃モーションに変更
@@ -385,6 +388,9 @@ void CPlayer::Update(void)
 
 			// ジャンプ可能状態にする
 			m_isJump = false;
+
+			// メッシュインパクト生成
+			CMeshImpact::Create(m_pos, 80, 50.0f, 5.0f, 15.0f);
 		}
 	}
 
@@ -415,6 +421,9 @@ void CPlayer::Update(void)
 		m_isLanding = true;
 		m_move.y = 0.0f;
 	}
+
+	// 状態管理クラスの更新
+	m_pState->Update();
 
 	// 影の更新処理
 	m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));

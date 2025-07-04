@@ -13,12 +13,14 @@
 #include "enemy.h"
 #include "player.h"
 #include "effect.h"
+#include "boss.h"
+#include "particle.h"
 
 //***********************************
-// マクロ定義
+// 定数宣言
 //***********************************
-#define BULLET_SIZE (30.0f) // 弾のサイズ
-#define BULLET_DAMAGE (1)	// 弾のダメージ
+constexpr float  BULLET_SIZE = 30.0f; // 弾のサイズ
+constexpr int  BULLET_DAMAGE = 1;	// 弾のダメージ
 
 //===============================
 // オーバーロードコンストラクタ
@@ -26,13 +28,10 @@
 CBullet::CBullet(int nPriority) : CBillboard(nPriority)
 {
 	// 値のクリア
-	m_nLife = 0;
+	m_nLife = NULL;
 	m_move = VECTOR3_NULL;
 	m_Type = BTYPE_NONE;
-	m_nPriority = nPriority;
 	m_nIdxTexture = NULL;
-	m_pTarget = nullptr;
-	m_isHoming = false;
 }
 //===============================
 // デストラクタ
@@ -117,13 +116,13 @@ void CBullet::SetTexture(BTYPE type)
 //===============================
 HRESULT CBullet::Init(D3DXVECTOR3 rot)
 {
-	// オブジェクト2Dの初期化
+	// 親クラスの初期化
 	CBillboard::Init();
 
 	// オブジェクトの種類を設定する
 	SetObjType(TYPE_BULLET);
 
-	// 移動量
+	// 移動量を計算
 	m_move = D3DXVECTOR3(rot.x * 15.0f, rot.y,rot.z * 15.0f);
 
 	return S_OK;
@@ -133,7 +132,7 @@ HRESULT CBullet::Init(D3DXVECTOR3 rot)
 //===============================
 void CBullet::Uninit(void)
 {
-	// オブジェクト2Dの破棄
+	// 親クラスの破棄
 	CBillboard::Uninit();
 }
 //===============================
@@ -186,81 +185,60 @@ void CBullet::Draw(void)
 	// オブジェクトの描画
 	CBillboard::Draw();
 }
-//===============================
-// 当たり判定関数
-//===============================
+//====================================
+// 当たり判定処理 ( 引数 : 弾の座標 )
+//====================================
 bool CBullet::Collision(D3DXVECTOR3 pos)
 {
-#if 0
-	// 最大数回す
-	for (int nCnt = 0; nCnt < MAX_OBJECT; nCnt++)
+	// ボスオブジェクトを取得する
+	CObject* pObj = CObject::GetObject(CObject::PRIORITY::BOSS, 0);
+
+	// 現在のオブジェクトの最大数を取得
+	int nNum = CObject::GetNumAll();
+
+	// オブジェクトが取得できたら
+	if (pObj != nullptr)
 	{
-		// オブジェクトを取得する
-		CObject* pObj = CObject::GetObject(CObject::PRIORITY::PLAYER,nCnt);
+		// 弾の種類を取得
+		BTYPE Type = GetType();
 
-		// 現在の弾の種類をセット
-		BTYPE btype= GetType();
-
-		// NULLチェック
-		if (pObj != NULL)
+		if (Type == BTYPE_PLAYER)
 		{
-			// オブジェクトの種類を取得
-			TYPE type = pObj->GetObjType();
+			// ボスの座標,サイズ取得
+			D3DXVECTOR3 BossPos = CManager::GetBoss()->GetPos();
+			float fBossSize = CManager::GetBoss()->GetSize(); 
 
-			if (type == TYPE_ENEMY && btype == BTYPE_PLAYER)
-			{// 種類が敵だったら かつ 弾の種類がプレイヤーの弾なら
+			// 弾の座標のYをボスのYに合わせる
+			pos.y = BossPos.y;
 
-				// 敵の座標,角度の取得
-				D3DXVECTOR3 enemypos = pObj->GetPos();
+			// XZ平面上の距離を計算
+			D3DXVECTOR3 diff = BossPos - pos;
 
-				// キャストする
-				CEnemy* pEnemy = (CEnemy*)pObj;
+			float fDistanceSq = D3DXVec3LengthSq(&diff);
 
-				// 敵の位置をと比較し,判定を生成
-				if (pos.x <= enemypos.x + 30.0f &&
-					pos.y >= enemypos.y - 30.0f &&
-					pos.x >= enemypos.x - 30.0f &&
-					pos.y <= enemypos.y + 30.0f)
-				{					
-					// 敵をにダメージ
- 					pEnemy->HitEnemy(BULLET_DAMAGE);
+			// ボスと弾の半径の合計
+			float fBulletRadius = BULLET_SIZE;
 
-					// 弾の終了処理
-					CBullet::Uninit();
+			// ヒットの半径を計算
+			float fHitRadius = fBossSize + fBulletRadius;
 
-					// 判定結果を返す
-					return true;
-				}
-			}
-			else if (type == TYPE_PLAYER && btype == BTYPE_ENEMY)
-			{// 種類がプレイヤーだったら　かつ 弾の種類が敵なら
+			// 判定の範囲を計算
+			float fLength = fHitRadius * fHitRadius;
 
-				// プレイヤーの座標,角度の取得
-				D3DXVECTOR3 pPos = pObj->GetPos();
+			// 範囲内なら
+			if (fDistanceSq <= fLength)
+			{
+				// TODO  : テスト
+				CParticle::Create(D3DXVECTOR3 (BossPos.x,30.0f,BossPos.z), D3DXCOLOR(1.0f, 0, 0, 1.0f), 50, 150, 100, 500);
 
-				// プレイヤーにキャストする
-				CPlayer* pPlayer = (CPlayer*)pObj;
+				// ヒット処理
+				CBullet::Uninit();
 
-				// プレイヤーの位置をと比較し,判定を生成
-				if (pos.x <= pPos.x + 50.0f &&
-					pos.y >= pPos.y - 50.0f &&
-					pos.x >= pPos.x - 50.0f &&
-					pos.y <= pPos.y + 50.0f &&
-					pPlayer->GetState() == CPlayer::PLAYERSTATE_NORMAL)
-				{
-					// プレイヤーにダメージ
-					// pPlayer->HitDamage(BULLET_DAMAGE);
-
-					// 弾の終了処理
-					CBullet::Uninit();
-
-					// 判定結果を返す
-					return true;
-				}
+				return true;
 			}
 		}
 	}
-#endif
-	// 判定結果が無かったら
- 	return false;
+
+	// 当たらないとき
+	return false;
 }

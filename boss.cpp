@@ -30,6 +30,8 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 	{
 		m_pModel[nCnt] = nullptr;
 	}
+
+	m_fSize = NULL;
 }
 //====================================
 // デストラクタ
@@ -41,14 +43,15 @@ CBoss::~CBoss()
 //====================================
 // 生成処理
 //====================================
-CBoss* CBoss::Create(D3DXVECTOR3 pos)
+CBoss* CBoss::Create(D3DXVECTOR3 pos,float fSize)
 {
 	// インスタンス生成
 	CBoss* pBoss = new CBoss;
 
 	// セット
 	pBoss->m_pos = pos;
-	
+	pBoss->m_fSize = fSize;
+
 	// 初期化失敗時
 	if (FAILED(pBoss->Init()))
 	{

@@ -27,7 +27,7 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CMeshField* Create(D3DXVECTOR3 pos, float nRadius);
+	static CMeshField* Create(D3DXVECTOR3 pos, float fRadius);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }

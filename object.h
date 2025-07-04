@@ -40,8 +40,8 @@ public:
 	{
 		NONE, // 初期状態
 		MESH, // メッシュ
-		BULLET,// 弾
 		BLOCK, // ブロック
+		BULLET,// 弾
 		BOSS, // ボス
 		SHADOW,//影
 		IMPACT, // 衝撃波

@@ -46,10 +46,12 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CBoss* Create(D3DXVECTOR3 pos);
+	static CBoss* Create(D3DXVECTOR3 pos, float fSize);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos;}
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
+
+	float GetSize(void) { return m_fSize; }
 
 private:
 	static const int m_nNumModels = 21;
@@ -63,6 +65,7 @@ private:
 
 	int m_nNumAll;		   // モデル総数
 	int m_type;			   // モーションの種類変数
+	float m_fSize;		   // サイズ
 
 };
 
