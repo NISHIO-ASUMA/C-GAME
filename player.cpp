@@ -28,11 +28,6 @@ constexpr float PLAYER_JUMPVALUE = 20.0f; // ジャンプ量
 constexpr int   NUMBER_MAIN = 0;       // メイン操作プレイヤー番号
 constexpr int   NUMBER_SUB = 1;		   // 分身操作プレイヤー番号
 
-//**********************
-// 静的メンバ変数宣言
-//**********************
-int CPlayer::m_nIdxPlayer = NULL; // プレイヤー識別番号
-
 //===============================
 // オーバーロードコンストラクタ
 //===============================
@@ -48,6 +43,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_posOld = VECTOR3_NULL;
 	m_size = NULL;
 	m_pFilename = {};
+	m_nIdxPlayer = NULL;
 
 	// モデルのポインタのクリア
 	for (int nCnt = 0; nCnt < MAX_MODEL; nCnt++)
@@ -91,8 +87,12 @@ CPlayer* CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,int nLife,const int nI
 	// パラメータ生成
 	pPlayer->m_pParameter = new CParameter;
 
-	// 体力設定
-	pPlayer->m_pParameter->SetHp(nLife);
+	// nullチェック
+	if (pPlayer->m_pParameter != nullptr)
+	{
+		// 体力設定
+		pPlayer->m_pParameter->SetHp(nLife);
+	}
 
 	// プレイヤー初期化処理
 	if (FAILED(pPlayer->Init()))
@@ -206,9 +206,10 @@ void CPlayer::Update(void)
 
 	// メッシュの座標の取得
 	D3DXVECTOR3 MeshCylinderPos = CManager::GetCylinder()->GetPos();
-#if 0
+
+#if 1
 	// ボスオブジェクトの取得
-	CObject * pObjBoss = CObject::GetObject(CObject::PRIORITY::BOSS, 0);
+	CObject * pObjBoss = CObject::GetTop(CObject::PRIORITY::BOSS);
 
 	// キャストする
 	CBoss* pBoss = CManager::GetBoss();
@@ -216,6 +217,7 @@ void CPlayer::Update(void)
 	// ボスの座標の取得
 	D3DXVECTOR3 BossPos = pBoss->GetPos();
 #endif
+
 	// メッシュの半径の取得
 	float fRadius = CManager::GetCylinder()->GetRadius();
 
@@ -301,7 +303,7 @@ void CPlayer::Update(void)
 	// キー入力フラグ
 	bool isKeyPress = false;
 
-#if 0
+#if 1
 	// ボスの方向へのベクトルを取得
 	D3DXVECTOR3 VecBoss = BossPos - m_pos;
 
@@ -327,7 +329,7 @@ void CPlayer::Update(void)
 		if (pInput->GetRepeat(DIK_RETURN, 15))
 		{
 			// 腕の武器の部分から弾を発射する
-			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), VECTOR3_NULL, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
 		}
 
 		// 攻撃してない時
@@ -396,7 +398,7 @@ void CPlayer::Update(void)
 			if (pInput->GetRepeat(DIK_RETURN, 15))
 			{
 				// 腕の武器の部分から弾を発射する
-				CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), VECTOR3_NULL, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 30);
+				CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 30);
 			}
 
 			// ジャンプ攻撃モーションに変更
@@ -655,6 +657,38 @@ void CPlayer::MoveKey(CInputKeyboard* pInputKeyBoard,CCamera * pCamera)
 		}
 	}
 #endif
+}
+//=========================================
+// 識別番号ごとのプレイヤーの取得
+//=========================================
+CPlayer* CPlayer::GetIdxPlayer(int Idx)
+{
+	// オブジェクトの先頭取得
+	CObject* pObj = CObject::GetTop(static_cast<int>(CObject::PRIORITY::PLAYER));
+
+	// pObjがnullptrじゃなかったら
+	while (pObj != nullptr)
+	{
+		// オブジェクトのタイプがPLAYERの時
+		if (pObj->GetObjType() == CObject::TYPE_PLAYER)
+		{
+			// プレイヤー型にキャスト
+			CPlayer* pPlayer = static_cast<CPlayer*>(pObj);
+
+			// 番号が一致していたら
+			if (pPlayer->GetPlayerIndex() == Idx)
+			{
+				// ポインタを返す
+				return pPlayer;
+			}
+		}
+
+		// 次のプレイヤーを代入
+		pObj = pObj->GetNext();
+	}
+
+	// 取得できなかった場合
+	return nullptr;
 }
 //=========================================
 // 識別番号ごとのプレイヤーの更新処理

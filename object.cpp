@@ -29,7 +29,7 @@ CObject::CObject(int nPriority)
 	m_nPriority = nPriority;			// 優先度を記録
 
 	m_pNext = nullptr;					// 次のポインタ初期化
-	m_pPrev = nullptr;					// 先頭の時はnullptrに初期化する
+	m_pPrev = nullptr;					// nullptrに初期化
 
 	m_pPrev = m_pCur[nPriority];		// 現在の最後尾を前ポインタに設定
 
@@ -93,7 +93,6 @@ void CObject::Release(void)
 	// 自身の優先度を取得
 	int pri = m_nPriority;
 
-#if 1
 	// 前のオブジェクトが存在する場合は、自分の次を前のオブジェクトに接続
 	if (m_pPrev != nullptr)
 	{
@@ -112,10 +111,9 @@ void CObject::Release(void)
 	}
 	else
 	{
-		// 自分がリストの末尾なら、カレントを前のオブジェクトに更新
+		// 自分がリストの最後尾なら、最後尾を前のオブジェクトに更新
 		m_pCur[pri] = m_pPrev;
 	}
-#endif
 
 	// 自分の前後ポインタを初期化
 	m_pNext = nullptr;
@@ -182,6 +180,7 @@ void CObject::DrawAll(void)
 			pObject = pObjeNext;
 		}
 	}
+
 	// デバッグフォント
 	CDebugproc::Print("現在のオブジェクト数 : %d", m_nNumAll);
 	CDebugproc::Draw(0, 120);
