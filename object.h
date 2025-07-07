@@ -66,18 +66,26 @@ public:
 	void SetObjType(TYPE type);
 	TYPE GetObjType(void);
 
-	static CObject* GetObject(int nPriority,int nIdx);
+	static CObject* GetTop(int nPriority) { return m_pTop[nPriority]; }// 先頭取得
+	CObject* GetNext(void) { return m_pNext; }		// 次を取得
 
 	static int GetNumAll(void) { return m_nNumAll; }
 
+
 protected:
-	void Release(void);
+	void Release(void); // 解放
 
 private:
-	static CObject* m_apObject[PRIORITY_MAX][MAX_OBJECT]; // オブジェクトのポインタ
 	static int m_nNumAll;		// 総数管理
 	int m_nID;					// 自分自身のID
 	TYPE m_Type;				// オブジェクトの種類変数
 	int m_nPriority;			// 優先順位番号
+
+	static CObject* m_pTop[PRIORITY_MAX];	// 先頭オブジェクト
+	static CObject* m_pCur[PRIORITY_MAX]; // 最後尾オブジェクト
+
+	CObject* m_pNext;		// 次のオブジェクトのポインタ
+	CObject* m_pPrev;		// 前のオブジェクトのポインタ
 };
+
 #endif

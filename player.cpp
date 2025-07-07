@@ -206,7 +206,7 @@ void CPlayer::Update(void)
 
 	// メッシュの座標の取得
 	D3DXVECTOR3 MeshCylinderPos = CManager::GetCylinder()->GetPos();
-
+#if 0
 	// ボスオブジェクトの取得
 	CObject * pObjBoss = CObject::GetObject(CObject::PRIORITY::BOSS, 0);
 
@@ -215,7 +215,7 @@ void CPlayer::Update(void)
 
 	// ボスの座標の取得
 	D3DXVECTOR3 BossPos = pBoss->GetPos();
-
+#endif
 	// メッシュの半径の取得
 	float fRadius = CManager::GetCylinder()->GetRadius();
 
@@ -301,6 +301,7 @@ void CPlayer::Update(void)
 	// キー入力フラグ
 	bool isKeyPress = false;
 
+#if 0
 	// ボスの方向へのベクトルを取得
 	D3DXVECTOR3 VecBoss = BossPos - m_pos;
 
@@ -312,7 +313,7 @@ void CPlayer::Update(void)
 
 	// 弾の移動成分を設定
 	D3DXVECTOR3 BulletMove = VecBoss;
-
+#endif
 	// プレイヤーの腕のワールドマトリックスを取得
 	D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
 
@@ -326,7 +327,7 @@ void CPlayer::Update(void)
 		if (pInput->GetRepeat(DIK_RETURN, 15))
 		{
 			// 腕の武器の部分から弾を発射する
-			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), VECTOR3_NULL, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
 		}
 
 		// 攻撃してない時
@@ -395,7 +396,7 @@ void CPlayer::Update(void)
 			if (pInput->GetRepeat(DIK_RETURN, 15))
 			{
 				// 腕の武器の部分から弾を発射する
-				CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+				CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), VECTOR3_NULL, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 30);
 			}
 
 			// ジャンプ攻撃モーションに変更

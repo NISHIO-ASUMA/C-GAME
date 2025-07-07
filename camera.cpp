@@ -86,6 +86,22 @@ void CCamera::Update(void)
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
 	// プレイヤー取得
+	CObject* pObjPlayer = CObject::GetTop(static_cast<int>(CObject::PRIORITY::PLAYER));
+
+	// 取得失敗時
+	if (pObjPlayer == nullptr)
+	{
+		return;
+	}
+
+	// プレイヤー型にキャストする
+	CPlayer* pPlayer = dynamic_cast<CPlayer*>(pObjPlayer);
+
+	// ボス取得
+	CBoss* pBoss = CManager::GetBoss();
+
+#if 0
+	// プレイヤー取得
 	CObject* pObjPlayer = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER), 0);
 
 	// 取得失敗時
@@ -99,6 +115,8 @@ void CCamera::Update(void)
 
 	// ボス取得
 	CBoss* pBoss = CManager::GetBoss();
+
+#endif
 
 #ifdef _DEBUG
 	// カメラモード変更

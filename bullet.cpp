@@ -51,6 +51,7 @@ CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, BTYPE nTy
 	// Å‘å”’´‚¦‚½‚ç
 	if (nNum >= MAX_OBJECT -1)
 	{
+		// null‚ð•Ô‚·
 		return nullptr;
 	}
 
@@ -159,10 +160,10 @@ void CBullet::Update(void)
 	SetPos(BulletPos);
 
 	// “G‚Æ‚Ì“–‚½‚è”»’è
-	bool isHit = Collision(BulletPos);
+	// bool isHit = Collision(BulletPos);
 
 	// ‘Ì—Í‚ª0ˆÈ‰º ‚©‚Â “G‚É“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç
-	if (m_nLife <= 0 && !isHit)
+	if (m_nLife <= 0 /*&& !isHit*/)
 	{
 		// –¢Žg—pó‘Ô
 		Uninit();
