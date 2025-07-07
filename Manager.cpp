@@ -152,7 +152,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 0, "data\\Player100motion.txt");
 
 	// プレイヤー生成
-	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 0, "data\\Player200motion.txt");
+	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 20, 1, "data\\Player200motion.txt");
 
 	// ブロック配置
 	m_pBlock = m_pBlock->Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);

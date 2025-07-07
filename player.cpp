@@ -44,6 +44,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_size = NULL;
 	m_pFilename = {};
 	m_nIdxPlayer = NULL;
+	m_fAngle = NULL;
 
 	// モデルのポインタのクリア
 	for (int nCnt = 0; nCnt < MAX_MODEL; nCnt++)
@@ -123,6 +124,7 @@ HRESULT CPlayer::Init(void)
 
 	// タイプ代入
 	m_type = CMotion::TYPE_MAX;
+	m_fAngle = 0.0f;
 
 	// フラグを設定
 	m_isJump = false;
@@ -201,6 +203,164 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(void)
 {
+	// 操作はNUMBER_MAINからのみ
+	static float fAngle = 0.0f;
+
+	// 入力、中心位置、半径
+	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+	D3DXVECTOR3 center = CManager::GetCylinder()->GetPos();
+	float radius = CManager::GetCylinder()->GetRadius();
+
+	// ボス座標
+	CBoss* pBoss = CManager::GetBoss();
+	D3DXVECTOR3 bossPos = pBoss->GetPos();
+
+	//================================
+	// MAINプレイヤー処理
+	//================================
+	if (m_nIdxPlayer == NUMBER_MAIN)
+	{
+		// Aキー：左回転
+		if (!m_isAttack && m_pMotion->GetMotionType() != CMotion::TYPE_JUMPATTACK)
+		{
+			if (pInput->GetPress(DIK_A))
+			{
+				fAngle += PLAYER_MOVE;
+				m_pMotion->SetMotion(CMotion::TYPE_MOVE);
+			}
+			else if (pInput->GetPress(DIK_D)) // Dキー：右回転
+			{
+				fAngle -= PLAYER_MOVE;
+				m_pMotion->SetMotion(CMotion::TYPE_MOVE);
+			}
+			else if (m_pMotion->GetMotionType() == CMotion::TYPE_MOVE)
+			{
+				m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
+			}
+		}
+
+		// ジャンプ
+		if (!m_isJump && pInput->GetTrigger(DIK_SPACE))
+		{
+			m_isJump = true;
+			m_isLanding = false;
+			m_move.y = PLAYER_JUMPVALUE;
+		}
+
+		// ジャンプ中処理
+		if (m_isJump)
+		{
+			m_pMotion->SetMotion(CMotion::TYPE_JUMP);
+
+			if (pInput->GetPress(DIK_RETURN))
+			{
+				if (pInput->GetRepeat(DIK_RETURN, 15))
+				{
+					D3DXVECTOR3 vecToBoss = bossPos - m_pos;
+					vecToBoss.y = 0.0f;
+					D3DXVec3Normalize(&vecToBoss, &vecToBoss);
+					D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
+					CBullet::Create(
+						D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43),
+						vecToBoss,
+						CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 30);
+				}
+
+				m_pMotion->SetMotion(CMotion::TYPE_JUMPATTACK);
+			}
+
+			if (m_isLanding)
+			{
+				m_pMotion->SetMotion(CMotion::TYPE_LANDING);
+				m_isJump = false;
+				CMeshImpact::Create(m_pos, 80, 50.0f, 5.0f, 15.0f);
+			}
+		}
+
+		// 攻撃処理
+		if (pInput->GetPress(DIK_RETURN) && m_pMotion->GetMotionType() != CMotion::TYPE_JUMPATTACK)
+		{
+			if (pInput->GetRepeat(DIK_RETURN, 15))
+			{
+				D3DXVECTOR3 vecToBoss = bossPos - m_pos;
+				vecToBoss.y = 0.0f;
+				D3DXVec3Normalize(&vecToBoss, &vecToBoss);
+				D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
+				CBullet::Create(
+					D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43),
+					vecToBoss,
+					CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+			}
+
+			if (!m_isAttack)
+			{
+				m_isAttack = true;
+				m_pMotion->SetMotion(CMotion::TYPE_ACTION);
+			}
+			else if (m_pMotion->GetFinishMotion())
+			{
+				m_isAttack = false;
+				m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
+			}
+		}
+
+		if (m_isAttack && m_pMotion->GetMotionType() != CMotion::TYPE_ACTION)
+		{
+			m_isAttack = false;
+		}
+
+		if (m_pMotion->GetMotionType() == CMotion::TYPE_JUMPATTACK && pInput->GetPress(DIK_RETURN))
+		{
+			m_move.y = 0.0f;
+		}
+		else
+		{
+			m_move.y -= 0.7f;
+		}
+	}
+
+	//================================
+	// 全プレイヤー共通処理（MAIN/SUB）
+	//================================
+
+	// 自身の角度
+	float myAngle = (m_nIdxPlayer == NUMBER_MAIN) ? fAngle : fAngle + D3DX_PI;
+
+	// 対角線座標を中心から計算
+	m_pos.x = center.x - sinf(myAngle) * radius;
+	m_pos.z = center.z - cosf(myAngle) * radius;
+
+	// 向き補間
+	m_rotDest.y = myAngle;
+	if (m_rotDest.y - m_rot.y > D3DX_PI) m_rot.y += D3DX_PI * 2.0f;
+	else if (m_rot.y - m_rotDest.y > D3DX_PI) m_rot.y -= D3DX_PI * 2.0f;
+	m_rot.y += (m_rotDest.y - m_rot.y) + D3DX_PI;
+
+	// 移動
+	m_posOld = m_pos;
+	m_pos += m_move;
+
+	if (m_pos.y <= 0.0f)
+	{
+		m_pos.y = 0.0f;
+		m_isLanding = true;
+		m_move.y = 0.0f;
+	}
+
+	// HPチェック
+	if (m_pParameter->GetHp() <= 0)
+	{
+		m_pMotion->SetMotion(CMotion::TYPE_DAMAGE);
+	}
+
+	// 更新
+	m_pState->Update();
+	m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
+	m_pMotion->Update(m_apModel, MAX_MODEL);
+	
+
+#if 0
+
 	// キーボードの取得
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
@@ -230,8 +390,8 @@ void CPlayer::Update(void)
 	//===========================
 	// 移動キー処理
 	//===========================
-	// 攻撃状態じゃなかったら移動を適用
-	if (!m_isAttack && Type != m_pMotion->TYPE_JUMPATTACK)
+	// 攻撃状態じゃない かつ インデックス番号がメインのプレイヤー
+	if (m_nIdxPlayer == NUMBER_MAIN && !m_isAttack && Type != m_pMotion->TYPE_JUMPATTACK)
 	{
 		// Aキー
 		if (pInput->GetPress(DIK_A))
@@ -288,11 +448,19 @@ void CPlayer::Update(void)
 		m_rot.y -= D3DX_PI * 2.0f;
 	}
 
+	//=============================================
+    // 対応する角度と座標・向きを計算
+	//=============================================
+	float finalAngle = (m_nIdxPlayer == NUMBER_MAIN) ? fAngle : fAngle + D3DX_PI;
+
 	//=====================================================
 	// メッシュの座標から見てプレイヤーの位置を求める
 	//=====================================================
 	m_pos.x = MeshCylinderPos.x - (sinf(fAngle)) * fRadius;		// X座標
 	m_pos.z = MeshCylinderPos.z - (cosf(fAngle)) * fRadius;		// Z座標
+
+	// 目的角を設定
+	m_rotDest.y = finalAngle;
 
 	// 角度を計算
 	m_rot.y += (m_rotDest.y - m_rot.y) + D3DX_PI;
@@ -315,6 +483,7 @@ void CPlayer::Update(void)
 
 	// 弾の移動成分を設定
 	D3DXVECTOR3 BulletMove = VecBoss;
+
 #endif
 	// プレイヤーの腕のワールドマトリックスを取得
 	D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
@@ -439,7 +608,6 @@ void CPlayer::Update(void)
 	m_posOld = m_pos;
 	m_pos += m_move;
 
-
 	// 座標が0以下
 	if (m_pos.y <= 0.0f)
 	{
@@ -466,6 +634,29 @@ void CPlayer::Update(void)
 
 	// モーション全体の更新
 	m_pMotion->Update(m_apModel, MAX_MODEL);
+
+#endif
+}
+//=========================================
+// 識別番号ごとのプレイヤーの更新処理
+//=========================================
+void CPlayer::UpdateIdxPlayer(int nIdx, CInputKeyboard* pInputKey)
+{
+	// 識別番号ごとのプレイヤーの動き
+	switch (nIdx)
+	{
+	case NUMBER_MAIN:
+
+		break;
+
+	case NUMBER_SUB:
+
+		break;
+
+	default:
+
+		break;
+	}
 }
 //===============================
 // プレイヤー描画処理
@@ -506,158 +697,6 @@ void CPlayer::Draw(void)
 	//CDebugproc::Draw(0, 140);
 
 }
-//=================================
-// キー操作
-//=================================
-void CPlayer::MoveKey(CInputKeyboard* pInputKeyBoard,CCamera * pCamera)
-{
-#if 0
-	// 移動処理
-	if (pInputKeyBoard->GetPress(DIK_A))
-	{// Aキーを押した
-
-		if (pInputKeyBoard->GetPress(DIK_W))
-		{// Wキーを押した
-			m_move.x += sinf(pCamera->GetRot().y - D3DX_PI * 0.25f) * MAX_MOVE;
-			m_move.z += cosf(pCamera->GetRot().y - D3DX_PI * 0.25f) * MAX_MOVE;
-			m_rotDest.y = pCamera->GetRot().y + (D3DX_PI * 0.75f);
-		}
-		else if (pInputKeyBoard->GetPress(DIK_S))
-		{// Sキーを押した
-			m_move.x -= sinf(pCamera->GetRot().y + D3DX_PI * 0.25f) * MAX_MOVE;
-			m_move.z -= cosf(pCamera->GetRot().y + D3DX_PI * 0.25f) * MAX_MOVE;
-			m_rotDest.y = pCamera->GetRot().y + (D3DX_PI * 0.25f);
-		}
-		else
-		{// Aキーのみを押した
-			m_move.x -= sinf(pCamera->GetRot().y + (D3DX_PI * 0.5f)) * MAX_MOVE;
-			m_move.z -= cosf(pCamera->GetRot().y + (D3DX_PI * 0.5f)) * MAX_MOVE;
-			m_rotDest.y = pCamera->GetRot().y + (D3DX_PI * 0.5f);
-		}
-
-		// 角度の正規化
-		if (m_rot.y > D3DX_PI)
-		{// D3DX_PIより大きくなったら
-			m_rot.y -= D3DX_PI * 2.0f;
-		}
-
-		// モーションセット
-		m_pMotion->SetMotion(m_pMotion->TYPE_MOVE, m_pMotion->TYPE_NEUTRAL, false, 30);
-	}
-	else if (pInputKeyBoard->GetPress(DIK_D))
-	{// Dキーを押した
-		if (pInputKeyBoard->GetPress(DIK_W))
-		{// Wキーを押した
-			m_move.x += sinf(pCamera->GetRot().y + D3DX_PI * 0.25f) * MAX_MOVE;
-			m_move.z += cosf(pCamera->GetRot().y + D3DX_PI * 0.25f) * MAX_MOVE;
-			m_rotDest.y = pCamera->GetRot().y - (D3DX_PI * 0.75f);
-
-		}
-		else if (pInputKeyBoard->GetPress(DIK_S))
-		{// Sキーを押した
-			m_move.x -= sinf(pCamera->GetRot().y - D3DX_PI * 0.25f) * MAX_MOVE;
-			m_move.z -= cosf(pCamera->GetRot().y - D3DX_PI * 0.25f) * MAX_MOVE;
-			m_rotDest.y = pCamera->GetRot().y - (D3DX_PI * 0.25f);
-		}
-		else
-		{// Dキーのみ押した
-			m_move.x += sinf(pCamera->GetRot().y + (D3DX_PI * 0.5f)) * MAX_MOVE;
-			m_move.z += cosf(pCamera->GetRot().y + (D3DX_PI * 0.5f)) * MAX_MOVE;
-			m_rotDest.y = pCamera->GetRot().y - (D3DX_PI * 0.5f);
-		}
-
-		// 角度の正規化
-		if (m_rot.y > D3DX_PI)
-		{// D3DX_PIより大きくなったら
-			m_rot.y -= D3DX_PI * 2.0f;
-		}
-
-		// モーションセット
-		m_pMotion->SetMotion(m_pMotion->TYPE_MOVE, m_pMotion->TYPE_NEUTRAL, false, 40);
-
-	}
-	else if (pInputKeyBoard->GetPress(DIK_W))
-	{// Wキーを押した
-
-		m_move.x += sinf(pCamera->GetRot().y) * MAX_MOVE;
-		m_move.z += cosf(pCamera->GetRot().y) * MAX_MOVE;
-		m_rotDest.y = pCamera->GetRot().y - (D3DX_PI);
-
-		// 角度を正規化
-		if (m_rot.y < -D3DX_PI)
-		{// D3DX_PIより小さくなったら
-			m_rot.y += D3DX_PI * 2.0f;
-		}
-
-		// モーションセット
-		m_pMotion->SetMotion(m_pMotion->TYPE_MOVE, m_pMotion->TYPE_NEUTRAL, false, 40);
-
-	}
-	else if (pInputKeyBoard->GetPress(DIK_S))
-	{// Sキーを押した
-
-		m_move.x -= sinf(pCamera->GetRot().y) * MAX_MOVE;
-		m_move.z -= cosf(pCamera->GetRot().y) * MAX_MOVE;
-		m_rotDest.y = pCamera->GetRot().y;
-
-		// 角度の正規化
-		if (m_rot.y > D3DX_PI)
-		{// D3DX_PIより大きくなったら
-			m_rot.y -= D3DX_PI * 2.0f;
-		}
-
-		// モーションセット
-		m_pMotion->SetMotion(m_pMotion->TYPE_MOVE, m_pMotion->TYPE_NEUTRAL, false, 30);
-
-	}
-	else
-	{
-		// 通常時はニュートラル
-		m_pMotion->SetMotion(TYPE_NEUTRAL, TYPE_MOVE, false, 0);
-	}
-
-	if (m_rotDest.y - m_rot.y > D3DX_PI)
-	{// 左回転
-		// 角度
-		m_rot.y = m_rot.y + D3DX_PI * 2.0f;
-	}
-	else if (m_rot.y - m_rotDest.y > D3DX_PI)
-	{// 右回転
-		// 角度
-		m_rot.y = m_rot.y - D3DX_PI * 2.0f;
-	}
-
-	// Enterキー入力
-	if (pInputKeyBoard->GetTrigger(DIK_RETURN))
-	{
-		// 攻撃モーションに変更
-		m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL, m_pMotion->TYPE_NEUTRAL, true, 40);
-	}
-
-	if (bJump == false)
-	{// ジャンプしていなくて着地していないとき
-		if (pInputKeyBoard->GetTrigger(DIK_SPACE))
-		{
-			// 攻撃モーションに変更
-			m_pMotion->SetMotion(m_pMotion->TYPE_ACTION, NULL, false, 0);
-
-			bJump = true;
-			isLanding = false;
-
-			// ジャンプキーが押された
-			m_move.y = 15.0f;
-		}
-	}
-	// ジャンプが使われている
-	if (bJump == true)
-	{
-		if (isLanding == true)
-		{
-			bJump = false;
-		}
-	}
-#endif
-}
 //=========================================
 // 識別番号ごとのプレイヤーの取得
 //=========================================
@@ -689,25 +728,4 @@ CPlayer* CPlayer::GetIdxPlayer(int Idx)
 
 	// 取得できなかった場合
 	return nullptr;
-}
-//=========================================
-// 識別番号ごとのプレイヤーの更新処理
-//=========================================
-void CPlayer::UpdateIdxPlayer(int nIdx,CInputKeyboard * pInputKey)
-{
-	// 識別番号ごとのプレイヤーの動き
-	switch (nIdx)
-	{
-	case NUMBER_MAIN:
-
-		break;
-
-	case NUMBER_SUB:
-
-		break;
-
-	default:
-
-		break;
-	}
 }

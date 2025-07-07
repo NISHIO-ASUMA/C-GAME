@@ -50,6 +50,8 @@ public:
 	static CPlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
 
+	void UpdateAction(CInputKeyboard* pInputKeyboard);
+
 	static constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 
 private:
@@ -80,8 +82,10 @@ private:
 	bool m_isAttack;
 
 	float m_size;
+	float m_fAngle;		// 現在の角度
 
 	int m_nIdxPlayer; // プレイヤーの識別番号
+
 	const char* m_pFilename; // 読み込むファイル名
 };
 
