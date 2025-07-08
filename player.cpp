@@ -24,10 +24,10 @@
 // 定数宣言
 //**********************
 constexpr float PLAYER_MOVE = 0.0095f; // 1フレームの移動量
-constexpr float PLAYER_JUMPVALUE = 20.0f; // ジャンプ量
+constexpr float PLAYER_JUMPVALUE = 13.0f; // ジャンプ量
 constexpr int   NUMBER_MAIN = 0;       // メイン操作プレイヤー番号
 constexpr int   NUMBER_SUB = 1;		   // 分身操作プレイヤー番号
-
+constexpr int   KeyRepeatCount = 15;	// キーのリピートカウント
 //===============================
 // オーバーロードコンストラクタ
 //===============================
@@ -236,191 +236,71 @@ void CPlayer::Update(void)
 	// プレイヤーの腕のワールドマトリックスを取得する
 	D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
 
+	// 攻撃中はボスの方向に体を向ける
+	if (m_isAttack)
+	{
+		// ボスからプレイヤーへのベクトル生成
+		D3DXVECTOR3 BossDir = CManager::GetBoss()->GetPos() - m_pos;
+
+		// y軸方向は一定
+		BossDir.y = 0.0f;
+
+		// 長さが0.0001fより大きいとき
+		if (D3DXVec3LengthSq(&BossDir) > 0.0001f)
+		{
+			// ベクトルを正規化
+			D3DXVec3Normalize(&BossDir, &BossDir);
+
+			// プレイヤーの角度を合わせる
+			m_rot.y = atan2f(-BossDir.x, -BossDir.z); // Y軸回転のみ調整
+		}
+	}
+
 	// 攻撃状態じゃない かつ 現在モーションがジャンプ攻撃じゃない時
 	if (!m_isAttack && m_pMotion->GetMotionType() != CMotion::TYPE_JUMPATTACK)
 	{
-
 		// 移動更新関数
 		UpdateMove(MeshPos,pInput);
-#if 0
-		if (pInput->GetPress(DIK_A))
-		{// Aキー入力
-
-			// 角度更新
-			fAngle += PLAYER_MOVE;
-
-			// 目的角を計算
-			m_rotDest.y = fAngle - D3DX_PI * 0.5f; // 左
-
-			// 移動モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_MOVE);
-		}
-		else if (pInput->GetPress(DIK_D)) 
-		{// Dキー入力
-
-			// 角度更新
-			fAngle -= PLAYER_MOVE;
-
-			// 目的角を計算
-			m_rotDest.y = fAngle + D3DX_PI * 0.5f; // 右
-
-			// 移動モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_MOVE);
-		}
-		else
-		{
-			// 移動モーション時,ニュートラルモーションに変更
-			if (m_pMotion->GetMotionType() == CMotion::TYPE_MOVE)m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
-		}
-#endif
 	}
 
-	//// 角度を正規化
-	//if (m_rotDest.y - m_rot.y > D3DX_PI)
-	//{
-	//	m_rot.y += D3DX_PI * 2.0f;
-	//}
-	//else if (m_rot.y - m_rotDest.y > D3DX_PI)
-	//{
-	//	m_rot.y -= D3DX_PI * 2.0f;
-	//}
-
-	//// 自身の角度を計算
-	//float IdxAngle = (m_nIdxPlayer == NUMBER_MAIN) ? fAngle : fAngle + D3DX_PI;
-
-	//// 対角線座標を中心から計算
-	//m_pos.x = MeshPos.x - sinf(IdxAngle) * fRadius;
-	//m_pos.z = MeshPos.z - cosf(IdxAngle) * fRadius;
-
-	//// 現在の角度に設定
-	//m_rot.y += (m_rotDest.y - m_rot.y) + D3DX_PI;
-
-	// モーションのフラグ
-	bool isJumpAttacking = (m_pMotion->GetMotionType() == m_pMotion->TYPE_JUMPATTACK);
-
-	// キーフラグをセット
-	bool isKeyPress = false;
-
-	//====================
 	// 攻撃処理
-	//====================
-	if (pInput->GetPress(DIK_RETURN) && m_pMotion->GetMotionType() != CMotion::TYPE_JUMPATTACK)
-	{
-		// キーフラグをセット
-		isKeyPress = true;
-
-		// 15フレーム攻撃キーを入力していたら
-		if (pInput->GetRepeat(DIK_RETURN, 15))
-		{
-			// 弾を生成
-			CBullet::Create(
-				D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43),
-				VecBoss,
-				CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
-		}
-
-		if (!m_isAttack) 	// 攻撃状態じゃないとき
-		{
-			// 攻撃フラグを有効化する
-			m_isAttack = true;
-
-			// 地上攻撃モーション変更
-			m_pMotion->SetMotion(CMotion::TYPE_ACTION);
-		}
-		else if (m_isAttack && !m_pMotion->GetFinishMotion()) // 攻撃状態 かつ モーション終了判定がfalseの時
-		{
-			// 攻撃フラグを無効化する
-			m_isAttack = false;
-
-			// ニュートラルモーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
-
-			// キー入力フラグを無効にする
-			isKeyPress = false;
-		}
-	}
-	else if (!isKeyPress && m_pMotion->GetMotionType() == CMotion::TYPE_ACTION)
-	{// キーフラグが無効 かつ 現在のモーションが攻撃モーションなら
-
-		// 通常モーションに変更
-		m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL);
-
-		// 攻撃状態を解除
-		m_isAttack = false;
-	}
-
-	// 攻撃状態 かつ モーションの状態が攻撃じゃなかったら
-	if (m_isAttack && m_pMotion->GetMotionType() != CMotion::TYPE_ACTION)
-	{
-		// 攻撃を終了
-		m_isAttack = false;
-	}
-
-	// 空中攻撃中
-	if (isJumpAttacking && pInput->GetPress(DIK_RETURN))
-	{
-		// 一定の高さで静止する
-		m_move.y = 0.0f;
-	}
-	else
-	{
-		// 重力値を適用
-		m_move.y -= 0.7f;
-	}
-
-	// ジャンプキー入力 かつ ジャンプフラグがfalseの時
-	if (!m_isJump && pInput->GetTrigger(DIK_SPACE))
-	{
-		// フラグを有効化
-		m_isJump = true;
-
-		// 未着地判定に変更
-		m_isLanding = false;
-
-		// 上昇値を設定
-		m_move.y = PLAYER_JUMPVALUE;
-	}
-
-	// ジャンプ中処理
-	if (m_isJump)
-	{
-		// ジャンプモーションに変更
-		m_pMotion->SetMotion(CMotion::TYPE_JUMP);
-
-		// ジャンプ中に攻撃キー入力
-		if (pInput->GetPress(DIK_RETURN))
-		{
-			// 攻撃キーを15フレーム押し続けていたら
-			if (pInput->GetRepeat(DIK_RETURN, 15))
-			{
-				// 弾を生成
-				CBullet::Create(
-					D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43),
-					VecBoss,
-					CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 30);
-			}
-
-			// ジャンプ攻撃モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_JUMPATTACK);
-		}
-
-		// 着地時の処理
-		if (m_isLanding)
-		{
-			// 着地モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_LANDING);
-
-			// ジャンプ可能状態に変更
-			m_isJump = false;
-
-			// 衝撃波を生成
-			CMeshImpact::Create(m_pos, 80, 50.0f, 5.0f, 15.0f);
-		}
-	}
+	UpdateNeutralAction(pInput,mtxWorld, BulletMove);
 	
+	// ジャンプ処理
+	UpdateJumpAction(pInput, mtxWorld, BulletMove);
+
 	// 移動処理
-	m_posOld = m_pos;
 	m_pos += m_move;
+
+	//=============================
+	// インパクトとの当たり判定
+	//=============================
+	CObject* pObj = CObject::GetTop(static_cast<int>(CObject::PRIORITY::IMPACT));
+
+	// nullptrじゃないとき
+	while (pObj != nullptr)
+	{
+		// メッシュタイプを取得
+		if (pObj->GetObjType() == CObject::TYPE_MESH)
+		{
+			// インパクトにキャスト
+			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
+
+			if (pImpact->Collision(&m_pos))
+			{
+				// 当たったらダメージモーションに切り替え
+				m_pMotion->SetMotion(CMotion::TYPE_DAMAGE);
+
+				// 状態更新
+				m_pState->SetState(CState::STATE_DAMAGE);
+
+				break; // 当たったら抜ける
+			}
+		}
+
+		// 次のオブジェクトを検出する
+		pObj = pObj->GetNext();
+	}
 
 	// 現在のy座標が0.0f以下の時
 	if (m_pos.y <= 0.0f)
@@ -433,14 +313,6 @@ void CPlayer::Update(void)
 
 		// 高さへの移動量を0.0fに設定
 		m_move.y = 0.0f;
-	}
-
-	// HPチェック
-	if (m_pParameter->GetHp() <= 0)
-	{
-		// TODO : テスト検証
-		// ダメージモーションに変更
-		m_pMotion->SetMotion(CMotion::TYPE_DAMAGE);
 	}
 
 	// 状態管理を更新
@@ -482,14 +354,6 @@ void CPlayer::Draw(void)
 	{
 		m_apModel[nCnt]->Draw();
 	}
-
-	// デバッグ表示
-	//CDebugproc::Print("プレイヤー座標 [ %.2f,%.2f,%.2f ]", m_pos.x, m_pos.y, m_pos.z );
-	//CDebugproc::Draw(0, 20);
-
-	//CDebugproc::Print("プレイヤー向き [ %.2f,%.2f,%.2f ]", m_rot.x, m_rot.y, m_rot.z);
-	//CDebugproc::Draw(0, 140);
-
 }
 //=========================================
 // 識別番号ごとのプレイヤーの取得
@@ -526,9 +390,62 @@ CPlayer* CPlayer::GetIdxPlayer(int Idx)
 //=========================================
 // 識別番号ごとの攻撃更新処理
 //=========================================
-void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard)
+void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const D3DXVECTOR3 DestMove)
 {
-	
+	// キーフラグをセット
+	bool isKeyPress = false;
+
+	//====================
+	// 攻撃処理
+	//====================
+	if (pInputKeyboard->GetPress(DIK_RETURN) && m_pMotion->GetMotionType() != CMotion::TYPE_JUMPATTACK)
+	{
+		// キーフラグをセット
+		isKeyPress = true;
+
+		// 15フレーム攻撃キーを入力していたら
+		if (pInputKeyboard->GetRepeat(DIK_RETURN, KeyRepeatCount))
+		{
+			// 弾を生成
+			CBullet::Create(D3DXVECTOR3(pMtx._41, pMtx._42, pMtx._43), DestMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+		}
+
+		if (!m_isAttack) 	// 攻撃状態じゃないとき
+		{
+			// 攻撃フラグを有効化する
+			m_isAttack = true;
+
+			// 地上攻撃モーション変更
+			m_pMotion->SetMotion(CMotion::TYPE_ACTION);
+		}
+		else if (m_isAttack && !m_pMotion->GetFinishMotion()) // 攻撃状態 かつ モーション終了判定がfalseの時
+		{
+			// 攻撃フラグを無効化する
+			m_isAttack = false;
+
+			// ニュートラルモーションに変更
+			m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
+
+			// キー入力フラグを無効にする
+			isKeyPress = false;
+		}
+	}
+	else if (!isKeyPress && m_pMotion->GetMotionType() == CMotion::TYPE_ACTION)
+	{// キーフラグが無効 かつ 現在のモーションが攻撃モーションなら
+
+		// 通常モーションに変更
+		m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL);
+
+		// 攻撃状態を解除
+		m_isAttack = false;
+	}
+
+	// 攻撃状態 かつ モーションの状態が攻撃じゃなかったら
+	if (m_isAttack && m_pMotion->GetMotionType() != CMotion::TYPE_ACTION)
+	{
+		// 攻撃を終了
+		m_isAttack = false;
+	}
 }
 //=========================================
 // 識別番号ごとの移動更新処理
@@ -579,7 +496,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 	case NUMBER_SUB: // 対角線上のプレイヤー
 
 		// キー入力時の角度計算
-		if (pInputKeyboard->GetPress(DIK_A))
+		if (pInputKeyboard->GetPress(DIK_A)) // Aキー
 		{
 			// 角度更新
 			fAngle += PLAYER_MOVE;
@@ -590,7 +507,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 移動モーションに変更
 			m_pMotion->SetMotion(CMotion::TYPE_MOVE);
 		}
-		else if (pInputKeyboard->GetPress(DIK_D))
+		else if (pInputKeyboard->GetPress(DIK_D)) // Dキー
 		{
 			// 角度更新
 			fAngle -= PLAYER_MOVE;
@@ -639,285 +556,74 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 		m_rot.y += (m_rotDest.y - m_rot.y);
 	}
 
-	// 座標更新処理}
+	// 座標更新処理
 	m_posOld = m_pos;
 	m_pos += m_move;
-
 }
-#if 0
-
-// キーボードの取得
-CInputKeyboard* pInput = CManager::GetInputKeyboard();
-
-// メッシュの座標の取得
-D3DXVECTOR3 MeshCylinderPos = CManager::GetCylinder()->GetPos();
-
-#if 1
-// ボスオブジェクトの取得
-CObject* pObjBoss = CObject::GetTop(CObject::PRIORITY::BOSS);
-
-// キャストする
-CBoss* pBoss = CManager::GetBoss();
-
-// ボスの座標の取得
-D3DXVECTOR3 BossPos = pBoss->GetPos();
-#endif
-
-// メッシュの半径の取得
-float fRadius = CManager::GetCylinder()->GetRadius();
-
-// 現在のモーションタイプを取得
-int Type = m_pMotion->GetMotionType();
-
-// 角度計算用
-static float fAngle = NULL;
-
-//===========================
-// 移動キー処理
-//===========================
-// 攻撃状態じゃない かつ インデックス番号がメインのプレイヤー
-if (m_nIdxPlayer == NUMBER_MAIN && !m_isAttack && Type != m_pMotion->TYPE_JUMPATTACK)
+//=========================================
+// 識別番号ごとのジャンプ更新処理
+//=========================================
+void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove)
 {
-	// Aキー
-	if (pInput->GetPress(DIK_A))
+	// モーションのフラグ
+	bool isJumpAttacking = (m_pMotion->GetMotionType() == m_pMotion->TYPE_JUMPATTACK);
+
+	// 空中攻撃中
+	if (isJumpAttacking && pInputKeyboard->GetPress(DIK_RETURN))
 	{
-		// 角度更新
-		fAngle += PLAYER_MOVE;
-
-		// 目的角を計算
-		m_rotDest.y = fAngle - D3DX_PI * 0.5f; // 左
-
-		// 移動モーションに設定
-		m_pMotion->SetMotion(m_pMotion->TYPE_MOVE);
-
-	}
-	// Dキー	
-	else if (pInput->GetPress(DIK_D))
-	{
-		// 角度更新
-		fAngle -= PLAYER_MOVE;
-
-		// 目的角を計算
-		m_rotDest.y = fAngle + D3DX_PI * 0.5f; // 右
-
-		// 移動モーション
-		m_pMotion->SetMotion(m_pMotion->TYPE_MOVE);
+		// 一定の高さで静止する
+		m_move.y = 0.0f;
 	}
 	else
 	{
-		// 移動だったら
-		if (Type == m_pMotion->TYPE_MOVE)
-		{
-			// ニュートラルモーションに変更
-			m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL);
-		}
-	}
-}
-
-// 状態変更
-if (pInput->GetTrigger(DIK_K))
-{
-	// 状態変更
-	m_pState->SetState(m_pState->STATE_DAMAGE);
-}
-
-//=========================
-// 角度を正規化する
-//=========================
-if (m_rotDest.y - m_rot.y > D3DX_PI)
-{
-	m_rot.y += D3DX_PI * 2.0f;
-}
-else if (m_rot.y - m_rotDest.y > D3DX_PI)
-{
-	m_rot.y -= D3DX_PI * 2.0f;
-}
-
-//=============================================
-// 対応する角度と座標・向きを計算
-//=============================================
-float finalAngle = (m_nIdxPlayer == NUMBER_MAIN) ? fAngle : fAngle + D3DX_PI;
-
-//=====================================================
-// メッシュの座標から見てプレイヤーの位置を求める
-//=====================================================
-m_pos.x = MeshCylinderPos.x - (sinf(fAngle)) * fRadius;		// X座標
-m_pos.z = MeshCylinderPos.z - (cosf(fAngle)) * fRadius;		// Z座標
-
-// 目的角を設定
-m_rotDest.y = finalAngle;
-
-// 角度を計算
-m_rot.y += (m_rotDest.y - m_rot.y) + D3DX_PI;
-
-//=========================
-// 攻撃処理
-//=========================
-// キー入力フラグ
-bool isKeyPress = false;
-
-#if 1
-// ボスの方向へのベクトルを取得
-D3DXVECTOR3 VecBoss = BossPos - m_pos;
-
-// 水平方向で合わせる
-VecBoss.y = NULL;
-
-// ベクトルを正規化
-D3DXVec3Normalize(&VecBoss, &VecBoss);
-
-// 弾の移動成分を設定
-D3DXVECTOR3 BulletMove = VecBoss;
-
-#endif
-// プレイヤーの腕のワールドマトリックスを取得
-D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
-
-// 攻撃キー かつ モーションがジャンプ攻撃でなければ
-if (pInput->GetPress(DIK_RETURN) && Type != m_pMotion->TYPE_JUMPATTACK)
-{
-	// キーフラグをセット
-	isKeyPress = true;
-
-	// 15フレームごとに弾を発射
-	if (pInput->GetRepeat(DIK_RETURN, 15))
-	{
-		// 腕の武器の部分から弾を発射する
-		CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+		// 重力値を適用
+		m_move.y -= 0.7f;
 	}
 
-	// 攻撃してない時
-	if (!m_isAttack)
+	// ジャンプキー入力 かつ ジャンプフラグがfalseの時
+	if (!m_isJump && pInputKeyboard->GetTrigger(DIK_SPACE))
 	{
 		// フラグを有効化
-		m_isAttack = true;
-
-		// 攻撃モーションに変更
-		m_pMotion->SetMotion(m_pMotion->TYPE_ACTION);
-	}
-	else if (m_isAttack && m_pMotion->GetFinishMotion() == false)
-	{
-		// アタックをfalseにする
-		m_isAttack = false;
-
-		// 通常モーションに変更
-		m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL);
-
-		// フラグをfalseにする
-		isKeyPress = false;
-	}
-}
-else if (isKeyPress == false && Type == m_pMotion->TYPE_ACTION)
-{
-	// 通常モーションに変更
-	m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL);
-
-	// 攻撃状態を解除
-	m_isAttack = false;
-}
-
-// 攻撃フラグがオン かつ アクションモーションじゃなければ
-if (m_isAttack && m_pMotion->GetMotionType() != m_pMotion->TYPE_ACTION)
-{
-	// 攻撃状態を解除
-	m_isAttack = false;
-}
-
-//=========================
-// ジャンプ処理
-//=========================
-if (m_isJump == false)
-{// ジャンプしていなくて着地していないとき
-	if (pInput->GetTrigger(DIK_SPACE))
-	{
-		// フラグを変更
 		m_isJump = true;
+
+		// 未着地判定に変更
 		m_isLanding = false;
 
-		// ジャンプキーが押された
+		// 上昇値を設定
 		m_move.y = PLAYER_JUMPVALUE;
 	}
-}
 
-// ジャンプ可能時
-if (m_isJump == true)
-{
-	// ジャンプモーションに変更
-	m_pMotion->SetMotion(m_pMotion->TYPE_JUMP);
-
-	// ジャンプしているなら
-	if (pInput->GetPress(DIK_RETURN))
+	// ジャンプ中処理
+	if (m_isJump)
 	{
-		// 弾の発射間隔を調整する
-		if (pInput->GetRepeat(DIK_RETURN, 15))
+		// ジャンプモーションに変更
+		m_pMotion->SetMotion(CMotion::TYPE_JUMP);
+
+		// ジャンプ中に攻撃キー入力
+		if (pInputKeyboard->GetPress(DIK_RETURN))
 		{
-			// 腕の武器の部分から弾を発射する
-			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), BulletMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 30);
+			// 攻撃キーを15フレーム押し続けていたら
+			if (pInputKeyboard->GetRepeat(DIK_RETURN, KeyRepeatCount))
+			{
+				// 弾を生成
+				CBullet::Create(D3DXVECTOR3(pMtx._41, pMtx._42, pMtx._43), DestMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 45);
+			}
+
+			// ジャンプ攻撃モーションに変更
+			m_pMotion->SetMotion(CMotion::TYPE_JUMPATTACK);
 		}
 
-		// ジャンプ攻撃モーションに変更
-		m_pMotion->SetMotion(m_pMotion->TYPE_JUMPATTACK);
+		// 着地時の処理
+		if (m_isLanding)
+		{
+			// 着地モーションに変更
+			m_pMotion->SetMotion(CMotion::TYPE_LANDING);
 
-	}
+			// ジャンプ可能状態に変更
+			m_isJump = false;
 
-	// 着地時
-	if (m_isLanding == true)
-	{
-		// 着地モーションに変更
-		m_pMotion->SetMotion(m_pMotion->TYPE_LANDING);
-
-		// ジャンプ可能状態にする
-		m_isJump = false;
-
-		// メッシュインパクト生成
-		CMeshImpact::Create(m_pos, 80, 50.0f, 5.0f, 15.0f);
+			// 衝撃波を生成
+			// CMeshImpact::Create(m_pos, 80, 50.0f, 5.0f, 15.0f);
+		}
 	}
 }
-
-// モーションのフラグ
-bool isJumpAttacking = (m_pMotion->GetMotionType() == m_pMotion->TYPE_JUMPATTACK);
-
-// 攻撃キー押してる間は静止
-if (isJumpAttacking && pInput->GetPress(DIK_RETURN))
-{
-	m_move.y = 0.0f; // 高さキープ
-}
-else
-{
-	m_move.y -= 0.7f; // 重力適用
-}
-
-//=========================
-// 位置更新
-//=========================
-m_posOld = m_pos;
-m_pos += m_move;
-
-// 座標が0以下
-if (m_pos.y <= 0.0f)
-{
-	m_pos.y = 0.0f;
-	m_isLanding = true;
-	m_move.y = 0.0f;
-}
-
-// 現在体力の取得
-int nLife = m_pParameter->GetHp();
-
-// 体力が0以下
-if (nLife <= 0)
-{
-	// 死亡モーションに変更
-	m_pMotion->SetMotion(m_pMotion->TYPE_DAMAGE);
-}
-
-// 状態管理クラスの更新
-m_pState->Update();
-
-// 影の更新処理
-m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
-
-// モーション全体の更新
-m_pMotion->Update(m_apModel, MAX_MODEL);
-
-#endif

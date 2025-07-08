@@ -85,15 +85,6 @@ void CCamera::Update(void)
 	CInputMouse* pMouse = CManager::GetMouse();
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
-	// プレイヤー取得
-	CObject* pObjPlayer = CObject::GetTop(static_cast<int>(CObject::PRIORITY::PLAYER));
-
-	// 取得失敗時
-	if (pObjPlayer == nullptr)
-	{
-		return;
-	}
-
 	// ボス取得
 	CBoss* pBoss = CManager::GetBoss();
 

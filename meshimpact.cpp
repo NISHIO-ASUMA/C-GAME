@@ -380,7 +380,7 @@ CMeshImpact* CMeshImpact::Create(D3DXVECTOR3 pos, int nLife,float fOutRadius,flo
 //===============================
 // 当たり判定処理
 //===============================
-bool CMeshImpact::Collision(D3DXVECTOR3* pPos, int nDamage)
+bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 {
 	// 頂点情報のポインタ
 	VERTEX_3D* pVtx = nullptr;
@@ -411,9 +411,6 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos, int nDamage)
 		// 頂点との距離が内径と外径の差分よりも小さい値になったら
 		if (fDisVerTex <= fDisSize * 0.5f)
 		{
-			// ダメージ処理
-			nDamage = 20;
-
 			// 当たっている
 			isHit = true;
 

@@ -17,10 +17,10 @@
 CEffect::CEffect(int nPriority) : CBillboard(nPriority)
 {
 	// 値のクリア
-	m_nLife = NULL;
-	m_fRadius = 0.0f;
-	m_move = VECTOR3_NULL;
 	m_nIdxTexture = NULL;
+	m_nLife = NULL;
+	m_fRadius = NULL;
+	m_move = VECTOR3_NULL;
 }
 //===============================
 // デストラクタ
@@ -110,6 +110,7 @@ void CEffect::Update(void)
 	// 半径をデクリメント
 	m_fRadius -= 0.01f;
 
+	// α値を減少
 	col.a -= 0.005f;
 
 	// 座標をセットする
@@ -164,7 +165,7 @@ void CEffect::Draw(void)
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-	// 親クラス描画
+	// ビルボード描画
 	CBillboard::Draw();
 
 	// αテストを無効

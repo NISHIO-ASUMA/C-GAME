@@ -45,7 +45,6 @@ public:
 	D3DXVECTOR3 GetRotDest(void) { return m_rotDest; }
 
 	void SetRotDest(D3DXVECTOR3 rotDest) { m_rotDest = rotDest; }
-	void MoveKey(CInputKeyboard* pInputKeyBoard, CCamera* pCamera);
 
 	static CPlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
@@ -53,8 +52,9 @@ public:
 	static constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 
 private:
-	void UpdateAction(CInputKeyboard* pInputKeyboard); // 攻撃更新関数
+	void UpdateNeutralAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
 	void UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard);   // 移動更新関数
+	void UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove);
 
 	D3DXVECTOR3 m_move;		// 移動量
 	D3DXVECTOR3 m_rotDest;  // 目的角

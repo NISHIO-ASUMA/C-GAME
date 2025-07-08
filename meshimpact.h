@@ -29,7 +29,7 @@ public:
 
 	static CMeshImpact* Create(D3DXVECTOR3 pos, int nLife, float fRadius, float fInRadius,float fSpeed);
 
-	bool Collision(D3DXVECTOR3* pPos, int nDamage);
+	bool Collision(D3DXVECTOR3* pPos);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }

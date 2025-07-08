@@ -9,8 +9,6 @@
 // インクルードファイル宣言
 //**************************
 #include "Manager.h"
-#include "object2D.h"
-#include "enemy.h"
 #include "score.h"
 #include "time.h"
 #include "objectX.h"
@@ -19,6 +17,7 @@
 #include "meshdome.h"
 #include "meshfield.h"
 #include "player.h"
+#include "meshimpact.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -219,7 +218,6 @@ void CManager::Uninit(void)
 		m_pInputMouse = nullptr;
 	}
 
-
 	// NULLチェック
 	if (m_pSound != nullptr)
 	{
@@ -244,7 +242,6 @@ void CManager::Uninit(void)
 
 		// NULLにする
 		m_pCamera = nullptr;
-
 	}
 
 	//  ライトの破棄
@@ -258,7 +255,6 @@ void CManager::Uninit(void)
 
 		// NULLにする
 		m_pLight = nullptr;
-
 	}
 
 	// テクスチャ破棄
@@ -307,6 +303,13 @@ void CManager::Update()
 	// レンダラーの更新処理
 	m_pRenderer->Update();
 
+	// TODO : 検証用
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
+	{
+		// 衝撃波を生成
+		CMeshImpact::Create(VECTOR3_NULL, 80, 50.0f, 5.0f, 15.0f);
+	}
+	
 #ifdef _DEBUG
 	// ブロックマネージャー更新
 	m_pBlockManager->Update();
@@ -384,7 +387,7 @@ CLight* CManager::GetLight(void)
 	return m_pLight;
 }
 //===========================
-// 3Dオブジェクトの取得
+// オブジェクト3Dの取得
 //===========================
 CObject3D* CManager::GetObj3D(void)
 {
