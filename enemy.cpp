@@ -101,9 +101,6 @@ HRESULT CEnemy::Init(void)
 	// 親クラスの初期化
 	CObject2D::Init();
 
-	// 種類をセット
-	SetObjType(TYPE_ENEMY);
-
 	// 取得
 	D3DXVECTOR3 rot = GetRot();
 

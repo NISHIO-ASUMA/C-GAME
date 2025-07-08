@@ -99,7 +99,7 @@ void CCamera::Update(void)
 
 	// プレイヤー取得
 	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
-
+	CPlayer* pPlayerSub = CPlayer::GetIdxPlayer(1);
 
 #ifdef _DEBUG
 	// カメラモード変更
@@ -145,36 +145,59 @@ void CCamera::Update(void)
 
 	case MODE_LOCKON:
 	{
-		
-		// プレイヤーとボスの座標取得
-		D3DXVECTOR3 playerPos = pPlayer->GetPos();
-		D3DXVECTOR3 bossPos = pBoss->GetPos();
+		// MAINプレイヤー座標,SUBプレイヤー座標,ボス座標を取得
+		D3DXVECTOR3 playerPos = pPlayer->GetPos();				// MAIN座標
+		D3DXVECTOR3 subPlayerPos = pPlayerSub->GetPos();		// SUB座標
+		D3DXVECTOR3 bossPos = pBoss->GetPos();					// ボス座標
 
-		// ボスへの向きベクトルを作成
-		D3DXVECTOR3 vecToBoss = bossPos - playerPos;
-		vecToBoss.y = 0.0f; // 高さは無視
+		// MAINプレイヤー向き計算
+		D3DXVECTOR3 VecToBoss = bossPos - playerPos;
 
-		// 正規化
-		D3DXVec3Normalize(&vecToBoss, &vecToBoss);
+		// 高さは無視
+		VecToBoss.y = 0.0f;
 
-		// プレイヤーの回転角をボスの方向に向ける
-		float angleToBoss = atan2f(vecToBoss.x, vecToBoss.z);
-		pPlayer->SetRotDest(D3DXVECTOR3(0, angleToBoss, 0));
+		// ベクトルを正規化
+		D3DXVec3Normalize(&VecToBoss, &VecToBoss);
 
-		// カメラ座標計算
-		D3DXVECTOR3 camOffset = -vecToBoss * 280.0f; // プレイヤーの後方へ距離をとる
-		camOffset.y = 160.0f; // カメラの高さ
+		// ボスへの角度を計算
+		float fAngleToBoss = atan2f(VecToBoss.x, VecToBoss.z);
 
-		// カメラの座標をプレイヤー位置＋オフセットに設定
+		// プレイヤーの目的角に設定する
+		pPlayer->SetRotDest(D3DXVECTOR3(0.0f, fAngleToBoss, 0.0f));
+
+		// SUBプレイヤーの向き計算
+		D3DXVECTOR3 VecSubToBoss = bossPos - subPlayerPos;
+
+		// 高さは無視
+		VecSubToBoss.y = 0.0f;
+
+		// ベクトルを正規化する
+		D3DXVec3Normalize(&VecSubToBoss, &VecSubToBoss);
+
+		// ボスへの角度を計算
+		float fAngleSubToBoss = atan2f(VecSubToBoss.x, VecSubToBoss.z);
+
+		// SUBプレイヤーの目的角度を設定
+		pPlayerSub->SetRotDest(D3DXVECTOR3(0.0f, fAngleSubToBoss, 0.0f));
+
+		// カメラ位置をMAINプレイヤーの後方へ
+		D3DXVECTOR3 camOffset = -VecToBoss * 280.0f;
+
+		// 高さを設定
+		camOffset.y = 160.0f;
+
+		// カメラの目的位置
 		D3DXVECTOR3 desiredPosV = playerPos + camOffset;
 
-		// 注視点はボスにセット
+		// ターゲット座標をボス座標に設定
 		D3DXVECTOR3 targetBoss = bossPos;
+
+		// 高さをプレイヤーの高さに合わせる
 		targetBoss.y = playerPos.y + 50.0f;
 
-		// カメラ座標にセット
-		m_pCamera.posV += (desiredPosV - m_pCamera.posV) * 0.3f; // 追従
-		m_pCamera.posR += (targetBoss - m_pCamera.posR) * 0.3f;  // 注視点補間
+		// カメラに適用する
+		m_pCamera.posV += (desiredPosV - m_pCamera.posV) * 0.3f;
+		m_pCamera.posR += (targetBoss - m_pCamera.posR) * 0.3f; 
 	}
 		break;
 

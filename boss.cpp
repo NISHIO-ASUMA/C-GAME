@@ -144,6 +144,7 @@ void CBoss::Update(void)
 //====================================
 void CBoss::Draw(void)
 {
+#if 1
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -170,7 +171,7 @@ void CBoss::Draw(void)
 		// 全モデル描画
 		m_pModel[nCnt]->Draw();
 	}
-
+#endif
 	// デバッグフォント
 	CDebugproc::Print("ボス座標 [ %.2f ,%.2f , %.2f]", m_pos.x,m_pos.y,m_pos.z);
 	CDebugproc::Draw(0, 40);

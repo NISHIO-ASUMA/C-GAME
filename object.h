@@ -26,7 +26,7 @@ public:
 	{
 		TYPE_NONE = 0,
 		TYPE_PLAYER,
-		TYPE_ENEMY,
+		TYPE_MESH,
 		TYPE_BULLET,
 		TYPE_BOSS,
 		TYPE_BLOCK,
@@ -63,8 +63,8 @@ public:
 	static void UpdateAll(void);
 	static void DrawAll(void);
 
-	void SetObjType(TYPE type);
-	TYPE GetObjType(void);
+	void SetObjType(TYPE type) { m_Type = type; }
+	TYPE GetObjType(void) { return m_Type; }
 
 	static CObject* GetTop(int nPriority) { return m_pTop[nPriority]; }// 先頭取得
 	CObject* GetNext(void) { return m_pNext; }		// 次を取得
@@ -82,7 +82,7 @@ private:
 	int m_nPriority;			// 優先順位番号
 
 	static CObject* m_pTop[PRIORITY_MAX];	// 先頭オブジェクト
-	static CObject* m_pCur[PRIORITY_MAX]; // 最後尾オブジェクト
+	static CObject* m_pCur[PRIORITY_MAX];	// 最後尾オブジェクト
 
 	CObject* m_pNext;		// 次のオブジェクトのポインタ
 	CObject* m_pPrev;		// 前のオブジェクトのポインタ

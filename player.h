@@ -50,12 +50,11 @@ public:
 	static CPlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
 
-	void UpdateAction(CInputKeyboard* pInputKeyboard);
-
 	static constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 
 private:
-	void UpdateIdxPlayer(int nIdx, CInputKeyboard* pInputKey);	// 番号ごとの更新関数
+	void UpdateAction(CInputKeyboard* pInputKeyboard); // 攻撃更新関数
+	void UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard);   // 移動更新関数
 
 	D3DXVECTOR3 m_move;		// 移動量
 	D3DXVECTOR3 m_rotDest;  // 目的角

@@ -359,6 +359,7 @@ CMeshImpact* CMeshImpact::Create(D3DXVECTOR3 pos, int nLife,float fOutRadius,flo
 	pMesh->m_fOutRadius = fOutRadius; // ŠOŒa
 	pMesh->m_nLife = nLife;			// Œp‘±ŽžŠÔ
 	pMesh->m_fSpeed = fSpeed;		// ŠgŽU‘¬“x
+	pMesh->SetObjType(TYPE_MESH);   // ƒƒbƒVƒ…ƒ^ƒCƒv‚ðÝ’è
 
 	// ‰Šú‰»Ž¸”sŽž
 	if (FAILED(pMesh->Init()))

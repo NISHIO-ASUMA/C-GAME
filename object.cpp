@@ -28,8 +28,8 @@ CObject::CObject(int nPriority)
 	m_Type = TYPE_NONE;					// オブジェクト種類を初期化
 	m_nPriority = nPriority;			// 優先度を記録
 
-	m_pNext = nullptr;					// 次のポインタ初期化
-	m_pPrev = nullptr;					// nullptrに初期化
+	m_pNext = nullptr;					// 次のポインタをnullptrに初期化
+	m_pPrev = nullptr;					// 前のポインタをnullptrに初期化
 
 	m_pPrev = m_pCur[nPriority];		// 現在の最後尾を前ポインタに設定
 
@@ -39,8 +39,8 @@ CObject::CObject(int nPriority)
 		m_pCur[nPriority]->m_pNext = this; // そこから自分につなげる
 	}
 	else
-	{
-		// 先頭がいなければ自分が先頭
+	{// 先頭がいなければ自分が先頭になる
+		
 		m_pTop[nPriority] = this;
 	}
 
@@ -184,18 +184,4 @@ void CObject::DrawAll(void)
 	// デバッグフォント
 	CDebugproc::Print("現在のオブジェクト数 : %d", m_nNumAll);
 	CDebugproc::Draw(0, 120);
-}
-//===============================
-// 種類をセット
-//===============================
-void CObject::SetObjType(TYPE type)
-{
-	m_Type = type;
-}
-//===============================
-// 種類を取得
-//===============================
-CObject::TYPE CObject::GetObjType(void)
-{
-	return m_Type;
 }
