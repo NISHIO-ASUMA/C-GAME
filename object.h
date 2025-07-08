@@ -46,6 +46,7 @@ public:
 		SHADOW,//影
 		IMPACT, // 衝撃波
 		PLAYER, // プレイヤー
+		EFFECT, // エフェクト
 		UI,  // 2DUI関係
 		PRIORITY_MAX // 最大数
 	};

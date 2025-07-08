@@ -12,7 +12,7 @@
 #include "Manager.h"
 #include "debugproc.h"
 #include "player.h"
-
+#include "effect.h"
 //**********************
 // マクロ定義
 //**********************
@@ -414,8 +414,10 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 			// 当たっている
 			isHit = true;
 
-			// ループ抜ける
-			break;
+			// エフェクトを表示（衝突座標に）
+			D3DXVECTOR3 hitPos = m_pos + pVtx[nCnt].pos; // インパクト頂点のワールド位置
+
+			CEffect::Create(hitPos, COLOR_WHITE, VECTOR3_NULL, 10, 10.0f); // エフェクト生成
 		}
 	}
 

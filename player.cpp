@@ -28,6 +28,7 @@ constexpr float PLAYER_JUMPVALUE = 13.0f; // ジャンプ量
 constexpr int   NUMBER_MAIN = 0;       // メイン操作プレイヤー番号
 constexpr int   NUMBER_SUB = 1;		   // 分身操作プレイヤー番号
 constexpr int   KeyRepeatCount = 15;	// キーのリピートカウント
+
 //===============================
 // オーバーロードコンストラクタ
 //===============================
@@ -272,6 +273,11 @@ void CPlayer::Update(void)
 	// 移動処理
 	m_pos += m_move;
 
+	// 現在の状態を取得
+	int state = m_pState->GetState();
+
+	m_pState->SetState(state);
+
 	//=============================
 	// インパクトとの当たり判定
 	//=============================
@@ -286,7 +292,7 @@ void CPlayer::Update(void)
 			// インパクトにキャスト
 			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
 
-			if (pImpact->Collision(&m_pos))
+			if (pImpact->Collision(&m_pos) && state == m_pState->STATE_NORMAL)
 			{
 				// 当たったらダメージモーションに切り替え
 				m_pMotion->SetMotion(CMotion::TYPE_DAMAGE);

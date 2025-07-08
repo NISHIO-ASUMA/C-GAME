@@ -30,7 +30,7 @@ class CEffect;
 class CParticle : public CObject
 {
 public:
-	CParticle(int nPriority = 7);
+	CParticle(int nPriority = static_cast<int>(CObject::PRIORITY::EFFECT));
 	~CParticle();
 
 	HRESULT Init(void);
@@ -43,8 +43,8 @@ public:
 private:
 	std::vector<CEffect*> m_pEffect; // エフェクト配列
 
-	D3DXVECTOR3 m_pos; // 座標
-	D3DXCOLOR m_col;   // 色
+	D3DXVECTOR3 m_pos;  // 座標
+	D3DXCOLOR m_col;    // 色
 	int m_nMaxParticle; // 最大数
 	int m_nLife;		//	寿命
 	int m_nLength;		// 飛散する距離

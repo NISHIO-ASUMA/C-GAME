@@ -39,8 +39,9 @@ public:
 	void OffWireFrame();
 
 	void ChangeTarget(D3DXVECTOR3 posV, D3DXVECTOR3 posR, D3DXVECTOR3 vecU);
-	LPDIRECT3DTEXTURE9 GetTextureMT(void) { return m_pTextureMT; }
 	LPDIRECT3DTEXTURE9 GetTextureFeedMT(void) { return m_apTextureMT[0]; }
+
+	static constexpr int NUM_FEEDBACKPOLYGON = 2; // フィードバック用ポリゴン
 
 private:
 	LPDIRECT3D9 m_pD3D;				    // Direct3Dオブジェクトへのポインタ
@@ -54,17 +55,13 @@ private:
 	UINT m_Width;
 	UINT m_Height;
 
-	LPDIRECT3DTEXTURE9 m_pTextureMT; // レンダリングターゲット用テクスチャ
-	LPDIRECT3DSURFACE9 m_pRenderMT;	 // テクスチャレンダリング用インターフェース
-
 	LPDIRECT3DSURFACE9 m_pRenderDef; // マルチターゲットレンダリング用インターフェース保存用
 	LPDIRECT3DSURFACE9 m_pZBuffDef;	 // マルチターゲットレンダリング用Zバッファ保存用
 
-	LPDIRECT3DTEXTURE9 m_apTextureMT[2]; // レンダリングターゲット用テクスチャ
-	LPDIRECT3DSURFACE9 m_apRenderMT[2];	 // テクスチャレンダリング用インターフェース
+	LPDIRECT3DTEXTURE9 m_apTextureMT[NUM_FEEDBACKPOLYGON]; // レンダリングターゲット用テクスチャ
+	LPDIRECT3DSURFACE9 m_apRenderMT[NUM_FEEDBACKPOLYGON];	 // テクスチャレンダリング用インターフェース
 	LPDIRECT3DSURFACE9 m_pZBuffMT;	 // テクスチャレンダリング用Zバッファ
 	D3DVIEWPORT9 m_viewportMT;		 // テクスチャレンダリング用ビューポート
-
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxMT;  // ポリゴン用頂点バッファ
 

@@ -32,7 +32,6 @@ public:
 
 private:
 	float m_size; // サイズ設定用
-
 };
 
 #endif

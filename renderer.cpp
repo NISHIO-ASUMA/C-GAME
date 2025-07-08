@@ -28,14 +28,12 @@ CRenderer::CRenderer()
 	// 値のクリア
 	m_pD3D = nullptr;
 	m_pD3DDevice = nullptr;
-	m_pRenderMT = nullptr;
-	m_pTextureMT = nullptr;
 	m_pZBuffMT = nullptr;
 	m_pRenderDef = nullptr;
 	m_pZBuffDef = nullptr;
 	m_isbuller = false;
 
-	for (int nCnt = 0; nCnt < 2; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
 	{
 		m_apRenderMT[nCnt] = nullptr;
 		m_apTextureMT[nCnt] = nullptr;
@@ -135,13 +133,13 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	// マルチターゲット用変数
 	LPDIRECT3DSURFACE9 pRenderDef, pZBuffDef;
 
-	for (int nTex = 0; nTex < 2; nTex++)
+	for (int nTex = 0; nTex < NUM_FEEDBACKPOLYGON; nTex++)
 	{
 		// レンダリングターゲットテクスチャ生成
 		m_pD3DDevice->CreateTexture(SCREEN_WIDTH, SCREEN_HEIGHT, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_apTextureMT[nTex], NULL);
 	}
 
-	for (int n = 0; n < 2; n++)
+	for (int n = 0; n < NUM_FEEDBACKPOLYGON; n++)
 	{
 		// レンダリング用インターフェース作成 
 		m_apTextureMT[n]->GetSurfaceLevel(0, &m_apRenderMT[n]);
@@ -156,7 +154,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	// 現在のZバッファを取得
 	m_pD3DDevice->GetDepthStencilSurface(&pZBuffDef);
 
-	for (int nCnt = 0; nCnt < 2; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
 	{
 		// レンダリングターゲットを設定
 		m_pD3DDevice->SetRenderTarget(0, m_apRenderMT[nCnt]);
@@ -206,7 +204,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	float fWidth = SCREEN_WIDTH * 0.5f;
 	float fHeight = SCREEN_HEIGHT * 0.5f;
 
-	for (int nCnt = 0; nCnt < 2; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
 	{
 		// 頂点座標の設定
 		pVtx[0].pos = D3DXVECTOR3(pos.x - fWidth, pos.y - fHeight, 0.0f);
@@ -220,7 +218,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		pVtx[2].rhw =
 		pVtx[3].rhw = 1.0f;
 
-		
+		// 透明度を設定
 		float fAlpha = nCnt == 0 ? 1.0f : 0.65f;
 
 		// 頂点カラーの設定
@@ -235,6 +233,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
 		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
 
+		// 頂点座標を更新
 		pVtx += 4;
 	}
 
@@ -257,20 +256,6 @@ void CRenderer::Uninit(void)
 
 	// 全オブジェクト破棄
 	CObject::ReleaseAll();
-	
-	// マルチレンダリングターゲット用テクスチャの破棄
-	if (m_pTextureMT != nullptr)
-	{
-		m_pTextureMT->Release();
-		m_pTextureMT = nullptr;
-	}
-
-	// マルチレンダリングターゲット用インターフェースの破棄
-	if (m_pRenderMT != nullptr)
-	{
-		m_pRenderMT->Release();
-		m_pRenderMT = nullptr;
-	}
 
 	// マルチレンダリングターゲット用Zバッファの破棄
 	if (m_pZBuffMT != nullptr)
@@ -287,7 +272,7 @@ void CRenderer::Uninit(void)
 	}
 
 	// 作成数分破棄
-	for (int nCnt = 0; nCnt < 2; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
 	{
 		// テクスチャ破棄
 		if (m_apTextureMT[nCnt] != nullptr)

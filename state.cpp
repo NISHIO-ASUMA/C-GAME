@@ -57,6 +57,9 @@ void CState::Uninit(void)
 //==================================
 void CState::Update(void)
 {
+	// 現在の状態を取得
+	m_state = GetState();
+
 	// 状態に応じて変更
 	switch (m_state)
 	{
@@ -75,7 +78,7 @@ void CState::Update(void)
 		if (m_StateCount <= 0)
 		{
 			m_state = STATE_INVINCIBLE;
-			m_StateCount = MAX_STATECOUNT;
+			m_StateCount = 5;
 		}
 
 		break;
@@ -89,6 +92,7 @@ void CState::Update(void)
 		{
 			// 通常状態に変更
 			m_state = STATE_NORMAL;
+			m_StateCount = MAX_STATECOUNT; // カウントを変更
 		}
 
 		break;
@@ -96,6 +100,9 @@ void CState::Update(void)
 	default:
 		break;
 	}
+
+	// 状態セット
+	SetState(m_state);
 }
 //==================================
 // 生成処理
