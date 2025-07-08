@@ -166,7 +166,7 @@ void CCamera::Update(void)
 		D3DXVec3Normalize(&VecSubToBoss, &VecSubToBoss);
 
 		// ボスへの角度を計算
-		float fAngleSubToBoss = atan2f(VecSubToBoss.x, VecSubToBoss.z);
+		float fAngleSubToBoss = atan2f(-VecSubToBoss.x, -VecSubToBoss.z);
 
 		// SUBプレイヤーの目的角度を設定
 		pPlayerSub->SetRotDest(D3DXVECTOR3(0.0f, fAngleSubToBoss, 0.0f));

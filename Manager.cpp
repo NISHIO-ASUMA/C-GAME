@@ -307,7 +307,7 @@ void CManager::Update()
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
 	{
 		// ÕŒ‚”g‚ğ¶¬
-		CMeshImpact::Create(VECTOR3_NULL, 80, 50.0f, 5.0f, 15.0f);
+		CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
 	}
 	
 #ifdef _DEBUG

@@ -13,6 +13,7 @@
 #include "debugproc.h"
 #include "player.h"
 #include "effect.h"
+
 //**********************
 // マクロ定義
 //**********************
@@ -215,7 +216,7 @@ void CMeshImpact::Update(void)
 	VERTEX_3D* pVtx = nullptr;
 
 	// 頂点計算変数
-	int nCntVertex = 0;
+	int nCntVertex = NULL;
 
 	// 赤色に設定
 	m_col = D3DXCOLOR(1.0f, 1.0f, 0.0f,1.0f);
@@ -242,7 +243,7 @@ void CMeshImpact::Update(void)
 			0.5f,
 			cosf(fAngel) * m_fOutRadius);
 
-		// と由展カラーの設定
+		// カラーの設定
 		pVtx[nCntVertex].col = m_col;
 
 		// 頂点カウントをインクリメント
@@ -341,6 +342,9 @@ void CMeshImpact::Draw(void)
 	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+	CDebugproc::Print("衝撃波の座標 { %.2f,%.2f,%.2f }", m_pos.x, m_pos.y, m_pos.z);
+	CDebugproc::Draw(0,180);
 }
 //===============================
 // 生成処理
@@ -397,27 +401,20 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 		// インパクトの外径と内径の差分を計算する
 		float fDisSize = m_fOutRadius - m_fInRadius;
 
-		// 座標格納変数
-		D3DXVECTOR3 OutPos = VECTOR3_NULL;
+		// インパクト頂点のワールド座標とのXZ距離を計算
+		float dx = pPos->x - (m_pos.x + pVtx[nCnt].pos.x);
+		float dz = pPos->z - (m_pos.z + pVtx[nCnt].pos.z);
 
-		// 差分を計算する
-		OutPos.x = pPos->x - (m_pos.x + pVtx[nCnt].pos.x);
-		OutPos.y = pPos->y - (m_pos.y + pVtx[nCnt].pos.y);
-		OutPos.z = pPos->z - (m_pos.z + pVtx[nCnt].pos.z);
-
-		// 頂点との差分を計算する ( 円判定 )
-		float fDisVerTex = sqrtf((OutPos.x * OutPos.x) + (OutPos.y * OutPos.y) + (OutPos.z * OutPos.z));
+		// XZ平面の頂点との差分を計算する ( 円判定 )
+		float fDisVerTex = sqrtf(dx * dx + dz * dz);
 
 		// 頂点との距離が内径と外径の差分よりも小さい値になったら
-		if (fDisVerTex <= fDisSize * 0.5f)
+		if (fDisVerTex <= fDisSize * 0.8f)
 		{
 			// 当たっている
 			isHit = true;
 
-			// エフェクトを表示（衝突座標に）
-			D3DXVECTOR3 hitPos = m_pos + pVtx[nCnt].pos; // インパクト頂点のワールド位置
-
-			CEffect::Create(hitPos, COLOR_WHITE, VECTOR3_NULL, 10, 10.0f); // エフェクト生成
+			break;
 		}
 	}
 

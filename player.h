@@ -72,7 +72,7 @@ private:
 
 	int m_type;				// モーションの種類変数
 	int m_nNumAll;		    // モデル総数
-	int m_StateCount;		// 状態管理カウンター
+	int m_State;		// 状態管理カウンター
 	int m_nIdxTexture;		// テクスチャID
 
 	bool m_isLanding;		// 着地判定

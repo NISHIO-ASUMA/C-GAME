@@ -78,7 +78,7 @@ void CState::Update(void)
 		if (m_StateCount <= 0)
 		{
 			m_state = STATE_INVINCIBLE;
-			m_StateCount = 5;
+			m_StateCount = 20;
 		}
 
 		break;

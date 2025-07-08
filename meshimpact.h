@@ -32,7 +32,6 @@ public:
 	bool Collision(D3DXVECTOR3* pPos);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
-	D3DXVECTOR3 GetRot(void) { return m_rot; }
 
 private:
 	D3DXVECTOR3 m_pos;

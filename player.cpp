@@ -19,6 +19,8 @@
 #include "camera.h"
 #include "state.h"
 #include "parameter.h"
+#include "debugproc.h"
+
 
 //**********************
 // 定数宣言
@@ -36,7 +38,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	m_move = VECTOR3_NULL;
-	m_StateCount = NULL;
+	m_State = NULL;
 	m_nIdxTexture = NULL;
 	m_rotDest = VECTOR3_NULL;
 	m_nNumAll = NULL;
@@ -270,17 +272,17 @@ void CPlayer::Update(void)
 	// ジャンプ処理
 	UpdateJumpAction(pInput, mtxWorld, BulletMove);
 
-	// 移動処理
+	// 移動加算処理
 	m_pos += m_move;
 
-	// 現在の状態を取得
-	int state = m_pState->GetState();
-
-	m_pState->SetState(state);
+	// 状態を更新
+	m_pState->Update();
+	m_State = m_pState->GetState();
 
 	//=============================
 	// インパクトとの当たり判定
 	//=============================
+	// オブジェクト取得
 	CObject* pObj = CObject::GetTop(static_cast<int>(CObject::PRIORITY::IMPACT));
 
 	// nullptrじゃないとき
@@ -292,15 +294,17 @@ void CPlayer::Update(void)
 			// インパクトにキャスト
 			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
 
-			if (pImpact->Collision(&m_pos) && state == m_pState->STATE_NORMAL)
+			// コリジョン かつ　状態が通常時
+			if (pImpact->Collision(&m_pos) == true)
 			{
-				// 当たったらダメージモーションに切り替え
-				m_pMotion->SetMotion(CMotion::TYPE_DAMAGE);
+				if (m_State == m_pState->STATE_NORMAL)
+				{
+					// 当たったらダメージモーションに切り替え
+					m_pMotion->SetMotion(CMotion::TYPE_DAMAGE);
 
-				// 状態更新
-				m_pState->SetState(CState::STATE_DAMAGE);
-
-				break; // 当たったら抜ける
+					// 状態更新
+					m_pState->SetState(CState::STATE_DAMAGE);
+				}
 			}
 		}
 
@@ -322,13 +326,14 @@ void CPlayer::Update(void)
 	}
 
 	// 状態管理を更新
-	m_pState->Update();
+	//m_pState->Update();
 
 	// 影の座標を更新
 	m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
 
 	// モーション全体を更新
 	m_pMotion->Update(m_apModel, MAX_MODEL);
+
 }
 //===============================
 // プレイヤー描画処理
@@ -360,6 +365,22 @@ void CPlayer::Draw(void)
 	{
 		m_apModel[nCnt]->Draw();
 	}
+
+	// フォント
+	CDebugproc::Print("現在のSTATE { %d } ", m_State);
+	// デバッグフォント描画
+	CDebugproc::Draw(0, 160);
+
+	// 識別描画
+	CDebugproc::Print("MAINプレイヤーの座標 { %.2f,%.2f,%.2f }", CPlayer::GetIdxPlayer(0)->GetPos().x, CPlayer::GetIdxPlayer(0)->GetPos().y, CPlayer::GetIdxPlayer(0)->GetPos().z);
+	// デバッグフォント描画
+	CDebugproc::Draw(0, 200);
+
+	// 識別描画
+	CDebugproc::Print("SUBプレイヤーの座標 { %.2f,%.2f,%.2f }", CPlayer::GetIdxPlayer(1)->GetPos().x, CPlayer::GetIdxPlayer(1)->GetPos().y, CPlayer::GetIdxPlayer(1)->GetPos().z);
+	// デバッグフォント描画
+	CDebugproc::Draw(0, 220);
+
 }
 //=========================================
 // 識別番号ごとのプレイヤーの取得
@@ -564,7 +585,6 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 
 	// 座標更新処理
 	m_posOld = m_pos;
-	m_pos += m_move;
 }
 //=========================================
 // 識別番号ごとのジャンプ更新処理
