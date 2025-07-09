@@ -87,6 +87,8 @@ private:
 
 	CObject* m_pNext;		// 次のオブジェクトのポインタ
 	CObject* m_pPrev;		// 前のオブジェクトのポインタ
+
+	bool m_isDeath;			// 死亡フラグ
 };
 
 #endif

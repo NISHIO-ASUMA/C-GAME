@@ -12,9 +12,9 @@
 #include "Manager.h"
 
 //**************************
-// マクロ定義
+// 定数宣言
 //**************************
-#define NUM_DIGIT (10)		// 分割の値
+constexpr int NUM_DIGIT = 10; // 表示する分割桁数の値
 
 //**********************
 // 静的メンバ変数宣言
@@ -52,6 +52,7 @@ CScore* CScore::Create(D3DXVECTOR3 pos,float fWidth,float fHeight)
 	// スコアインスタンス生成
 	CScore* pScore = new CScore;
 
+	// 座標,サイズ設定
 	pScore->m_pos = pos;
 	pScore->m_fWidth = fWidth;
 	pScore->m_fHeight = fHeight;
@@ -64,6 +65,9 @@ CScore* CScore::Create(D3DXVECTOR3 pos,float fWidth,float fHeight)
 
 		// nullptr代入
 		pScore = nullptr;
+
+		// nullptrを返す
+		return nullptr;
 	}
 	
 	// スコアポインタを返す
@@ -157,7 +161,7 @@ void CScore::Draw(void)
 	// テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
 
-	// 使っている桁数分
+	// 使っている桁数分の描画
 	for (int nCnt = 0; nCnt < NUM_SCORE; nCnt++)
 	{
 		// テクスチャセット

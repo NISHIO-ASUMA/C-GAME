@@ -49,7 +49,7 @@ public:
 	static CPlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
 
-	static constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
+	static inline constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 
 private:
 	void UpdateNeutralAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数

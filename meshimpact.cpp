@@ -15,14 +15,13 @@
 #include "effect.h"
 
 //**********************
-// マクロ定義
+// 定数宣言
 //**********************
-#define NUM_X (30) // Xの分割数
-#define NUM_Z (1) // Zの分割数
-
-#define VERTEX ((NUM_X + 1) * (NUM_Z + 1))			// 頂点数
-#define PRIM (VERTEX - 2)							// ポリゴン数
-#define INDEX (VERTEX + 2)							// インデックス数
+constexpr int NUM_X = 30; // X平面の分割数
+constexpr int NUM_Z = 1;  // Z平面の分割数
+constexpr int VERTEX = (NUM_X + 1) * (NUM_Z + 1); // 頂点数
+constexpr int PRIM = (VERTEX - 2);				  // ポリゴン数
+constexpr int INDEX = (VERTEX + 2);				  // インデックスバッファ数
 
 //===============================
 // オーバーロードコンストラクタ
@@ -269,6 +268,9 @@ void CMeshImpact::Update(void)
 		nCntVertex++;
 	}
 
+	// 頂点バッファのアンロック
+	m_pVtx->Unlock();
+
 	// 寿命を減らす
 	m_nLife--;
 
@@ -278,11 +280,10 @@ void CMeshImpact::Update(void)
 	// 寿命が尽きた
 	if (m_nLife <= 0)
 	{
-		// 頂点バッファのアンロック
-		m_pVtx->Unlock();
-
 		// 未使用にする
-		Uninit();
+		Release();
+
+		return;
 	}
 }
 //===============================

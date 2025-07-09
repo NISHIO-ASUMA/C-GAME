@@ -16,11 +16,6 @@
 #include "number.h"
 #include "object.h"
 
-//**************************
-// マクロ定義
-//**************************
-#define NUM_SCORE (8)		// スコアの桁数
-
 //*******************************************
 // スコアクラスを定義 ( オブジェクト継承 )
 //*******************************************
@@ -41,13 +36,17 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	void SetTexture(void);
 
+	static inline constexpr int NUM_SCORE = 8; // 桁数
+
 private: 
 	
-	CNumber *m_apNumber[NUM_SCORE];			// ナンバーのポインタ
-	D3DXCOLOR m_col;						// カラー
-	D3DXVECTOR3 m_pos;						// 座標
-	D3DXVECTOR3 m_rot;						// 角度
 	static int m_nScore;			// スコア保持用
+
+	CNumber *m_apNumber[NUM_SCORE];	// 桁数分のナンバーのポインタ
+	D3DXCOLOR m_col;				// カラー
+	D3DXVECTOR3 m_pos;				// 座標
+	D3DXVECTOR3 m_rot;				// 角度]
+	
 
 	float m_fWidth;					// 横幅
 	float m_fHeight;				// 高さ

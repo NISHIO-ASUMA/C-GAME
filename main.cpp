@@ -28,7 +28,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);			// メモリリーク検知用のフラグ
-    // _CrtSetBreakAlloc(12063);
+   //  _CrtSetBreakAlloc(27114);
 #endif // _DEBUG
 
 	// マネージャーのインスタンスを生成
@@ -142,9 +142,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
 			{// 60/1経過
 
-				dwExecLastTime = dwCurrentTime;	// 処理開始の時刻
+				// 処理開始の時刻
+				dwExecLastTime = dwCurrentTime;	
 
-				dwFrameCount++;					// フレームカウントを加算
+				// フレームカウントを加算
+				dwFrameCount++;					
 
 				// マネージャー更新処理
 				pManager->Update();
@@ -177,7 +179,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 	// メッセージを返す
 	return(int)msg.wParam;
 }
-
 
 //==========================================
 // ウインドウプロシージャ

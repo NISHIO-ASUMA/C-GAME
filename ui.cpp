@@ -12,7 +12,7 @@ CUi::~CUi()
 
 HRESULT CUi::Init(void)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void CUi::Uninit(void)

@@ -15,7 +15,7 @@
 //**********************
 // 静的メンバ変数宣言
 //**********************
-int CObject::m_nNumAll = 0;					// オブジェクト総数
+int CObject::m_nNumAll = NULL;					// オブジェクト総数
 
 CObject* CObject::m_pTop[PRIORITY_MAX] = {};	// 先頭アドレス
 CObject* CObject::m_pCur[PRIORITY_MAX] = {};	// 最後尾アドレス
@@ -27,6 +27,7 @@ CObject::CObject(int nPriority)
 {
 	m_Type = TYPE_NONE;					// オブジェクト種類を初期化
 	m_nPriority = nPriority;			// 優先度を記録
+	m_isDeath = false;					// 死亡フラグを無効化
 
 	m_pNext = nullptr;					// 次のポインタをnullptrに初期化
 	m_pPrev = nullptr;					// 前のポインタをnullptrに初期化
@@ -55,7 +56,7 @@ CObject::~CObject()
 	// 無し
 }
 //===============================
-// 全解放処理
+// オブジェクト全解放処理
 //===============================
 void CObject::ReleaseAll(void)
 {
@@ -74,6 +75,16 @@ void CObject::ReleaseAll(void)
 			// オブジェクト終了処理
 			pObj->Uninit();
 
+			// 前後を初期化
+			pObj->m_pNext = nullptr;
+			pObj->m_pPrev = nullptr;
+
+			// オブジェクト自体をここで削除する
+			delete pObj;
+
+			// nullptrにする
+			pObj = nullptr;
+
 			// 次のオブジェクトに代入
 			pObj = pNext;
 		}
@@ -84,49 +95,20 @@ void CObject::ReleaseAll(void)
 		// 最後尾のポインタをnullptrにする
 		m_pCur[nPri] = nullptr;
 	}
+
+	// 総数をリセットする
+	m_nNumAll = NULL;
 }
 //===============================
 // オブジェクトの破棄
 //===============================
 void CObject::Release(void)
 {
-	// 自身の優先度を取得
-	int pri = m_nPriority;
-
-	// 前のオブジェクトが存在する場合は、自分の次を前のオブジェクトに接続
-	if (m_pPrev != nullptr)
-	{
-		m_pPrev->m_pNext = m_pNext;
-	}
-	else
-	{
-		// 自分がリストの先頭なら、トップを次のオブジェクトに更新
-		m_pTop[pri] = m_pNext;
-	}
-
-	// 次のオブジェクトが存在する場合は、自分の前を次のオブジェクトに接続
-	if (m_pNext != nullptr)
-	{
-		m_pNext->m_pPrev = m_pPrev;
-	}
-	else
-	{
-		// 自分がリストの最後尾なら、最後尾を前のオブジェクトに更新
-		m_pCur[pri] = m_pPrev;
-	}
-
-	// 自分の前後ポインタを初期化
-	m_pNext = nullptr;
-	m_pPrev = nullptr;
-
-	// 総数を1つ減らす
-	m_nNumAll--;
-
-	// 自身をメモリから削除
-	delete this;
+	// 死亡フラグを有効化するのみ
+	m_isDeath = true;
 }
 //===============================
-// 全更新処理
+// オブジェクト全更新処理
 //===============================
 void CObject::UpdateAll(void)
 {
@@ -149,9 +131,62 @@ void CObject::UpdateAll(void)
 			pObject = pObjeNext;
 		}
 	}
+
+	// 死亡しているかフラグで判別し対象のオブジェクトを削除
+	for (int nCnt = 0; nCnt < PRIORITY_MAX; nCnt++)
+	{
+		// 先頭アドレス,優先番号を取得
+		CObject* pObject = m_pTop[nCnt];
+
+		// 取得できたら
+		while (pObject != nullptr)
+		{
+			// 次のオブジェクト保存
+			CObject* pObjeNext = pObject->m_pNext;
+
+			// フラグが有効の物を破棄する
+			if (pObject->m_isDeath)
+			{
+				// 前のオブジェクトが存在する場合は、自分の次を前のオブジェクトに接続
+				if (pObject->m_pPrev != nullptr)
+				{
+					pObject->m_pPrev->m_pNext = pObject->m_pNext;
+				}
+				else
+				{
+					// 自分がリストの先頭なら、トップを次のオブジェクトに更新
+					m_pTop[nCnt] = pObject->m_pNext;
+				}
+
+				// 次のオブジェクトが存在する場合は、自分の前を次のオブジェクトに接続
+				if (pObject->m_pNext != nullptr)
+				{
+					pObject->m_pNext->m_pPrev = pObject->m_pPrev;
+				}
+				else
+				{
+					// 自分がリストの最後尾なら、最後尾を前のオブジェクトに更新
+					m_pCur[nCnt] = pObject->m_pPrev;
+				}
+
+				// 前後を初期化
+				pObject->m_pNext = nullptr;
+				pObject->m_pPrev = nullptr;
+
+				// 総数減算
+				m_nNumAll--;
+
+				// オブジェクト自身破棄
+				delete pObject;
+			}
+
+			// 次のオブジェクトを代入
+			pObject = pObjeNext;
+		}
+	}
 }
 //===============================
-// 全描画処理
+// オブジェクト全描画処理
 //===============================
 void CObject::DrawAll(void)
 {

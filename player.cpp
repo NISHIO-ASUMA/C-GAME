@@ -21,7 +21,6 @@
 #include "parameter.h"
 #include "debugproc.h"
 
-
 //**********************
 // 定数宣言
 //**********************
@@ -217,9 +216,8 @@ void CPlayer::Update(void)
 	// キーボードの入力取得
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
-	// シリンダー座標,半径の取得
+	// シリンダー座標取得
 	D3DXVECTOR3 MeshPos = CManager::GetCylinder()->GetPos();
-	float fRadius = CManager::GetCylinder()->GetRadius();
 
 	// ボス座標の取得
 	D3DXVECTOR3 BossPos = CManager::GetBoss()->GetPos();
@@ -275,9 +273,11 @@ void CPlayer::Update(void)
 	// 移動加算処理
 	m_pos += m_move;
 
-	// 状態を更新
-	m_pState->Update();
+	// 現在の状態を取得
 	m_State = m_pState->GetState();
+
+	// 現在の状態をセットする
+	m_pState->SetState(m_State);
 
 	//=============================
 	// インパクトとの当たり判定
@@ -294,9 +294,10 @@ void CPlayer::Update(void)
 			// インパクトにキャスト
 			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
 
-			// コリジョン かつ　状態が通常時
+			// コリジョンした かつ　状態が通常時
 			if (pImpact->Collision(&m_pos) == true)
 			{
+				// 現在状態がNORMALなら
 				if (m_State == m_pState->STATE_NORMAL)
 				{
 					// 当たったらダメージモーションに切り替え
@@ -304,6 +305,9 @@ void CPlayer::Update(void)
 
 					// 状態更新
 					m_pState->SetState(CState::STATE_DAMAGE);
+
+					// 一回当たったら抜ける
+					break;
 				}
 			}
 		}
@@ -326,14 +330,13 @@ void CPlayer::Update(void)
 	}
 
 	// 状態管理を更新
-	//m_pState->Update();
+	m_pState->Update();
 
 	// 影の座標を更新
 	m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
 
 	// モーション全体を更新
 	m_pMotion->Update(m_apModel, MAX_MODEL);
-
 }
 //===============================
 // プレイヤー描画処理

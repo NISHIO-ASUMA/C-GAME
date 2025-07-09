@@ -88,7 +88,7 @@ void CState::Update(void)
 		// 状態管理カウンターをデクリメント
 		m_StateCount--;
 
-		if (m_StateCount <= 0)
+		if (m_StateCount <= NULL)
 		{
 			// 通常状態に変更
 			m_state = STATE_NORMAL;
