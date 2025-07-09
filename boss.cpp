@@ -80,7 +80,7 @@ HRESULT CBoss::Init(void)
 	m_type = TYPE_MAX;
 
 	// モーションの読み込み
-	m_pMotion = CMotion::Load("data\\MOTION\\Boss\\Boss_motion.txt", m_nNumModels, m_pModel);
+	m_pMotion = CMotion::Load("data\\MOTION\\Boss\\Boss_motion.txt", m_nNumModels, m_pModel,TYPE_MAX);
 
 	// モーション数を設定
 	m_pMotion->SetMotionNum(m_type);

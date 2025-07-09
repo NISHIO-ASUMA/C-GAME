@@ -137,11 +137,11 @@ HRESULT CPlayer::Init(void)
 	m_isLanding = false;
 	m_isMoving = false;
 
+	// モーションの読み込み
+	m_pMotion = CMotion::Load(m_pFilename, MAX_MODEL, m_apModel,PLAYERMOTION_MAX);
+
 	// モーション数を設定
 	m_pMotion->SetMotionNum(PLAYERMOTION_MAX);
-
-	// モーションの読み込み
-	m_pMotion = CMotion::Load(m_pFilename, MAX_MODEL, m_apModel);
 
 	// 状態管理を生成
 	m_pState = CState::Create();

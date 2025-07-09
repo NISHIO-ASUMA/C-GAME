@@ -38,6 +38,8 @@ CMotion::CMotion()
 	m_isBlendMotion = false;
 	m_isFinishMotion = false;
 	m_isFirstMotion = false;
+
+	m_nNumModels = NULL;
 }
 //==============================
 // デストラクタ
@@ -49,7 +51,7 @@ CMotion::~CMotion()
 //==============================
 // モーション読み込み関数
 //==============================
-CMotion* CMotion::Load(const char* pFilename,const int nMaxParts, CModel** pModel)
+CMotion* CMotion::Load(const char* pFilename,const int nMaxParts, CModel** pModel, int nDestMotions)
 {
 	// モーションクラスのインスタンス生成
 	CMotion* pMotion = new CMotion;
@@ -77,6 +79,9 @@ CMotion* CMotion::Load(const char* pFilename,const int nMaxParts, CModel** pMode
 	int nIdx = 0;
 	int nCntMotion = 0;
 
+	// この引数に読み込むモーション総数を設定してこれの分だけm_amotionInfoでリサイズする
+	pMotion->m_aMotionInfo.resize(nDestMotions);
+
 	// 文字列を読み続ける
 	while (std::getline(file, line))
 	{
@@ -90,6 +95,10 @@ CMotion* CMotion::Load(const char* pFilename,const int nMaxParts, CModel** pMode
 		{
 			// モデル数設定
 			pMotion->SetModels(iss, nModel, nMaxParts);
+
+			// 一時保存
+			pMotion->m_nNumModels = nModel;
+
 		}
 		// "MODEL_FILENAME"読み取り時
 		else if (token == "MODEL_FILENAME")
@@ -431,8 +440,6 @@ void CMotion::SetModels(std::istringstream& iss, int& nModel, int nMaxParts)
 	// 読み込んだモデル数を設定
 	iss >> eq >> nModel;
 
-	// ここでリサイズする
-	
 	// 例外処理
 	if (nModel > nMaxParts)
 	{
@@ -603,12 +610,15 @@ void CMotion::SetPartsMotion(std::ifstream& file, CMotion* pMotion, int nCntMoti
 			// nNumKeyを代入
 			pMotion->m_aMotionInfo[nCntMotion].nNumKey = numKeys;
 
-			// Vector配列にサイズを渡す
-			pMotion->m_aMotionInfo[nCntMotion].aKeyInfo.resize(numKeys); 
+			// ↑上の処理でそのモーションのキー全体が上の処理でわかるのでその分のサイズを設定したい
+			pMotion->m_aMotionInfo[nCntMotion].aKeyInfo.resize(numKeys);
 
 			//	キー数の上限に達するまで
 			while (nCntKey < numKeys)
 			{
+				// aKeyInfoのサイズがわかったらキーごとにあるパーツの情報をakeyにサイズセットをして箱を確保してあげる
+				pMotion->m_aMotionInfo[nCntMotion].aKeyInfo[nCntKey].aKey.resize(m_nNumModels); // m_nNumModelsは最大モデル数
+
 				// キー情報の設定
 				SetKey(file, pMotion, nCntMotion, nCntKey);
 
@@ -629,6 +639,7 @@ void CMotion::SetPartsMotion(std::ifstream& file, CMotion* pMotion, int nCntMoti
 //======================================
 void CMotion::SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int nCntKey)
 {
+	// 行読み込み
 	std::string line;
 
 	// 使用変数
@@ -666,6 +677,7 @@ void CMotion::SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int 
 			// 有効化
 			ReadKey = true;
 
+			// while継続
 			continue;
 		}
 		else if (ReadKey)
@@ -688,7 +700,7 @@ void CMotion::SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int 
 	}
 }
 //======================================
-// キーごとの情報設定   TODO ここ直す
+// キーごとの情報設定
 //======================================
 void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMotion* pMotion, int nCntMotion, int nCntKey, int& posKeyIndex, int& rotKeyIndex)
 {
@@ -710,12 +722,6 @@ void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMoti
 	// "POS"読み取り時
 	if (param == "POS") 
 	{
-		// キー情報のサイズを取得する
-		if (keyInfo.aKey.size() <= posKeyIndex)
-		{
-			keyInfo.aKey.resize(posKeyIndex + 1);
-		}
-
 		// 各座標に代入する
 		keyInfo.aKey[posKeyIndex].fPosX = Vec.x;
 		keyInfo.aKey[posKeyIndex].fPosY = Vec.y;
@@ -727,12 +733,6 @@ void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMoti
 	// "ROT"読み取り時
 	else if (param == "ROT")
 	{
-		// サイズを取得する
-		if (keyInfo.aKey.size() <= rotKeyIndex)
-		{
-			keyInfo.aKey.resize(rotKeyIndex + 1);
-		}
-
 		// 各パーツの角度に代入
 		keyInfo.aKey[rotKeyIndex].fRotX = Vec.x;
 		keyInfo.aKey[rotKeyIndex].fRotY = Vec.y;

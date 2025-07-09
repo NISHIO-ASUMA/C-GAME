@@ -20,7 +20,6 @@
 class CMotion
 {
 public:
-	static inline constexpr int NUM_PART = 21;
 
 	//***************************
 	// モーション列挙型宣言
@@ -74,7 +73,7 @@ public:
 	CMotion();
 	~CMotion();
 
-	static CMotion* Load(const char* pFilename, const int nMaxParts,CModel ** pModel);
+	static CMotion* Load(const char* pFilename, const int nMaxParts,CModel ** pModel,int nDestMotions);
 	void SetMotion(int motiontype);
 	void Update(CModel** ppModel, const int nMaxPart);
 
@@ -114,6 +113,8 @@ private:
 	int m_nKeyBlend;					// ブレンドモーションの現在のキー
 	int m_nNextKeyBlend;				// ブレンドモーションの次のキー
 //----------------------------------------------------------------------
+
+	int m_nNumModels;
 };
 
 #endif
