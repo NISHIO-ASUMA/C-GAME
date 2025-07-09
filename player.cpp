@@ -128,19 +128,20 @@ HRESULT CPlayer::Init(void)
 	m_nNumAll = MAX_MODEL;
 
 	// タイプ代入
-	m_type = CMotion::TYPE_MAX;
-	m_fAngle = 0.0f;
+	m_type = PLAYERMOTION_MAX;
+
+	m_fAngle = NULL;
 
 	// フラグを設定
 	m_isJump = false;
 	m_isLanding = false;
 	m_isMoving = false;
 
+	// モーション数を設定
+	m_pMotion->SetMotionNum(PLAYERMOTION_MAX);
+
 	// モーションの読み込み
 	m_pMotion = CMotion::Load(m_pFilename, MAX_MODEL, m_apModel);
-
-	// モーション数を設定
-	m_pMotion->SetMotionNum(CMotion::TYPE_MAX);
 
 	// 状態管理を生成
 	m_pState = CState::Create();
@@ -271,7 +272,7 @@ void CPlayer::Update(void)
 	}
 
 	// 攻撃状態じゃない かつ 現在モーションがジャンプ攻撃じゃない時
-	if (!m_isAttack && m_pMotion->GetMotionType() != CMotion::TYPE_JUMPATTACK)
+	if (!m_isAttack && m_pMotion->GetMotionType() != PLAYERMOTION_JUMPATTACK)
 	{
 		// 移動更新関数
 		UpdateMove(MeshPos,pInput);
@@ -314,7 +315,7 @@ void CPlayer::Update(void)
 				if (m_State == m_pState->STATE_NORMAL)
 				{
 					// 当たったらダメージモーションに切り替え
-					m_pMotion->SetMotion(CMotion::TYPE_DAMAGE);
+					m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
 					// 状態更新
 					m_pState->SetState(CState::STATE_DAMAGE);
@@ -476,7 +477,7 @@ void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx
 	//====================
 	// 攻撃処理
 	//====================
-	if (pInputKeyboard->GetPress(DIK_RETURN) && m_pMotion->GetMotionType() != CMotion::TYPE_JUMPATTACK)
+	if (pInputKeyboard->GetPress(DIK_RETURN) && m_pMotion->GetMotionType() != PLAYERMOTION_JUMPATTACK)
 	{
 		// キーフラグをセット
 		isKeyPress = true;
@@ -494,7 +495,7 @@ void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx
 			m_isAttack = true;
 
 			// 地上攻撃モーション変更
-			m_pMotion->SetMotion(CMotion::TYPE_ACTION);
+			m_pMotion->SetMotion(PLAYERMOTION_ACTION);
 		}
 		else if (m_isAttack && !m_pMotion->GetFinishMotion()) // 攻撃状態 かつ モーション終了判定がfalseの時
 		{
@@ -502,13 +503,13 @@ void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx
 			m_isAttack = false;
 
 			// ニュートラルモーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
+			m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL);
 
 			// キー入力フラグを無効にする
 			isKeyPress = false;
 		}
 	}
-	else if (!isKeyPress && m_pMotion->GetMotionType() == CMotion::TYPE_ACTION)
+	else if (!isKeyPress && m_pMotion->GetMotionType() == PLAYERMOTION_ACTION)
 	{// キーフラグが無効 かつ 現在のモーションが攻撃モーションなら
 
 		// 通常モーションに変更
@@ -519,7 +520,7 @@ void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx
 	}
 
 	// 攻撃状態 かつ モーションの状態が攻撃じゃなかったら
-	if (m_isAttack && m_pMotion->GetMotionType() != CMotion::TYPE_ACTION)
+	if (m_isAttack && m_pMotion->GetMotionType() != PLAYERMOTION_ACTION)
 	{
 		// 攻撃を終了
 		m_isAttack = false;
@@ -551,7 +552,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			m_rotDest.y = fAngle - D3DX_PI * 0.5f; // 左向きに設定
 
 			// 移動モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_MOVE);
+			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
 		}
 		else if (pInputKeyboard->GetPress(DIK_D))
 		{
@@ -562,12 +563,12 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			m_rotDest.y = fAngle + D3DX_PI * 0.5f; // 右向きに設定
 
 			// 移動モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_MOVE);
+			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
 		}
 		else
 		{
 			// 移動モーション時,ニュートラルモーションに変更
-			if (m_pMotion->GetMotionType() == CMotion::TYPE_MOVE)m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
+			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE)m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL);
 		}
 		break;
 
@@ -583,7 +584,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			m_rotDest.y = fAngle - D3DX_PI * 0.5f; // 左向きに設定
 
 			// 移動モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_MOVE);
+			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
 		}
 		else if (pInputKeyboard->GetPress(DIK_D)) // Dキー
 		{
@@ -594,12 +595,12 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			m_rotDest.y = fAngle + D3DX_PI * 0.5f; // 右向きに設定
 
 			// 移動モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_MOVE);
+			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
 		}
 		else
 		{
 			// 移動モーション時,ニュートラルモーションに変更
-			if (m_pMotion->GetMotionType() == CMotion::TYPE_MOVE)m_pMotion->SetMotion(CMotion::TYPE_NEUTRAL);
+			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE)m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL);
 		}
 		break;
 
@@ -643,7 +644,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove)
 {
 	// モーションのフラグ
-	bool isJumpAttacking = (m_pMotion->GetMotionType() == m_pMotion->TYPE_JUMPATTACK);
+	bool isJumpAttacking = (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK);
 
 	// 空中攻撃中
 	if (isJumpAttacking && pInputKeyboard->GetPress(DIK_RETURN))
@@ -674,7 +675,7 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 	if (m_isJump)
 	{
 		// ジャンプモーションに変更
-		m_pMotion->SetMotion(CMotion::TYPE_JUMP);
+		m_pMotion->SetMotion(PLAYERMOTION_JUMP);
 
 		// ジャンプ中に攻撃キー入力
 		if (pInputKeyboard->GetPress(DIK_RETURN))
@@ -687,20 +688,17 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 			}
 
 			// ジャンプ攻撃モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_JUMPATTACK);
+			m_pMotion->SetMotion(PLAYERMOTION_JUMPATTACK);
 		}
 
 		// 着地時の処理
 		if (m_isLanding)
 		{
 			// 着地モーションに変更
-			m_pMotion->SetMotion(CMotion::TYPE_LANDING);
+			m_pMotion->SetMotion(PLAYERMOTION_LANDING);
 
 			// ジャンプ可能状態に変更
 			m_isJump = false;
-
-			// 衝撃波を生成
-			// CMeshImpact::Create(m_pos, 80, 50.0f, 5.0f, 15.0f);
 		}
 	}
 }

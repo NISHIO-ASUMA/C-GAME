@@ -30,6 +30,22 @@ class CParameter;
 class CPlayer : public CObject
 {
 public:
+	//***********************************
+	// プレイヤーが行うモーション列挙型
+	//***********************************
+	enum PLAYERMOTION
+	{
+		PLAYERMOTION_NEUTRAL = 0,	// ニュートラル
+		PLAYERMOTION_MOVE,			// 移動
+		PLAYERMOTION_ACTION,		// アクション
+		PLAYERMOTION_JUMP,			// ジャンプ
+		PLAYERMOTION_LANDING,		// 着地
+		PLAYERMOTION_JUMPATTACK,	// SP攻撃
+		PLAYERMOTION_DAMAGE,		// 吹き飛ばし
+		PLAYERMOTION_WAKEUP,		// 起き上がり
+		PLAYERMOTION_MAX
+	};
+
 	CPlayer(int nPriority = static_cast<int>(CObject::PRIORITY::PLAYER));
 	~CPlayer();
 

@@ -12,6 +12,7 @@
 // インクルードファイル
 //**********************
 #include "model.h"
+#include <vector>
 
 //*****************************
 // モーションクラスを定義
@@ -56,17 +57,17 @@ public:
 	struct KEY_INFO
 	{
 		int nFrame;				// フレーム数
-		KEY aKey[NUM_PART]; 	// 各パーツのキーの要素
+		std::vector<KEY> aKey; // 動的なキー数
 	};
 
 	//***************************
 	// モーション情報の構造体宣言
 	//***************************
-	struct MOTION_INFO
+	struct INFO
 	{
 		bool bLoop;						// ループするかしないか
 		int nNumKey;					// キーの総数
-		KEY_INFO aKeyInfo[NUM_PART];	// キー情報
+		std::vector<KEY_INFO> aKeyInfo; // モーションの動的キーフレーム
 		TYPE Motiontype;				// モーションの種類
 	};
 
@@ -92,7 +93,8 @@ public:
 	bool GetFinishMotion(void) { return m_isFinishMotion; }
 
 private: 
-	MOTION_INFO m_aMotionInfo[TYPE_MAX];// モーション情報
+	std::vector<INFO> m_aMotionInfo; // モーション情報を動的確保
+
 	int m_nNumMotion;					// モーションの総数
 	bool m_isLoopMotion;				// ループするかどうか
 	int m_nNumKey;						// キーの総数

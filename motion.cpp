@@ -16,11 +16,8 @@
 //==============================
 CMotion::CMotion()
 {
-	// 値のクリア
-	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
-	{
-		m_aMotionInfo[nCnt] = {};
-	}
+	// 配列クリア
+	m_aMotionInfo.clear();
 
 	m_isLoopMotion = false;
 	m_nCounterMotion = NULL;
@@ -251,8 +248,49 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 //======================================
 void CMotion::UpdateCurrentMotion(CModel** ppModel, int nModelCount)
 {
+	// モーションデータの取得変数を宣言
+	const INFO& motionInfo = m_aMotionInfo[m_motiontype];
+	const KEY_INFO& keyInfoNow = motionInfo.aKeyInfo[m_nKey];
+	const KEY_INFO& keyInfoNext = motionInfo.aKeyInfo[m_nNextKey];
+
+	// インデックス範囲チェックしオーバーしている場合
+	if (nModelCount >= keyInfoNow.aKey.size() || nModelCount >= keyInfoNext.aKey.size())
+	{
+		return; // 範囲外なので何もせず終了
+	}
+
+	// 現在と次のキー用の変数を宣言する
+	const KEY& NowKey = keyInfoNow.aKey[nModelCount];
+	const KEY& NextKey = keyInfoNext.aKey[nModelCount];
+
 	// キー情報から位置と向きを算出
 	D3DXVECTOR3 posMotion, rotMotion;
+
+	// 角度と座標の差分を計算
+	posMotion.x = NextKey.fPosX - NowKey.fPosX;
+	posMotion.y = NextKey.fPosY - NowKey.fPosY;
+	posMotion.z = NextKey.fPosZ - NowKey.fPosZ;
+
+	rotMotion.x = NextKey.fRotX - NowKey.fRotX;
+	rotMotion.y = NextKey.fRotY - NowKey.fRotY; 
+	rotMotion.z = NextKey.fRotZ - NowKey.fRotZ;
+
+	// 求める値を保存する変数を宣言
+	D3DXVECTOR3 Pos, Rot;
+
+	// 補間係数を計算
+	float fDis = static_cast<float>(m_nCounterMotion) / keyInfoNow.nFrame;
+
+	// 補間結果を算出
+	Pos.x = NowKey.fPosX + posMotion.x * fDis;
+	Pos.y = NowKey.fPosY + posMotion.y * fDis;
+	Pos.z = NowKey.fPosZ + posMotion.z * fDis;
+
+	Rot.x = NowKey.fRotX + rotMotion.x * fDis;
+	Rot.y = NowKey.fRotY + rotMotion.y * fDis;
+	Rot.z = NowKey.fRotZ + rotMotion.z * fDis;
+
+#if 0
 
 	// 座標の差分を計算する
 	posMotion.x = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fPosX - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosX;
@@ -279,6 +317,7 @@ void CMotion::UpdateCurrentMotion(CModel** ppModel, int nModelCount)
 	Rot.x = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotX + rotMotion.x * fDis);
 	Rot.y = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotY + rotMotion.y * fDis);
 	Rot.z = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotZ + rotMotion.z * fDis);
+#endif
 
 	// モデルのパーツに設定
 	ppModel[nModelCount]->SetPos(Pos);
@@ -392,6 +431,8 @@ void CMotion::SetModels(std::istringstream& iss, int& nModel, int nMaxParts)
 	// 読み込んだモデル数を設定
 	iss >> eq >> nModel;
 
+	// ここでリサイズする
+	
 	// 例外処理
 	if (nModel > nMaxParts)
 	{
@@ -550,25 +591,29 @@ void CMotion::SetPartsMotion(std::ifstream& file, CMotion* pMotion, int nCntMoti
 		// "NUM_KEY"を読み取った
 		else if (token == "NUM_KEY")
 		{
+			// "="代入
 			std::string eq;
+			
+			// キー数保存
 			int numKeys;
+
+			// 値代入
 			motionss >> eq >> numKeys;
 
-			// "="を読み取った
-			if (eq == "=")
+			// nNumKeyを代入
+			pMotion->m_aMotionInfo[nCntMotion].nNumKey = numKeys;
+
+			// Vector配列にサイズを渡す
+			pMotion->m_aMotionInfo[nCntMotion].aKeyInfo.resize(numKeys); 
+
+			//	キー数の上限に達するまで
+			while (nCntKey < numKeys)
 			{
-				// キーの総数設定
-				pMotion->m_aMotionInfo[nCntMotion].nNumKey = numKeys;
+				// キー情報の設定
+				SetKey(file, pMotion, nCntMotion, nCntKey);
 
-				// 指定された数だけキーセットを読み込む
-				while (nCntKey < numKeys)
-				{
-					// キーセット読み込み関数
-					SetKey(file, pMotion, nCntMotion, nCntKey);
-
-					// 次のモーションのキーへ
-					nCntKey++;
-				}
+				// インクリメントして進める
+				nCntKey++;
 			}
 		}
 		// "END_MOTIONSET"を読み取った
@@ -643,7 +688,7 @@ void CMotion::SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int 
 	}
 }
 //======================================
-// キーごとの情報設定
+// キーごとの情報設定   TODO ここ直す
 //======================================
 void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMotion* pMotion, int nCntMotion, int nCntKey, int& posKeyIndex, int& rotKeyIndex)
 {
@@ -663,25 +708,37 @@ void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMoti
     KEY_INFO& keyInfo = pMotion->m_aMotionInfo[nCntMotion].aKeyInfo[nCntKey];
 
 	// "POS"読み取り時
-    if (param == "POS")
-    {
-		// 各座標に値を設定
-        keyInfo.aKey[posKeyIndex].fPosX = Vec.x;
-        keyInfo.aKey[posKeyIndex].fPosY = Vec.y;
-        keyInfo.aKey[posKeyIndex].fPosZ = Vec.z;
+	if (param == "POS") 
+	{
+		// キー情報のサイズを取得する
+		if (keyInfo.aKey.size() <= posKeyIndex)
+		{
+			keyInfo.aKey.resize(posKeyIndex + 1);
+		}
 
-		// キーカウントをインクリメント
-        posKeyIndex++;
-    }
+		// 各座標に代入する
+		keyInfo.aKey[posKeyIndex].fPosX = Vec.x;
+		keyInfo.aKey[posKeyIndex].fPosY = Vec.y;
+		keyInfo.aKey[posKeyIndex].fPosZ = Vec.z;
+
+		// キー情報カウントを加算
+		posKeyIndex++;
+	}
 	// "ROT"読み取り時
-    else if (param == "ROT")
-    {
-		// 各角度に値を設定
-        keyInfo.aKey[rotKeyIndex].fRotX = Vec.x;
-        keyInfo.aKey[rotKeyIndex].fRotY = Vec.y;
-        keyInfo.aKey[rotKeyIndex].fRotZ = Vec.z;
+	else if (param == "ROT")
+	{
+		// サイズを取得する
+		if (keyInfo.aKey.size() <= rotKeyIndex)
+		{
+			keyInfo.aKey.resize(rotKeyIndex + 1);
+		}
 
-		// キーカウントをインクリメント
-        rotKeyIndex++;
-    }
+		// 各パーツの角度に代入
+		keyInfo.aKey[rotKeyIndex].fRotX = Vec.x;
+		keyInfo.aKey[rotKeyIndex].fRotY = Vec.y;
+		keyInfo.aKey[rotKeyIndex].fRotZ = Vec.z;
+
+		// キー情報カウントを加算
+		rotKeyIndex++;
+	}
 }
