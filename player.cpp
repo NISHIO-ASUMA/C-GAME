@@ -24,11 +24,11 @@
 //**********************
 // 定数宣言
 //**********************
-constexpr float PLAYER_MOVE = 0.0095f; // 1フレームの移動量
-constexpr float PLAYER_JUMPVALUE = 13.0f; // ジャンプ量
-constexpr int   NUMBER_MAIN = 0;       // メイン操作プレイヤー番号
-constexpr int   NUMBER_SUB = 1;		   // 分身操作プレイヤー番号
-constexpr int   KeyRepeatCount = 15;	// キーのリピートカウント
+constexpr float PLAYER_MOVE = 0.0095f;		// 1フレームの移動量
+constexpr float PLAYER_JUMPVALUE = 18.0f;	// ジャンプ量
+constexpr int   NUMBER_MAIN = 0;			// メイン操作プレイヤー番号
+constexpr int   NUMBER_SUB = 1;				// 分身操作プレイヤー番号
+constexpr int   KeyRepeatCount = 15;		// キーのリピートカウント
 
 //===============================
 // オーバーロードコンストラクタ
@@ -235,7 +235,20 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 BulletMove = VecBoss;
 
 	// プレイヤーの腕のワールドマトリックスを取得する
-	D3DXMATRIX mtxWorld = m_apModel[18]->GetMtxWorld();
+	D3DXMATRIX mtxWorld = {};
+
+	// 右腕モデルの取得
+	CModel* pModelWepon = CPlayer::GetModelPartType(CModel::PARTTYPE_WEAPON);
+
+	// nullじゃないなら
+	if (pModelWepon != nullptr)
+	{
+		// ワールドマトリックスをセット
+		mtxWorld = pModelWepon->GetMtxWorld();
+	}
+
+	// 現在体力の取得
+	int nLife = m_pParameter->GetHp();
 
 	// 攻撃中はボスの方向に体を向ける
 	if (m_isAttack)
@@ -306,6 +319,9 @@ void CPlayer::Update(void)
 					// 状態更新
 					m_pState->SetState(CState::STATE_DAMAGE);
 
+					// ダメージ処理
+					m_pParameter->HitDamage(1);
+
 					// 一回当たったら抜ける
 					break;
 				}
@@ -327,6 +343,19 @@ void CPlayer::Update(void)
 
 		// 高さへの移動量を0.0fに設定
 		m_move.y = 0.0f;
+	}
+
+	// 現在体力をセット
+	nLife = m_pParameter->GetHp();
+
+	// ゼロ以下
+	if (nLife <= 0)
+	{
+		// 終了処理
+		Uninit();
+
+		// ここで処理を返す
+		return;
 	}
 
 	// 状態管理を更新
@@ -415,6 +444,25 @@ CPlayer* CPlayer::GetIdxPlayer(int Idx)
 	}
 
 	// 取得できなかった場合
+	return nullptr;
+}
+//=========================================
+// モデルの特定部分パーツの取得関数
+//=========================================
+CModel* CPlayer::GetModelPartType(CModel::PARTTYPE modelpart)
+{
+	// プレイヤーが持っているモデルの数の中から探す
+	for (int nModel = 0; nModel < MAX_MODEL; nModel++)
+	{
+		// モデルがある かつ 取得したい物と一致していたら
+		if (m_apModel[nModel] && m_apModel[nModel]->GetPartType() == modelpart)
+		{
+			// 該当モデルのidx番号のモデルを返す
+			return m_apModel[nModel];
+		}
+	}
+
+	// 該当なし
 	return nullptr;
 }
 //=========================================

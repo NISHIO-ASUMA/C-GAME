@@ -64,7 +64,7 @@ HRESULT CCamera::Init(void)
 	// 視点から注視点までの距離
 	m_pCamera.fDistance = sqrtf((fRotx * fRotx) + (fRoty * fRoty) + (fRotz * fRotz));
 
-	// 初期モード
+	// 初期モードセット
 	m_pCamera.nMode = MODE_NONE;
 
 	return S_OK;
@@ -91,6 +91,13 @@ void CCamera::Update(void)
 	// プレイヤー取得
 	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
 	CPlayer* pPlayerSub = CPlayer::GetIdxPlayer(1);
+
+	// nullptrチェック
+	if (pPlayer == nullptr || pPlayerSub == nullptr)
+	{
+		// ここで処理を返す
+		return;
+	}
 
 #ifdef _DEBUG
 	// カメラモード変更
@@ -175,7 +182,7 @@ void CCamera::Update(void)
 		D3DXVECTOR3 camOffset = -VecToBoss * 280.0f;
 
 		// 高さを設定
-		camOffset.y = 160.0f;
+		camOffset.y = 200.0f;
 
 		// カメラの目的位置
 		D3DXVECTOR3 desiredPosV = playerPos + camOffset;
@@ -195,7 +202,6 @@ void CCamera::Update(void)
 	default:
 		break;
 	}
-
 
 	// 角度の正規化
 	if (m_pCamera.rot.y > D3DX_PI)
@@ -253,9 +259,11 @@ void CCamera::MouseView(CInputMouse * pMouse)
 	// 右クリック
 	if (pMouse->GetPress(CInputMouse::MOUSE_LEFT))
 	{
+		// マウスの移動量取得
 		D3DXVECTOR2 Move = pMouse->GetMouseVelocity();
 		D3DXVECTOR2 MoveOld = pMouse->GetMouseOldVelocity();
 
+		// 現在の角度を計算
 		D3DXVECTOR2 fAngle = Move - MoveOld;
 
 		// 回転量を更新

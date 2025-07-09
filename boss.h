@@ -33,8 +33,6 @@ public:
 		TYPE_NEUTRAL = 0,	// ニュートラル
 		TYPE_MOVE,			// 移動
 		TYPE_ACTION,		// アクション
-		TYPE_JUMP,			// ジャンプ
-		TYPE_LANDING,		// 着地
 		TYPE_MAX
 	};
 

@@ -137,6 +137,7 @@ public:
 	D3DXVECTOR2 GetMouseVelocity() { return D3DXVECTOR2((float)m_CurrentMouseState.lX, (float)m_CurrentMouseState.lY); }
 
 	D3DXVECTOR2 GetMouseOldVelocity() { return D3DXVECTOR2((float)m_MouseOldState.lX, (float)m_MouseOldState.lY); }
+
 	BOOL IsMouseWheelPresent(void);
 
 private:

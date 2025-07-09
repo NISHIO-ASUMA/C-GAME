@@ -160,10 +160,10 @@ void CBullet::Update(void)
 	SetPos(BulletPos);
 
 	// “G‚Æ‚Ì“–‚½‚è”»’è
-	// bool isHit = Collision(BulletPos);
+	bool isHit = Collision(BulletPos);
 
 	// ‘Ì—Í‚ª0ˆÈ‰º ‚©‚Â “G‚É“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç
-	if (m_nLife <= 0 /*&& !isHit*/)
+	if (m_nLife <= 0 && !isHit)
 	{
 		// –¢Žg—pó‘Ô
 		Uninit();

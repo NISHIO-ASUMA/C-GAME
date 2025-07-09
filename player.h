@@ -49,6 +49,8 @@ public:
 	static CPlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
 
+	CModel* GetModelPartType(CModel::PARTTYPE modelpart);
+
 	static inline constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 
 private:

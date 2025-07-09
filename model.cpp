@@ -24,20 +24,9 @@ CModel::CModel()
 	m_pos = VECTOR3_NULL;
 	m_rot = VECTOR3_NULL;
 	m_pTexture = nullptr;
-	m_isLoopMotion = false;
-	m_nCounterMotion = NULL;
-	m_nKey = NULL;
-	m_nNumKey = NULL;
-	m_nNumMotion = NULL;
-	m_type = TYPE_NEUTRAL;
 	m_offPos = VECTOR3_NULL;
 	m_offRot = VECTOR3_NULL;
-
-	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
-	{
-		m_aMotionInfo[nCnt] = {};
-	}
-
+	m_parttype = PARTTYPE_NONE;
 }
 //=================================
 // デストラクタ
@@ -207,7 +196,8 @@ void CModel::Draw(void)
 		}
 		else
 		{
-			pDevice->SetTexture(0, NULL); // テクスチャなし
+			// テクスチャなし
+			pDevice->SetTexture(0, NULL); 
 		}
 
 		// モデル(パーツ)の描画

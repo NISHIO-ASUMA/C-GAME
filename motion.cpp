@@ -493,6 +493,20 @@ void CMotion::SetParts(std::ifstream& file, CModel** pModel)
 				pModel[nIdx]->OffSetRot(rot);
 			}
 		}
+		// "PARTTYPE"を読み取った
+		else if (cmd == "PARTTYPE")
+		{
+			// 読み取った種類を代入する
+			std::string eq, partTypeStr;
+			partss >> eq >> partTypeStr;
+
+			// インデックスが0以上 かつ モデルがあるなら
+			if (nIdx >= NULL && pModel[nIdx])
+			{
+				if (partTypeStr == "WEAPON") { pModel[nIdx]->SetPartType(CModel::PARTTYPE_WEAPON); }// 武器の部位
+				else { pModel[nIdx]->SetPartType(CModel::PARTTYPE_NONE); }							// 無いときはこれにする
+			}
+		}
 		// "END_PARTSSET"を読み取った
 		else if (cmd == "END_PARTSSET")
 		{

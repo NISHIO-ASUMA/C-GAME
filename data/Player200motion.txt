@@ -180,6 +180,7 @@ CHARACTERSET
 		PARENT = 7				# (親)右手
 		POS = -2.70 0.00 0.00	# 位置
 		ROT = 0.00 0.00 0.00	# 向き
+		PARTTYPE = WEAPON		# モデルの種類
 	END_PARTSSET
 
 END_CHARACTERSET

@@ -19,6 +19,8 @@
 class CMotion
 {
 public:
+	static inline constexpr int NUM_PART = 21;
+
 	//***************************
 	// モーション列挙型宣言
 	//***************************
@@ -54,7 +56,7 @@ public:
 	struct KEY_INFO
 	{
 		int nFrame;				// フレーム数
-		KEY aKey[MAX_PART]; 	// 各パーツのキーの要素
+		KEY aKey[NUM_PART]; 	// 各パーツのキーの要素
 	};
 
 	//***************************
@@ -64,7 +66,7 @@ public:
 	{
 		bool bLoop;						// ループするかしないか
 		int nNumKey;					// キーの総数
-		KEY_INFO aKeyInfo[MAX_PART];	// キー情報
+		KEY_INFO aKeyInfo[NUM_PART];	// キー情報
 		TYPE Motiontype;				// モーションの種類
 	};
 
@@ -88,7 +90,6 @@ public:
 
 	int GetMotionType(void) { return m_motiontype; }
 	bool GetFinishMotion(void) { return m_isFinishMotion; }
-
 
 private: 
 	MOTION_INFO m_aMotionInfo[TYPE_MAX];// モーション情報
