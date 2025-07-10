@@ -31,8 +31,20 @@ public:
 	enum TYPE
 	{
 		TYPE_NEUTRAL = 0,	// ニュートラル
-		TYPE_MOVE,			// 移動
+		TYPE_ACTION,		// 腕攻撃
 		TYPE_MAX
+	};
+
+	//***************************
+	// 行動パターン列挙型
+	//***************************
+	enum ATTACKPATTERN
+	{
+		PATTERN_NONE, // 何も行動していない
+		PATTERN_HAND, // 殴り
+		PATTERN_BULLET, // 弾発射
+		PATTERN_CIRCLE, // 振り回し攻撃
+		PATTERN_MAX
 	};
 
 	CBoss(int nPriority = static_cast<int>(CObject::PRIORITY::BOSS));
@@ -50,14 +62,17 @@ public:
 
 	float GetSize(void) { return m_fSize; }
 
+	bool Collision(D3DXVECTOR3* pPos);
+
 private:
-	static const int m_nNumModels = 21;
+
+	static constexpr int NUMMODELS = 21;
 
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_rot;
 	D3DXMATRIX m_mtxworld;	// マトリックス
 
-	CModel* m_pModel[m_nNumModels];
+	CModel* m_pModel[NUMMODELS];
 	CMotion* m_pMotion;
 
 	int m_nNumAll;		   // モデル総数

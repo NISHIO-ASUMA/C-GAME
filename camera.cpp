@@ -179,10 +179,10 @@ void CCamera::Update(void)
 		pPlayerSub->SetRotDest(D3DXVECTOR3(0.0f, fAngleSubToBoss, 0.0f));
 
 		// カメラ位置をMAINプレイヤーの後方へ
-		D3DXVECTOR3 camOffset = -VecToBoss * 280.0f;
+		D3DXVECTOR3 camOffset = -VecToBoss * 400.0f;
 
 		// 高さを設定
-		camOffset.y = 200.0f;
+		camOffset.y = 180.0f;
 
 		// カメラの目的位置
 		D3DXVECTOR3 desiredPosV = playerPos + camOffset;

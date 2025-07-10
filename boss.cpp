@@ -26,7 +26,7 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 	m_type = NULL;
 	m_mtxworld = {};
 
-	for (int nCnt = 0; nCnt < m_nNumModels; nCnt++)
+	for (int nCnt = 0; nCnt < NUMMODELS; nCnt++)
 	{
 		m_pModel[nCnt] = nullptr;
 	}
@@ -80,7 +80,7 @@ HRESULT CBoss::Init(void)
 	m_type = TYPE_MAX;
 
 	// モーションの読み込み
-	m_pMotion = CMotion::Load("data\\MOTION\\Boss\\Boss_motion.txt", m_nNumModels, m_pModel,TYPE_MAX);
+	m_pMotion = CMotion::Load("data\\Boss\\Bossmotion.txt", NUMMODELS, m_pModel,TYPE_MAX);
 
 	// モーション数を設定
 	m_pMotion->SetMotionNum(m_type);
@@ -93,7 +93,7 @@ HRESULT CBoss::Init(void)
 void CBoss::Uninit(void)
 {
 	// モデル数分の破棄
-	for (int nCnt = 0; nCnt < m_nNumModels; nCnt++)
+	for (int nCnt = 0; nCnt < NUMMODELS; nCnt++)
 	{
 		// nullptrチェック
 		if (m_pModel[nCnt] != nullptr)
@@ -133,11 +133,27 @@ void CBoss::Update(void)
 	// 攻撃パターン数をランダム設定
 	int nAttackPattern = rand() % 3;
 
-	// モーションセット
-	m_pMotion->SetMotion(TYPE_NEUTRAL);
+	// 値に応じて変更
+	switch (nAttackPattern)
+	{
+	case PATTERN_NONE:
+		// モーションセット
+		m_pMotion->SetMotion(TYPE_NEUTRAL);
+		break;
+
+	case PATTERN_HAND:
+		// 殴りモーション
+		m_pMotion->SetMotion(TYPE_ACTION);
+		break;
+
+	default:
+		// モーションセット
+		m_pMotion->SetMotion(TYPE_NEUTRAL);
+		break;
+	}
 
 	// モーションの更新
-	m_pMotion->Update(m_pModel, m_nNumModels);
+	m_pMotion->Update(m_pModel, NUMMODELS);
 }
 //====================================
 // 描画処理
@@ -166,7 +182,7 @@ void CBoss::Draw(void)
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxworld);
 
 	// 全モデルパーツの描画
-	for (int nCnt = 0; nCnt < m_nNumModels; nCnt++)
+	for (int nCnt = 0; nCnt < NUMMODELS; nCnt++)
 	{
 		// 全モデル描画
 		m_pModel[nCnt]->Draw();
