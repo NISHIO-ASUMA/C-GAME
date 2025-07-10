@@ -2,6 +2,8 @@
 //
 // モーション処理 [ motion.cpp ]
 // Author: Asuma Nishio
+// 
+// TODO : ここのモーション機構を変える
 //
 //=====================================
 
@@ -10,6 +12,12 @@
 //**************************
 #include "motion.h"
 #include "template.h"
+#include "player.h"
+
+//**************************
+// 定数宣言
+//**************************
+constexpr int NEUTRAL = 0; // ニュートラル番号
 
 //==============================
 // コンストラクタ
@@ -40,6 +48,7 @@ CMotion::CMotion()
 	m_isFirstMotion = false;
 
 	m_nNumModels = NULL;
+	m_isStopAction = false;
 }
 //==============================
 // デストラクタ
@@ -96,7 +105,7 @@ CMotion* CMotion::Load(const char* pFilename,const int nMaxParts, CModel** pMode
 			// モデル数設定
 			pMotion->SetModels(iss, nModel, nMaxParts);
 
-			// 一時保存
+			// 読み込んだモデル数を保存する
 			pMotion->m_nNumModels = nModel;
 
 		}
@@ -141,7 +150,7 @@ CMotion* CMotion::Load(const char* pFilename,const int nMaxParts, CModel** pMode
 // モーションセット
 //=================================
 void CMotion::SetMotion(int motiontype)
-{
+{// ここはmotiontypeに渡された番号を取得する
 	// 同じだったら
 	if (m_motiontype == motiontype)
 	{
@@ -155,10 +164,11 @@ void CMotion::SetMotion(int motiontype)
 	m_isFinishMotion = false;
 }
 //==============================
-// モーション更新処理
+// モーション全体更新処理
 //==============================
 void CMotion::Update(CModel** ppModel, const int nMaxPart)
-{
+{// モーションタイプの番号で該当のモーション更新するだけにする
+
 	// モデル数格納
 	int nNumModel = nMaxPart;
 	
@@ -172,9 +182,15 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		return;
 	}
 
+	// フラグを生成
+	bool isPlayer = false;
+
 	// 最大モデル数で回す
 	for (int nCnt = 0; nCnt < nNumModel; nCnt++)
 	{
+		// プレイヤーモデルかどうか判定
+		isPlayer = ppModel[nCnt] && ppModel[nCnt]->IsPlayer();
+
 		// 現在モーションキー計算
 		m_motiontype = Clump(m_motiontype, 0, m_nNumMotion);
 		m_nNextKey = Wrap(m_nKey + 1, 0, m_aMotionInfo[m_motiontype].nNumKey -1);
@@ -187,15 +203,16 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		UpdateCurrentMotion(ppModel, nCnt);
 	}
 
-	// 通常モーションのフレームを進める
+	// フレーム進行処理
 	if (m_nCounterMotion >= m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame)
 	{
-		// モーションカウントを初期化
+		// カウンターをリセット
 		m_nCounterMotion = 0;
 
-		// アクションモーションの時,最後のキーで止める
-		if (m_motiontype == TYPE_ACTION || m_motiontype == TYPE_JUMPATTACK)
+		// プレイヤーモデルだったら
+		if ((m_motiontype == CPlayer::PLAYERMOTION_ACTION || m_motiontype == CPlayer::PLAYERMOTION_JUMPATTACK) && isPlayer)
 		{
+			// キー数が上限より一個下
 			if (m_nKey < m_aMotionInfo[m_motiontype].nNumKey - 1)
 			{
 				// キー数加算
@@ -203,47 +220,46 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 			}
 			else
 			{
-				// キーを最大数に設定
+				// 最後のキーで止める
 				m_nKey = m_aMotionInfo[m_motiontype].nNumKey - 2;
 
-				// モーションカウントを最後のフレームの値に設定
+				// フレームを最後のキーに設定
 				m_nCounterMotion = m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame;
 			}
 		}
 		else
 		{
-			// 通常はループ
-			m_nCounterMotion = 0;
-
-			// キー数をラップ
+			// 通常ループ
 			m_nKey = Wrap(m_nKey + 1, 0, m_aMotionInfo[m_motiontype].nNumKey - 1);
 		}
 	}
 	else
 	{
-		// モーションカウントを加算
+		// カウンターを加算
 		m_nCounterMotion++;
 	}
 
-	// アクションなら
-	if (m_motiontype == TYPE_ACTION || m_motiontype == TYPE_JUMPATTACK)
+	// プレイヤーのモーションがアクション時 かつ 判別しているモデルがプレイヤーなら
+	if (isPlayer && m_motiontype == CPlayer::PLAYERMOTION_ACTION)
 	{
+		// 終了フラグを立てる
 		m_isFinishMotion = true;
 
-		// キーを最大数に設定
+		// 最後のキーで止める
 		m_nKey = m_aMotionInfo[m_motiontype].nNumKey - 2;
 
-		// モーションカウントを最後のフレームの値に設定
+		// フレームを最後のキーに設定
 		m_nCounterMotion = m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame;
 
+		// ここで関数を抜ける
 		return;
 	}
 
 	// Loop がfalse かつ キー数が超えたら
-	if (m_aMotionInfo[m_motiontype].bLoop == false && m_aMotionInfo[m_motiontype].nNumKey - 1 <= m_nKey && m_motiontype != TYPE_ACTION)
+	if (!m_aMotionInfo[m_motiontype].bLoop && m_aMotionInfo[m_motiontype].nNumKey - 1 <= m_nKey)
 	{
-		// ニュートラルモーションに変更
-		m_motiontype = TYPE_NEUTRAL;
+		// ニュートラルにする
+		m_motiontype = NEUTRAL;
 
 		// キー数を初期化
 		m_nKey = 0;
@@ -428,7 +444,6 @@ void CMotion::UpdateBlend(CModel** ppModel, int nModelCount)
 	ppModel[nModelCount]->SetPos(D3DXVECTOR3(KeyLastSet.fRotX, KeyLastSet.fRotY, KeyLastSet.fRotZ));
 	ppModel[nModelCount]->SetRot(D3DXVECTOR3(KeyLastSet.fPosX, KeyLastSet.fPosY, KeyLastSet.fPosZ));
 }
-
 //======================================
 // モデル数読み込み
 //======================================

@@ -22,22 +22,6 @@ class CMotion
 public:
 
 	//***************************
-	// モーション列挙型宣言
-	//***************************
-	enum TYPE
-	{
-		TYPE_NEUTRAL = 0,	// ニュートラル
-		TYPE_MOVE,			// 移動
-		TYPE_ACTION,		// アクション
-		TYPE_JUMP,			// ジャンプ
-		TYPE_LANDING,		// 着地
-		TYPE_JUMPATTACK,	// SP攻撃
-		TYPE_DAMAGE,		// 吹き飛ばし
-		TYPE_WAKEUP,		// 起き上がり
-		TYPE_MAX
-	};
-
-	//***************************
 	// キー構造体宣言
 	//***************************
 	struct KEY
@@ -67,20 +51,21 @@ public:
 		bool bLoop;						// ループするかしないか
 		int nNumKey;					// キーの総数
 		std::vector<KEY_INFO> aKeyInfo; // モーションの動的キーフレーム
-		TYPE Motiontype;				// モーションの種類
 	};
 
 	CMotion();
 	~CMotion();
 
 	static CMotion* Load(const char* pFilename, const int nMaxParts,CModel ** pModel,int nDestMotions);
-	void SetMotion(int motiontype);
-	void Update(CModel** ppModel, const int nMaxPart);
 
+	// 更新関数
+	void Update(CModel** ppModel, const int nMaxPart);
 	void UpdateCurrentMotion(CModel** ppModel, int nModelCount);
 	void UpdateBlend(CModel** ppModel, int nModelCount);
-	void SetMotionNum(int nMotion) { m_nNumMotion = nMotion; }
 
+	// セッター
+	void SetMotion(int motiontype);
+	void SetMotionNum(int nMotion) { m_nNumMotion = nMotion; }
 	void SetModels(std::istringstream& iss, int& nModel, int nMaxParts);
 	void SetModelFile(std::istringstream& iss, CModel** pModel, int nCnt);
 	void SetParts(std::ifstream& file, CModel** pModel);
@@ -88,6 +73,7 @@ public:
 	void SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int nCntKey);
 	void SetKeyDate(std::istringstream& ss, const std::string& param, CMotion* pMotion, int nCntMotion, int nCntKey, int& posKeyIndex, int& rotKeyIndex);
 
+	// ゲッター
 	int GetMotionType(void) { return m_motiontype; }
 	bool GetFinishMotion(void) { return m_isFinishMotion; }
 
@@ -115,6 +101,7 @@ private:
 //----------------------------------------------------------------------
 
 	int m_nNumModels;
+	bool m_isStopAction;
 };
 
 #endif

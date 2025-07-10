@@ -101,9 +101,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 	DWORD dwFrameCount = 0;					// フレームカウント
 	DWORD dwFPSLastTime = timeGetTime();	// 最後にFPSを計測した時刻
 
-	// レンダラー取得
-	CRenderer* prendere = CManager::GetRenderer();
-
 	// メッセージループ
 	while (1)
 	{

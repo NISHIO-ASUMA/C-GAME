@@ -66,6 +66,7 @@ public:
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
 
 	CModel* GetModelPartType(CModel::PARTTYPE modelpart);
+	int GetType(void) { return m_type; }
 
 	static inline constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 
@@ -90,7 +91,7 @@ private:
 
 	int m_type;				// モーションの種類変数
 	int m_nNumAll;		    // モデル総数
-	int m_State;		// 状態管理カウンター
+	int m_State;			// 状態管理カウンター
 	int m_nIdxTexture;		// テクスチャID
 
 	bool m_isLanding;		// 着地判定

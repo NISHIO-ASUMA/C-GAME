@@ -127,7 +127,7 @@ HRESULT CPlayer::Init(void)
 	// モデル総数を代入
 	m_nNumAll = MAX_MODEL;
 
-	// タイプ代入
+	// モーション種類数を代入
 	m_type = PLAYERMOTION_MAX;
 
 	m_fAngle = NULL;
@@ -142,6 +142,17 @@ HRESULT CPlayer::Init(void)
 
 	// モーション数を設定
 	m_pMotion->SetMotionNum(PLAYERMOTION_MAX);
+
+	// プレイヤー識別モデルフラグを設定
+	for (int nCnt = 0; nCnt < MAX_MODEL; nCnt++)
+	{
+		// nullptrじゃなかったら
+		if (m_apModel[nCnt] != nullptr)
+		{
+			// フラグを設定する
+			m_apModel[nCnt]->SetIsPlayer(true);
+		}
+	}
 
 	// 状態管理を生成
 	m_pState = CState::Create();
@@ -489,7 +500,8 @@ void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx
 			CBullet::Create(D3DXVECTOR3(pMtx._41, pMtx._42, pMtx._43), DestMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
 		}
 
-		if (!m_isAttack) 	// 攻撃状態じゃないとき
+		// 攻撃状態じゃないとき
+		if (!m_isAttack) 	
 		{
 			// 攻撃フラグを有効化する
 			m_isAttack = true;
@@ -513,7 +525,7 @@ void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx
 	{// キーフラグが無効 かつ 現在のモーションが攻撃モーションなら
 
 		// 通常モーションに変更
-		m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL);
+		m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL);
 
 		// 攻撃状態を解除
 		m_isAttack = false;

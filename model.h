@@ -51,6 +51,9 @@ public:
 	void SetPartType(PARTTYPE nDestPartType) { m_parttype = nDestPartType; }
 	PARTTYPE GetPartType(void) const { return m_parttype; }
 
+	bool IsPlayer() const { return m_isPlayer; }
+	void SetIsPlayer(bool flag) { m_isPlayer = flag; }
+
 private:
 
 	D3DXVECTOR3 m_pos, m_rot,m_offPos,m_offRot; // 座標,角度
@@ -64,6 +67,8 @@ private:
 	int* m_pTexture;		// テクスチャポインタ
 
 	PARTTYPE m_parttype;    // モデルの種類
+
+	bool m_isPlayer = false; // プレイヤーに対応したモデルかどうか
 };
 
 #endif

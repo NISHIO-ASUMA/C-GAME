@@ -134,7 +134,7 @@ void CBoss::Update(void)
 	int nAttackPattern = rand() % 3;
 
 	// モーションセット
-	m_pMotion->SetMotion(m_pMotion->TYPE_NEUTRAL);
+	m_pMotion->SetMotion(TYPE_NEUTRAL);
 
 	// モーションの更新
 	m_pMotion->Update(m_pModel, m_nNumModels);

@@ -399,22 +399,27 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 	// X座標の分割数で見る
 	for (int nCnt = 0; nCnt < NUM_X; nCnt++)
 	{
-		// インパクトの外径と内径の差分を計算する
-		float fDisSize = m_fOutRadius - m_fInRadius;
-
 		// インパクト頂点のワールド座標とのXZ距離を計算
 		float dx = pPos->x - (m_pos.x + pVtx[nCnt].pos.x);
+		float dy = pPos->y - (m_pos.y + pVtx[nCnt].pos.y);
 		float dz = pPos->z - (m_pos.z + pVtx[nCnt].pos.z);
 
-		// XZ平面の頂点との差分を計算する ( 円判定 )
-		float fDisVerTex = sqrtf(dx * dx + dz * dz);
+		// Y方向の当たり判定幅を設定
+		const float fHeightTolerance = 5.0f; 
 
-		// 頂点との距離が内径と外径の差分よりも小さい値になったら
-		if (fDisVerTex <= fDisSize * 0.8f)
+		// 半径の差分をとる
+		float fDisSize = (m_fOutRadius - m_fInRadius) * 0.8f;
+
+		// Y方向で外れてるなら当たらない
+		if (fabsf(dy) > fHeightTolerance) continue;
+
+		// 範囲計算
+		float fDisVerTexXZ = sqrtf(dx * dx + dz * dz);
+
+		// 差分が小さくなったら
+		if (fDisVerTexXZ <= fDisSize)
 		{
-			// 当たっている
 			isHit = true;
-
 			break;
 		}
 	}
