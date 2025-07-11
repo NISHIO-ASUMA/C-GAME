@@ -33,6 +33,7 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 
 	void SetTexture(void);
+
 private:
 	LPDIRECT3DINDEXBUFFER9 m_pIdx; // インデックスバッファ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtx;	// 頂点バッファ

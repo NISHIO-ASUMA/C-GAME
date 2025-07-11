@@ -43,7 +43,6 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_nNumAll = NULL;
 	m_type = NULL;
 	m_posOld = VECTOR3_NULL;
-	m_size = NULL;
 	m_pFilename = {};
 	m_nIdxPlayer = NULL;
 	m_fAngle = NULL;
@@ -90,14 +89,28 @@ CPlayer* CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,int nLife,const int nI
 	pPlayer->m_nIdxPlayer = nIdxParson;
 	pPlayer->m_pFilename = pFilename;
 
-	// パラメータ生成
-	pPlayer->m_pParameter = new CParameter;
-
-	// nullチェック
-	if (pPlayer->m_pParameter != nullptr)
+	// 体力は2体で共通
+	if (nIdxParson == NUMBER_MAIN)
 	{
-		// 体力設定
-		pPlayer->m_pParameter->SetHp(nLife);
+		// ポインタ生成
+		pPlayer->m_pParameter = new CParameter;
+
+		// nullチェック
+		if (pPlayer->m_pParameter != nullptr)
+		{
+			pPlayer->m_pParameter->SetHp(nLife);
+		}
+	}
+	else
+	{
+		// メイン側の情報をセット
+		CPlayer* pMain = CPlayer::GetIdxPlayer(NUMBER_MAIN);
+
+		// nullptrチェック
+		if (pMain != nullptr)
+		{
+			pPlayer->m_pParameter = pMain->m_pParameter;  // ポインタを共有
+		}
 	}
 
 	// プレイヤー初期化処理
@@ -205,7 +218,7 @@ void CPlayer::Uninit(void)
 	}
 
 	// nullptrチェック
-	if (m_pParameter != nullptr)
+	if (m_pParameter != nullptr && m_nIdxPlayer == NUMBER_MAIN)
 	{
 		// ポインタの破棄
 		delete m_pParameter;
@@ -249,7 +262,7 @@ void CPlayer::Update(void)
 	// プレイヤーの腕のワールドマトリックスを取得する
 	D3DXMATRIX mtxWorld = {};
 
-	// 右腕モデルの取得
+	// プレイヤー右腕モデルの取得
 	CModel* pModelWepon = CPlayer::GetModelPartType(CModel::PARTTYPE_WEAPON);
 
 	// nullじゃないなら
@@ -347,7 +360,7 @@ void CPlayer::Update(void)
 	//=============================
 	// ボス右手の当たり判定
 	//=============================
-	CBoss* pBoss = CManager::GetBoss();  // マネージャー経由で取得する
+	CBoss* pBoss = CManager::GetBoss();  // マネージャー経由でボスを取得する
 
 	// 当たり判定の距離
 	if (pBoss->CollisionRightHand(&m_pos))
@@ -391,15 +404,17 @@ void CPlayer::Update(void)
 		// ここで処理を返す
 		return;
 	}
+	else
+	{
+		// 状態管理を更新
+		m_pState->Update();
 
-	// 状態管理を更新
-	m_pState->Update();
+		// 影の座標を更新
+		m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
 
-	// 影の座標を更新
-	m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
-
-	// モーション全体を更新
-	m_pMotion->Update(m_apModel, MAX_MODEL);
+		// モーション全体を更新
+		m_pMotion->Update(m_apModel, MAX_MODEL);
+	}
 }
 //===============================
 // プレイヤー描画処理
@@ -447,6 +462,10 @@ void CPlayer::Draw(void)
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 220);
 
+	// 識別描画
+	CDebugproc::Print("プレイヤーの体力 { %d } ", m_pParameter->GetHp());
+	// デバッグフォント描画
+	CDebugproc::Draw(0, 340);
 }
 //=========================================
 // 識別番号ごとのプレイヤーの取得

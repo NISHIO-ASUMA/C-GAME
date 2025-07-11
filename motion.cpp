@@ -205,9 +205,9 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		m_motiontype = Clump(m_motiontype, 0, m_nNumMotion);
 		m_nNextKey = Wrap(m_nKey + 1, 0, m_aMotionInfo[m_motiontype].nNumKey -1);
 
-		// ブレンドのモーション設定
-		m_motiontypeBlend = Clump(m_motiontypeBlend, 0, 1);
-		m_nNextKeyBlend = Wrap(m_nKeyBlend + 1, 0, m_aMotionInfo[m_motiontypeBlend].nNumKey - 1);
+		//// ブレンドのモーション設定
+		//m_motiontypeBlend = Clump(m_motiontypeBlend, 0, 1);
+		//m_nNextKeyBlend = Wrap(m_nKeyBlend + 1, 0, m_aMotionInfo[m_motiontypeBlend].nNumKey - 1);
 
 		// 現在のモーション更新
 		UpdateCurrentMotion(ppModel, nCnt);
@@ -288,7 +288,7 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		m_nCounterMotion = 0;
 	}
 
-	// フレームカウント計算用
+	// 全体フレームカウント計算用
 	int nFrame = 0;
 
 	// キーごとのフレームで回す
@@ -298,14 +298,14 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		nFrame += m_aMotionInfo[m_motiontype].aKeyInfo[nCnt].nFrame;
 	}
 
+	// 最大値よりもカウントがオーバーしたら
 	if (m_nAllFrameCount >= m_nNumAllFrame)
 	{
 		m_nAllFrameCount = 0;
 	}
 
-	// 全体計算
+	// 全体フレーム計算
 	m_nNumAllFrame = nFrame;
-
 }
 //======================================
 // 現在のモーションの更新関数
@@ -320,7 +320,7 @@ void CMotion::UpdateCurrentMotion(CModel** ppModel, int nModelCount)
 	// インデックス範囲チェックしオーバーしている場合
 	if (nModelCount >= keyInfoNow.aKey.size() || nModelCount >= keyInfoNext.aKey.size())
 	{
-		return; // 範囲外なので何もせず終了
+		return; // 下の処理を通さない
 	}
 
 	// 現在と次のキー用の変数を宣言する
@@ -358,6 +358,7 @@ void CMotion::UpdateCurrentMotion(CModel** ppModel, int nModelCount)
 	ppModel[nModelCount]->SetPos(Pos);
 	ppModel[nModelCount]->SetRot(Rot);
 }
+
 //======================================
 // ブレンドモーションの更新関数
 //======================================
@@ -455,9 +456,12 @@ void CMotion::UpdateBlend(CModel** ppModel, int nModelCount)
 	ppModel[nModelCount]->SetRot(D3DXVECTOR3(KeyLastSet.fPosX, KeyLastSet.fPosY, KeyLastSet.fPosZ));
 }
 
+//======================================
+// デバッグフォント関数
+//======================================
 void CMotion::Debug(void)
 {
-	CDebugproc::Print("[カウント] %d /  [ 最大 ] %d", m_nAllFrameCount, m_nNumAllFrame);
+	CDebugproc::Print("[現在フレームカウント] %d /  [ 最大モーションフレーム ] %d", m_nAllFrameCount, m_nNumAllFrame);
 
 	CDebugproc::Draw(0, 320);
 }

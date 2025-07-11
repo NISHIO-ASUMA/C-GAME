@@ -230,7 +230,7 @@ bool CBullet::Collision(D3DXVECTOR3 pos)
 			if (fDistanceSq <= fLength)
 			{
 				// TODO  : テスト
-				CParticle::Create(D3DXVECTOR3 (BossPos.x,30.0f,BossPos.z), D3DXCOLOR(1.0f, 0, 0, 1.0f), 50, 150, 100, 500);
+				CParticle::Create(D3DXVECTOR3 (BossPos.x,30.0f,BossPos.z), D3DXCOLOR(1.0f,0.0f,0.0f,1.0f), 35, 150, 100, 300);
 
 				// ヒット処理
 				CBullet::Uninit();

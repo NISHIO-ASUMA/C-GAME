@@ -218,7 +218,7 @@ void CMeshImpact::Update(void)
 	int nCntVertex = NULL;
 
 	// 赤色に設定
-	m_col = D3DXCOLOR(1.0f, 1.0f, 0.0f,1.0f);
+	m_col = D3DXCOLOR(1.0f, 1.0f, 0.0f,0.7f);
 
 	// 速度を加算,だんだん広げる
 	m_fOutRadius += m_fSpeed;
@@ -262,7 +262,7 @@ void CMeshImpact::Update(void)
 			cosf(fAngel) * m_fInRadius);
 
 		// 頂点カラーの設定
-		pVtx[nCntVertex].col = D3DXCOLOR(1.0f,0.2f,0.0f,0.4f);
+		pVtx[nCntVertex].col = m_col;
 
 		// 頂点カウントをインクリメント
 		nCntVertex++;
@@ -275,7 +275,7 @@ void CMeshImpact::Update(void)
 	m_nLife--;
 
 	// TODO : ここを体力に応じて透明にしていく処理に変更
-	m_col.a -= 0.2f;
+	m_col.a -= 0.3f;
 
 	// 寿命が尽きた
 	if (m_nLife <= 0)
@@ -283,6 +283,7 @@ void CMeshImpact::Update(void)
 		// 未使用にする
 		Release();
 
+		// 処理を返す
 		return;
 	}
 }
@@ -344,8 +345,9 @@ void CMeshImpact::Draw(void)
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
+	// デバッグフォント
 	CDebugproc::Print("衝撃波の座標 { %.2f,%.2f,%.2f }", m_pos.x, m_pos.y, m_pos.z);
-	CDebugproc::Draw(0,180);
+	CDebugproc::Draw(1000,180);
 }
 //===============================
 // 生成処理
@@ -364,7 +366,7 @@ CMeshImpact* CMeshImpact::Create(D3DXVECTOR3 pos, int nLife,float fOutRadius,flo
 	pMesh->m_fOutRadius = fOutRadius; // 外径
 	pMesh->m_nLife = nLife;			// 継続時間
 	pMesh->m_fSpeed = fSpeed;		// 拡散速度
-	pMesh->SetObjType(TYPE_MESH);   // メッシュタイプを設定
+	pMesh->SetObjType(TYPE_MESH);   // オブジェクトのタイプを設定
 
 	// 初期化失敗時
 	if (FAILED(pMesh->Init()))
@@ -413,13 +415,16 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 		// Y方向で外れてるなら当たらない
 		if (fabsf(dy) > fHeightTolerance) continue;
 
-		// 範囲計算
+		// XZ平面の範囲計算
 		float fDisVerTexXZ = sqrtf(dx * dx + dz * dz);
 
 		// 差分が小さくなったら
 		if (fDisVerTexXZ <= fDisSize)
 		{
+			// 当たっている
 			isHit = true;
+
+			// 処理を抜ける
 			break;
 		}
 	}

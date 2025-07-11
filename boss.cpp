@@ -14,6 +14,11 @@
 #include "Manager.h"
 #include <ctime>
 
+//****************************
+// 定数宣言
+//****************************
+constexpr float HITRANGE = 12.0f; // コリジョンサイズ
+
 //====================================
 // オーバーロードコンストラクタ
 //====================================
@@ -71,40 +76,6 @@ CBoss* CBoss::Create(D3DXVECTOR3 pos,float fSize)
 	// ポインタを返す
 	return pBoss;
 }
-//====================================
-// 右手とプレイヤーの当たり判定
-//====================================
-bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
-{
-	// 一定フレーム内
-	if (m_pMotion->CheckFrame(100, 150, PATTERN_HAND))
-	{
-		// モデルのパーツ取得
-		CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
-
-		// nullだったら
-		if (!pRightHand) return false;
-
-		// 右手のワールドマトリックスを取得
-		D3DXMATRIX mtxWorld = pRightHand->GetMtxWorld();
-
-		// 距離チェック
-		float fHitRadius = 15.0f;
-
-		// 差分計算
-		D3DXVECTOR3 diff = *pPos - D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
-
-		// 長さ取得
-		float fDist = D3DXVec3Length(&diff);
-
-		// 距離を返す
-		return fDist <= (fHitRadius * fHitRadius);
-	}
-	else
-	{
-		return false;
-	}
-}
 //=========================================
 // モデルの特定部分パーツの取得関数
 //=========================================
@@ -134,6 +105,8 @@ HRESULT CBoss::Init(void)
 
 	// タイプ代入
 	m_type = TYPE_MAX;
+
+	m_nCoolTime = 120;
 
 	// モーションの読み込み
 	m_pMotion = CMotion::Load("data\\Boss\\Bossmotion.txt", NUMMODELS, m_pModel,TYPE_MAX);
@@ -193,11 +166,10 @@ void CBoss::Update(void)
 		isCreating = true;
 	}
 
-	//---------------------------------------
-	// クールタイム中なら待機＆モーション更新だけ
-	//---------------------------------------
+	// クールタイム中なら待機モーション更新だけ
 	if (m_nCoolTime > 0)
 	{
+		// クールタイムを減らす
 		m_nCoolTime--;
 
 		// もし現在攻撃モーションが終わっていればニュートラルに戻す
@@ -212,19 +184,17 @@ void CBoss::Update(void)
 		return;
 	}
 
-	//---------------------------------------
-	// モーション中か？
-	//---------------------------------------
+	// モーション中か判別
 	if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
 	{
 		// 攻撃モーション中なので、続ける
 		m_pMotion->Update(m_pModel, NUMMODELS);
+
+		// ここでかえす
 		return;
 	}
 
-	//---------------------------------------
-	// 攻撃選択 → モーション開始
-	//---------------------------------------
+	// ランダムに行動パターンを決定する
 	int nAttackPattern = rand() % 3;
 
 	switch (nAttackPattern)
@@ -252,9 +222,7 @@ void CBoss::Update(void)
 		break;
 	}
 
-	//---------------------------------------
-	// モーション更新
-	//---------------------------------------
+	// モーション全体更新
 	m_pMotion->Update(m_pModel, NUMMODELS);
 }
 //====================================
@@ -294,13 +262,43 @@ void CBoss::Draw(void)
 	CDebugproc::Print("ボス座標 [ %.2f ,%.2f , %.2f]", m_pos.x,m_pos.y,m_pos.z);
 	CDebugproc::Draw(0, 40);
 
-	// デバッグフォント
 	CDebugproc::Print("ボスモーション数 { %d }", m_type);
 	CDebugproc::Draw(0, 180);
 
-	// デバッグフォント
 	CDebugproc::Print("ボス右手座標 { %.2f,%.2f,%.2f }", GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._41, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._42, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._43);
 	CDebugproc::Draw(0, 300);
 
 	m_pMotion->Debug();
+}
+//====================================
+// 右手とプレイヤーの当たり判定
+//====================================
+bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
+{
+	// 一定フレーム内
+	if (m_pMotion->CheckFrame(100, 150, PATTERN_HAND))
+	{
+		// モデルのパーツ取得
+		CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
+
+		// nullだったら
+		if (!pRightHand) return false;
+
+		// 右手のワールドマトリックスを取得
+		D3DXMATRIX mtxWorld = pRightHand->GetMtxWorld();
+
+		// 差分計算
+		D3DXVECTOR3 diff = *pPos - D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
+
+		// 計算した差分の長さ取得
+		float fDist = D3DXVec3Length(&diff);
+
+		// 距離を返す
+		return fDist <= (HITRANGE * HITRANGE);
+	}
+	else
+	{
+		// 当たらないとき
+		return false;
+	}
 }

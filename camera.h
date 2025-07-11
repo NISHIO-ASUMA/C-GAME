@@ -40,8 +40,10 @@ public:
 	D3DXMATRIX GetMtxProjection(void) { return m_pCamera.mtxprojection; }
 	void MouseView(CInputMouse* pMouse);
 
+	void EventWork(int nStartframe, int EndFrame);
+
 private:
-	// 構造体を定義
+	// カメラ構造体を定義
 	struct Camera
 	{
 		D3DXMATRIX mtxprojection;	// プロジェクションマトリックス

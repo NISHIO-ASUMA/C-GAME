@@ -72,6 +72,9 @@ HRESULT CParticle::Init(void)
 	// 配列クリア
 	m_pEffect.clear();
 
+	//乱数の種を宣言(1つのみの宣言)
+	srand((unsigned int)time(NULL));
+
 	return S_OK;
 }
 //===============================
@@ -90,9 +93,6 @@ void CParticle::Uninit(void)
 //===============================
 void CParticle::Update(void)
 {
-	//乱数の種を宣言(1つのみの宣言)
-	srand((int)time(NULL));
-
 	//カラーの設定
 	D3DXCOLOR col = m_col;
 
