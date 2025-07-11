@@ -24,6 +24,7 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 	m_rot = VECTOR3_NULL;
 	m_pMotion = nullptr;
 	m_type = NULL;
+	m_nCoolTime = NULL;
 	m_mtxworld = {};
 
 	for (int nCnt = 0; nCnt < NUMMODELS; nCnt++)
@@ -32,6 +33,8 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 	}
 
 	m_fSize = NULL;
+
+	m_isAttacked = false;
 }
 //====================================
 // デストラクタ
@@ -67,6 +70,59 @@ CBoss* CBoss::Create(D3DXVECTOR3 pos,float fSize)
 
 	// ポインタを返す
 	return pBoss;
+}
+//====================================
+// 右手とプレイヤーの当たり判定
+//====================================
+bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
+{
+	// 一定フレーム内
+	if (m_pMotion->CheckFrame(100, 150, PATTERN_HAND))
+	{
+		// モデルのパーツ取得
+		CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
+
+		// nullだったら
+		if (!pRightHand) return false;
+
+		// 右手のワールドマトリックスを取得
+		D3DXMATRIX mtxWorld = pRightHand->GetMtxWorld();
+
+		// 距離チェック
+		float fHitRadius = 15.0f;
+
+		// 差分計算
+		D3DXVECTOR3 diff = *pPos - D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
+
+		// 長さ取得
+		float fDist = D3DXVec3Length(&diff);
+
+		// 距離を返す
+		return fDist <= (fHitRadius * fHitRadius);
+	}
+	else
+	{
+		return false;
+	}
+}
+//=========================================
+// モデルの特定部分パーツの取得関数
+//=========================================
+CModel* CBoss::GetModelPartType(CModel::PARTTYPE modelpart)
+{
+	// ボスが持っているモデルの数の中から探す
+	for (int nModel = 0; nModel < NUMMODELS; nModel++)
+	{
+		// モデルがある かつ 取得したい物と一致していたら
+		if (m_pModel[nModel] && m_pModel[nModel]->GetPartType() == modelpart)
+		{
+			// 該当モデルのidx番号のモデルを返す
+			return m_pModel[nModel];
+		}
+	}
+
+	// 該当なし
+	return nullptr;
 }
 //====================================
 // 初期化処理
@@ -127,32 +183,78 @@ void CBoss::Uninit(void)
 //====================================
 void CBoss::Update(void)
 {
-	// 乱数の種を設定
-	srand((int)time(NULL));
+	// フラグメント
+	static bool isCreating = false;
 
-	// 攻撃パターン数をランダム設定
+	if (!isCreating)
+	{
+		// 乱数の種を一度だけ設定する
+		srand((int)time(NULL));
+		isCreating = true;
+	}
+
+	//---------------------------------------
+	// クールタイム中なら待機＆モーション更新だけ
+	//---------------------------------------
+	if (m_nCoolTime > 0)
+	{
+		m_nCoolTime--;
+
+		// もし現在攻撃モーションが終わっていればニュートラルに戻す
+		if (m_pMotion->GetFinishMotion())
+		{
+			m_pMotion->SetMotion(TYPE_NEUTRAL);
+		}
+
+		// モーションの更新だけ行う
+		m_pMotion->Update(m_pModel, NUMMODELS);
+
+		return;
+	}
+
+	//---------------------------------------
+	// モーション中か？
+	//---------------------------------------
+	if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
+	{
+		// 攻撃モーション中なので、続ける
+		m_pMotion->Update(m_pModel, NUMMODELS);
+		return;
+	}
+
+	//---------------------------------------
+	// 攻撃選択 → モーション開始
+	//---------------------------------------
 	int nAttackPattern = rand() % 3;
 
-	// 値に応じて変更
 	switch (nAttackPattern)
 	{
 	case PATTERN_NONE:
-		// モーションセット
 		m_pMotion->SetMotion(TYPE_NEUTRAL);
 		break;
 
 	case PATTERN_HAND:
-		// 殴りモーション
 		m_pMotion->SetMotion(TYPE_ACTION);
+		m_nCoolTime = 60; 
+		break;
+
+	case PATTERN_BULLET:
+		// 弾追尾モーション
+		m_nCoolTime = 180;
+		break;
+
+	case PATTERN_CIRCLE:
+		// 薙ぎ払いモーション
+		m_nCoolTime = 150;
 		break;
 
 	default:
-		// モーションセット
-		m_pMotion->SetMotion(TYPE_NEUTRAL);
 		break;
 	}
 
-	// モーションの更新
+	//---------------------------------------
+	// モーション更新
+	//---------------------------------------
 	m_pMotion->Update(m_pModel, NUMMODELS);
 }
 //====================================
@@ -191,4 +293,14 @@ void CBoss::Draw(void)
 	// デバッグフォント
 	CDebugproc::Print("ボス座標 [ %.2f ,%.2f , %.2f]", m_pos.x,m_pos.y,m_pos.z);
 	CDebugproc::Draw(0, 40);
+
+	// デバッグフォント
+	CDebugproc::Print("ボスモーション数 { %d }", m_type);
+	CDebugproc::Draw(0, 180);
+
+	// デバッグフォント
+	CDebugproc::Print("ボス右手座標 { %.2f,%.2f,%.2f }", GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._41, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._42, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._43);
+	CDebugproc::Draw(0, 300);
+
+	m_pMotion->Debug();
 }

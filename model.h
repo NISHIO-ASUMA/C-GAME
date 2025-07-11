@@ -22,8 +22,8 @@ public:
 		PARTTYPE_NONE, // 何も種類を設定しない時
 		PARTTYPE_HEAD, // 頭
 		PARTTYPE_BODY, // 体
-		PARTTYPE_LEFT_ARM, // 左腕
-		PARTTYPE_RIGHT_ARM,// 右腕
+		PARTTYPE_LEFT_HAND, // 左腕
+		PARTTYPE_RIGHT_HAND,// 右腕
 		PARTTYPE_LEFT_LEG, //左足
 		PARTTYPE_RIGHT_LEG,// 右足
 		PARTTYPE_WEAPON,   // 武器
@@ -54,6 +54,9 @@ public:
 	bool IsPlayer() const { return m_isPlayer; }
 	void SetIsPlayer(bool flag) { m_isPlayer = flag; }
 
+	bool IsBoss() const { return m_isBoss; }
+	void SetIsBoss(bool flag) { m_isBoss = flag; }
+
 private:
 
 	D3DXVECTOR3 m_pos, m_rot,m_offPos,m_offRot; // 座標,角度
@@ -68,7 +71,8 @@ private:
 
 	PARTTYPE m_parttype;    // モデルの種類
 
-	bool m_isPlayer = false; // プレイヤーに対応したモデルかどうか
+	bool m_isPlayer; // プレイヤーに対応したモデルかどうか
+	bool m_isBoss;
 };
 
 #endif

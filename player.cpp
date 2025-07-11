@@ -319,7 +319,7 @@ void CPlayer::Update(void)
 			// インパクトにキャスト
 			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
 
-			// コリジョンした かつ　状態が通常時
+			// コリジョンした かつ 状態が通常時
 			if (pImpact->Collision(&m_pos) == true)
 			{
 				// 現在状態がNORMALなら
@@ -342,6 +342,28 @@ void CPlayer::Update(void)
 
 		// 次のオブジェクトを検出する
 		pObj = pObj->GetNext();
+	}
+
+	//=============================
+	// ボス右手の当たり判定
+	//=============================
+	CBoss* pBoss = CManager::GetBoss();  // マネージャー経由で取得する
+
+	// 当たり判定の距離
+	if (pBoss->CollisionRightHand(&m_pos))
+	{
+		// 状態が通常の時のみ
+		if (m_State == m_pState->STATE_NORMAL)
+		{
+			// ダメージモーション
+			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+
+			// 状態更新
+			m_pState->SetState(CState::STATE_DAMAGE);
+
+			// 体力を減らす
+			m_pParameter->HitDamage(1);
+		}
 	}
 
 	// 現在のy座標が0.0f以下の時

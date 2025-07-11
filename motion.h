@@ -63,6 +63,8 @@ public:
 	void UpdateCurrentMotion(CModel** ppModel, int nModelCount);
 	void UpdateBlend(CModel** ppModel, int nModelCount);
 
+	void Debug(void);
+
 	// セッター
 	void SetMotion(int motiontype);
 	void SetMotionNum(int nMotion) { m_nNumMotion = nMotion; }
@@ -76,6 +78,8 @@ public:
 	// ゲッター
 	int GetMotionType(void) { return m_motiontype; }
 	bool GetFinishMotion(void) { return m_isFinishMotion; }
+
+	bool CheckFrame(int nStartMotion, int nEndMotion, int nMotionType);
 
 private: 
 	std::vector<INFO> m_aMotionInfo; // モーション情報を動的確保
@@ -101,6 +105,8 @@ private:
 //----------------------------------------------------------------------
 
 	int m_nNumModels;
+	int m_nNumAllFrame;   // 全体フレーム数
+	int m_nAllFrameCount;
 	bool m_isStopAction;
 };
 

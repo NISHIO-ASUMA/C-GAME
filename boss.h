@@ -12,11 +12,11 @@
 // インクルードファイル
 //******************************
 #include "object.h"
+#include "model.h"
 
 //**********************
 // 前方宣言
 //**********************
-class CModel;
 class CMotion;
 
 //**********************
@@ -62,11 +62,12 @@ public:
 
 	float GetSize(void) { return m_fSize; }
 
-	bool Collision(D3DXVECTOR3* pPos);
+	bool CollisionRightHand(D3DXVECTOR3* pPos);
+	CModel*GetModelPartType(CModel::PARTTYPE modelpart);
 
 private:
 
-	static constexpr int NUMMODELS = 21;
+	static constexpr int NUMMODELS = 21; // 使うモデル数
 
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_rot;
@@ -75,10 +76,11 @@ private:
 	CModel* m_pModel[NUMMODELS];
 	CMotion* m_pMotion;
 
-	int m_nNumAll;		   // モデル総数
 	int m_type;			   // モーションの種類変数
 	float m_fSize;		   // サイズ
 
+	int m_nCoolTime;	// クールタイム
+	bool m_isAttacked;  // 攻撃しているか
 };
 
 #endif

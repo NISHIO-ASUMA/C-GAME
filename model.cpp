@@ -27,6 +27,8 @@ CModel::CModel()
 	m_offPos = VECTOR3_NULL;
 	m_offRot = VECTOR3_NULL;
 	m_parttype = PARTTYPE_NONE;
+	m_isPlayer  = false;
+	m_isBoss = false;
 }
 //=================================
 // デストラクタ

@@ -13,6 +13,8 @@
 #include "motion.h"
 #include "template.h"
 #include "player.h"
+#include "boss.h"
+#include "debugproc.h"
 
 //**************************
 // 定数宣言
@@ -49,6 +51,9 @@ CMotion::CMotion()
 
 	m_nNumModels = NULL;
 	m_isStopAction = false;
+
+	m_nAllFrameCount = NULL;
+	m_nNumAllFrame = NULL;
 }
 //==============================
 // デストラクタ
@@ -161,6 +166,7 @@ void CMotion::SetMotion(int motiontype)
 	m_motiontype = motiontype;
 	m_nKey = 0;
 	m_nCounterMotion = 0;
+	m_nAllFrameCount = 0;
 	m_isFinishMotion = false;
 }
 //==============================
@@ -184,12 +190,16 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 
 	// フラグを生成
 	bool isPlayer = false;
+	bool isBoss = false;
 
 	// 最大モデル数で回す
 	for (int nCnt = 0; nCnt < nNumModel; nCnt++)
 	{
 		// プレイヤーモデルかどうか判定
 		isPlayer = ppModel[nCnt] && ppModel[nCnt]->IsPlayer();
+
+		// ボスモデルかどうか判定
+		isBoss = ppModel[nCnt] && ppModel[nCnt]->IsBoss();
 
 		// 現在モーションキー計算
 		m_motiontype = Clump(m_motiontype, 0, m_nNumMotion);
@@ -237,6 +247,9 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	{
 		// カウンターを加算
 		m_nCounterMotion++;
+
+		// 全体フレームカウント
+		m_nAllFrameCount++;
 	}
 
 	// プレイヤーのモーションがアクション時 かつ 判別しているモデルがプレイヤーなら
@@ -255,7 +268,14 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		return;
 	}
 
-	// Loop がfalse かつ キー数が超えたら
+	// ボスの時
+	if (isBoss && m_motiontype != CBoss::PATTERN_NONE)
+	{
+		// 終了フラグを立てる
+		m_isFinishMotion = true;
+	}
+
+	// Loopがfalse かつ キー数が超えたら
 	if (!m_aMotionInfo[m_motiontype].bLoop && m_aMotionInfo[m_motiontype].nNumKey - 1 <= m_nKey)
 	{
 		// ニュートラルにする
@@ -267,6 +287,25 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		// モーションカウントを初期化
 		m_nCounterMotion = 0;
 	}
+
+	// フレームカウント計算用
+	int nFrame = 0;
+
+	// キーごとのフレームで回す
+	for (int nCnt = 0; nCnt < m_aMotionInfo[m_motiontype].nNumKey; nCnt++)
+	{
+		// 全体計算用に加算
+		nFrame += m_aMotionInfo[m_motiontype].aKeyInfo[nCnt].nFrame;
+	}
+
+	if (m_nAllFrameCount >= m_nNumAllFrame)
+	{
+		m_nAllFrameCount = 0;
+	}
+
+	// 全体計算
+	m_nNumAllFrame = nFrame;
+
 }
 //======================================
 // 現在のモーションの更新関数
@@ -314,35 +353,6 @@ void CMotion::UpdateCurrentMotion(CModel** ppModel, int nModelCount)
 	Rot.x = NowKey.fRotX + rotMotion.x * fDis;
 	Rot.y = NowKey.fRotY + rotMotion.y * fDis;
 	Rot.z = NowKey.fRotZ + rotMotion.z * fDis;
-
-#if 0
-
-	// 座標の差分を計算する
-	posMotion.x = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fPosX - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosX;
-	posMotion.y = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fPosY - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosY;
-	posMotion.z = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fPosZ - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosZ;
-
-	// 角度の差分を計算
-	rotMotion.x = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fRotX - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotX;
-	rotMotion.y = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fRotY - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotY;
-	rotMotion.z = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fRotZ - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotZ;
-
-	// 求める値を保存する変数を宣言
-	D3DXVECTOR3 Pos, Rot;
-
-	// 補間係数を計算
-	float fDis = (float)m_nCounterMotion / m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame;
-
-	// 座標計算
-	Pos.x = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosX + posMotion.x * fDis);
-	Pos.y = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosY + posMotion.y * fDis);
-	Pos.z = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosZ + posMotion.z * fDis);
-
-	// 角度計算
-	Rot.x = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotX + rotMotion.x * fDis);
-	Rot.y = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotY + rotMotion.y * fDis);
-	Rot.z = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotZ + rotMotion.z * fDis);
-#endif
 
 	// モデルのパーツに設定
 	ppModel[nModelCount]->SetPos(Pos);
@@ -444,6 +454,14 @@ void CMotion::UpdateBlend(CModel** ppModel, int nModelCount)
 	ppModel[nModelCount]->SetPos(D3DXVECTOR3(KeyLastSet.fRotX, KeyLastSet.fRotY, KeyLastSet.fRotZ));
 	ppModel[nModelCount]->SetRot(D3DXVECTOR3(KeyLastSet.fPosX, KeyLastSet.fPosY, KeyLastSet.fPosZ));
 }
+
+void CMotion::Debug(void)
+{
+	CDebugproc::Print("[カウント] %d /  [ 最大 ] %d", m_nAllFrameCount, m_nNumAllFrame);
+
+	CDebugproc::Draw(0, 320);
+}
+
 //======================================
 // モデル数読み込み
 //======================================
@@ -566,13 +584,24 @@ void CMotion::SetParts(std::ifstream& file, CModel** pModel)
 			// インデックスが0以上 かつ モデルがあるなら
 			if (nIdx >= NULL && pModel[nIdx])
 			{
-				if (partTypeStr == "WEAPON") { pModel[nIdx]->SetPartType(CModel::PARTTYPE_WEAPON); }// 武器の部位
-				else { pModel[nIdx]->SetPartType(CModel::PARTTYPE_NONE); }							// 無いときはこれにする
+				if (partTypeStr == "WEAPON") // 武器の部位
+				{ 
+					pModel[nIdx]->SetPartType(CModel::PARTTYPE_WEAPON); 
+				}
+				else if (partTypeStr == "RIGHTHAND") // 右手
+				{
+					pModel[nIdx]->SetPartType(CModel::PARTTYPE_RIGHT_HAND);
+				}
+				else // 無いとき
+				{
+					pModel[nIdx]->SetPartType(CModel::PARTTYPE_NONE); 
+				}
 			}
 		}
 		// "END_PARTSSET"を読み取った
 		else if (cmd == "END_PARTSSET")
 		{
+			// 抜ける
 			break;
 		}
 	}
@@ -756,4 +785,16 @@ void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMoti
 		// キー情報カウントを加算
 		rotKeyIndex++;
 	}
+}
+//======================================
+// モーションフレーム判定
+//======================================
+bool CMotion::CheckFrame(int nStartMotion, int nEndMotion, int nMotionType)
+{
+	// StartとEndの範囲内なら
+	if (m_nAllFrameCount >= nStartMotion && m_nAllFrameCount <= nEndMotion && m_motiontype == nMotionType)
+		return true;
+
+	// それ以外の時
+	return false;
 }
