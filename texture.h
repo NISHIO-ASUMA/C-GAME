@@ -49,6 +49,7 @@ private:
 		"data\\TEXTURE\\bg.jpeg",
 		"data\\TEXTURE\\DomeTex.jpg",
 		"data\\TEXTURE\\shadow000.jpg",
+		"data\\TEXTURE\\lifebar_gage.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[MAX_TEXTURE];	// テクスチャポインタ

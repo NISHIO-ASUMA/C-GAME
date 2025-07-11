@@ -166,6 +166,7 @@
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemymanager.cpp" />
     <ClCompile Include="explosion.cpp" />
+    <ClCompile Include="gage.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemymanager.h" />
     <ClInclude Include="explosion.h" />
+    <ClInclude Include="gage.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="light.h" />
