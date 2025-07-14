@@ -230,7 +230,7 @@ void CBoss::Update(void)
 //====================================
 void CBoss::Draw(void)
 {
-#if 1
+#if 0
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 

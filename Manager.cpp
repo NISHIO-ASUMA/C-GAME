@@ -157,7 +157,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// ブロック配置
 	m_pBlock = m_pBlock->Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);
 
-	CGage::Create(D3DXVECTOR3(100.0f, 100.0f, 0.0f), 300.0f, 100.0f);
+	//CGage::Create(D3DXVECTOR3(100.0f, 100.0f, 0.0f), 300.0f, 100.0f);
 
 	return S_OK;
 }

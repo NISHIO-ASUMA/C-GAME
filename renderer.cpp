@@ -78,7 +78,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_d3dpp.BackBufferCount = 1;								// バックバッファの数
 	m_d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;					// ダブルバッファの切り替え(映像信号に同期)
 	m_d3dpp.EnableAutoDepthStencil = TRUE;						// デプスバッファとステンシルバッファを作成
-	m_d3dpp.AutoDepthStencilFormat = D3DFMT_D16;				// デプスバッファとして16bitを使用
+	m_d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;				// デプスバッファとして16bitを使用
 	m_d3dpp.Windowed = bWindow;									// ウインドウモード
 	m_d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;	// リフレッシュシート
 	m_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;	// インターバル
@@ -139,10 +139,10 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		m_pD3DDevice->CreateTexture(SCREEN_WIDTH, SCREEN_HEIGHT, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_apTextureMT[nTex], NULL);
 	}
 
-	for (int n = 0; n < NUM_FEEDBACKPOLYGON; n++)
+	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
 	{
 		// レンダリング用インターフェース作成 
-		m_apTextureMT[n]->GetSurfaceLevel(0, &m_apRenderMT[n]);
+		m_apTextureMT[nCnt]->GetSurfaceLevel(0, &m_apRenderMT[nCnt]);
 	}
 
 	// Zバッファ生成
@@ -184,7 +184,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_viewportMT.MaxZ = 1.0f;
 
 	// フィードバック用ポリゴン生成
-	m_pD3DDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * 2,
+	m_pD3DDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * NUM_FEEDBACKPOLYGON,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
@@ -341,41 +341,41 @@ void CRenderer::Update(void)
 //===============================
 void CRenderer::Draw(void)
 {
-	// 画面クリア(バックバッファ&Zバッファのクリア)
+	// 画面クリア(バックバッファ&Zバッファ&ステンシルバッファのクリア)
 	m_pD3DDevice->Clear(0,
 		NULL,
-		(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER),
+		(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL),
 		D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
 
-	// 保存用変数宣言
-	LPDIRECT3DSURFACE9 pRenderWk;
-	LPDIRECT3DTEXTURE9 pTextureWk;
+	//// 保存用変数宣言
+	//LPDIRECT3DSURFACE9 pRenderWk;
+	//LPDIRECT3DTEXTURE9 pTextureWk;
 
-	// 変数
-	LPDIRECT3DSURFACE9 pRenderDef, pZBuffDef;
-	D3DVIEWPORT9 viewport;
-	D3DXMATRIX mtxview, mtxprojection;
+	//// 変数
+	//LPDIRECT3DSURFACE9 pRenderDef, pZBuffDef;
+	//D3DVIEWPORT9 viewport;
+	//D3DXMATRIX mtxview, mtxprojection;
 
-	// 取得
-	m_pD3DDevice->GetRenderTarget(0, &pRenderDef);
-	m_pD3DDevice->GetDepthStencilSurface(&pZBuffDef);
-	m_pD3DDevice->GetViewport(&viewport);
-	m_pD3DDevice->GetTransform(D3DTS_VIEW, &mtxview);
-	m_pD3DDevice->GetTransform(D3DTS_PROJECTION, &mtxprojection);
+	//// 取得
+	//m_pD3DDevice->GetRenderTarget(0, &pRenderDef);
+	//m_pD3DDevice->GetDepthStencilSurface(&pZBuffDef);
+	//m_pD3DDevice->GetViewport(&viewport);
+	//m_pD3DDevice->GetTransform(D3DTS_VIEW, &mtxview);
+	//m_pD3DDevice->GetTransform(D3DTS_PROJECTION, &mtxprojection);
 
 	// 描画開始
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
 	{// 描画成功時
 
-		if (m_isbuller)
-		{
-			// ターゲット設定 ( カメラ座標と同じにする )
-			ChangeTarget(D3DXVECTOR3(0.0f, 500.0f, -250.0f), VECTOR3_NULL, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+		//if (m_isbuller)
+		//{
+		//	// ターゲット設定 ( カメラ座標と同じにする )
+		//	ChangeTarget(D3DXVECTOR3(0.0f, 500.0f, -250.0f), VECTOR3_NULL, D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 
-			// 画面クリア関数
-			m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 225), 1.0f, 0);
+		//	// 画面クリア関数
+		//	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 225), 1.0f, 0);
 
-		}
+		//}
 
 		// 全オブジェクト描画
 		CObject::DrawAll();
@@ -386,34 +386,34 @@ void CRenderer::Draw(void)
 		// デバッグフォントの描画
 		m_pDebug->Draw(0,0);
 
-		if (m_isbuller)
-		{
-			// Texture[1]番のポリゴンを描画
-			m_pD3DDevice->SetFVF(FVF_VERTEX_2D);
-			m_pD3DDevice->SetStreamSource(0, m_pVtxMT, 0, sizeof(VERTEX_2D));
-			m_pD3DDevice->SetTexture(0, m_apTextureMT[1]);
-			m_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 4, 2);
+		//if (m_isbuller)
+		//{
+		//	// Texture[1]番のポリゴンを描画
+		//	m_pD3DDevice->SetFVF(FVF_VERTEX_2D);
+		//	m_pD3DDevice->SetStreamSource(0, m_pVtxMT, 0, sizeof(VERTEX_2D));
+		//	m_pD3DDevice->SetTexture(0, m_apTextureMT[1]);
+		//	m_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 4, 2);
 
-			// レンダー設定を戻す
-			m_pD3DDevice->SetRenderTarget(0, pRenderDef);
-			m_pD3DDevice->SetDepthStencilSurface(pZBuffDef);
+		//	// レンダー設定を戻す
+		//	m_pD3DDevice->SetRenderTarget(0, pRenderDef);
+		//	m_pD3DDevice->SetDepthStencilSurface(pZBuffDef);
 
-			// Texture[0]のポリゴン描画
-			m_pD3DDevice->SetFVF(FVF_VERTEX_2D);
-			m_pD3DDevice->SetStreamSource(0, m_pVtxMT, 0, sizeof(VERTEX_2D));
-			m_pD3DDevice->SetTexture(0, m_apTextureMT[0]);
-			m_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+		//	// Texture[0]のポリゴン描画
+		//	m_pD3DDevice->SetFVF(FVF_VERTEX_2D);
+		//	m_pD3DDevice->SetStreamSource(0, m_pVtxMT, 0, sizeof(VERTEX_2D));
+		//	m_pD3DDevice->SetTexture(0, m_apTextureMT[0]);
+		//	m_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
-			// テクスチャをワーカーに保存する
-			pTextureWk = m_apTextureMT[0];
-			m_apTextureMT[0] = m_apTextureMT[1];
-			m_apTextureMT[1] = pTextureWk;
+		//	// テクスチャをワーカーに保存する
+		//	pTextureWk = m_apTextureMT[0];
+		//	m_apTextureMT[0] = m_apTextureMT[1];
+		//	m_apTextureMT[1] = pTextureWk;
 
-			// レンダー設定をワーカーに保存する
-			pRenderWk = m_apRenderMT[0];
-			m_apRenderMT[0] = m_apRenderMT[1];
-			m_apRenderMT[1] = pRenderWk;
-		}
+		//	// レンダー設定をワーカーに保存する
+		//	pRenderWk = m_apRenderMT[0];
+		//	m_apRenderMT[0] = m_apRenderMT[1];
+		//	m_apRenderMT[1] = pRenderWk;
+		// }
 
 		// 描画終了
 		m_pD3DDevice->EndScene();

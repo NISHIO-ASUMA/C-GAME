@@ -23,6 +23,7 @@ class CInputKeyboard;
 class CCamera;
 class CState;
 class CParameter;
+class CShadowS;
 
 //*************************
 // プレイヤークラスを定義
@@ -88,6 +89,7 @@ private:
 	CShadow* m_pShadow;		// 影クラスのポインタ変数
 	CState* m_pState;		// 状態管理クラスのポインタ
 	CParameter* m_pParameter; // パラメータークラスポインタ
+	CShadowS* m_pShadowS;	// ステンシルシャドウクラスポインタ
 
 	int m_type;				// モーションの種類変数
 	int m_nNumAll;		    // モデル総数

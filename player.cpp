@@ -20,6 +20,7 @@
 #include "state.h"
 #include "parameter.h"
 #include "debugproc.h"
+#include "shadowS.h"
 
 //**********************
 // 定数宣言
@@ -58,6 +59,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_pShadow = nullptr;
 	m_pState = nullptr;
 	m_pParameter = nullptr;
+	m_pShadowS = nullptr;
 
 	// フラグメント
 	m_isLanding = false;
@@ -170,8 +172,11 @@ HRESULT CPlayer::Init(void)
 	// 状態管理を生成
 	m_pState = CState::Create();
 
+	// ステンシルシャドウ生成
+	// m_pShadowS = CShadowS::Create("data\\MODEL\\STAGEOBJ\\Shadowmodel.x",m_pos,m_rot);
+
 	// 影の生成
-	m_pShadow = m_pShadow->Create(m_pos, m_rot);
+	// m_pShadow = m_pShadow->Create(m_pos, m_rot);
 
 	return S_OK;
 }
@@ -410,10 +415,25 @@ void CPlayer::Update(void)
 		m_pState->Update();
 
 		// 影の座標を更新
-		m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
+		//m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
 
 		// モーション全体を更新
 		m_pMotion->Update(m_apModel, MAX_MODEL);
+	}
+
+	if (pInput->GetTrigger(DIK_F8) && m_nIdxPlayer == NUMBER_MAIN)
+	{
+		// ステンシルシャドウ生成
+		m_pShadowS = CShadowS::Create("data\\MODEL\\STAGEOBJ\\Shadowmodel.x", CPlayer::GetIdxPlayer(0)->GetPos(), CPlayer::GetIdxPlayer(0)->GetRot());
+	}
+
+	// ステンシルシャドウが存在する場合、プレイヤーに追従させる
+	if (m_pShadowS && m_nIdxPlayer == NUMBER_MAIN)
+	{
+		D3DXVECTOR3 shadowPos = CPlayer::GetIdxPlayer(0)->GetPos();
+		//shadowPos.y = 0.0f;
+		m_pShadowS->SetPos(shadowPos);
+		m_pShadowS->SetRot(CPlayer::GetIdxPlayer(0)->GetRot()); // 回転も必要なら
 	}
 }
 //===============================
@@ -421,6 +441,9 @@ void CPlayer::Update(void)
 //===============================
 void CPlayer::Draw(void)
 {
+	// キーボードの入力取得
+	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -466,6 +489,12 @@ void CPlayer::Draw(void)
 	CDebugproc::Print("プレイヤーの体力 { %d } ", m_pParameter->GetHp());
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 340);
+
+	if (pInput->GetPress(DIK_F9) && m_nIdxPlayer == NUMBER_MAIN)
+	{
+		CDebugproc::Print("ステンシル影 { %.2f,%.2f,%.2f }", m_pShadowS->GetPos().x, m_pShadowS->GetPos().y, m_pShadowS->GetPos().z);
+		CDebugproc::Draw(0, 360);
+	}
 }
 //=========================================
 // 識別番号ごとのプレイヤーの取得
