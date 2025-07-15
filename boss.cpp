@@ -18,6 +18,7 @@
 // 定数宣言
 //****************************
 constexpr float HITRANGE = 12.0f; // コリジョンサイズ
+constexpr int COOLTIME = 60;	  // 初期クールタイム
 
 //====================================
 // オーバーロードコンストラクタ
@@ -104,12 +105,13 @@ HRESULT CBoss::Init(void)
 	SetObjType(TYPE_BOSS);
 
 	// タイプ代入
-	m_type = TYPE_MAX;
+	m_type = CBoss::TYPE_MAX;
 
-	m_nCoolTime = 120;
+	// クールタイムを設定
+	m_nCoolTime = COOLTIME;
 
 	// モーションの読み込み
-	m_pMotion = CMotion::Load("data\\Boss\\Bossmotion.txt", NUMMODELS, m_pModel,TYPE_MAX);
+	m_pMotion = CMotion::Load("data\\Boss\\Bossmotion.txt", NUMMODELS, m_pModel, CBoss::TYPE_MAX);
 
 	// モーション数を設定
 	m_pMotion->SetMotionNum(m_type);
@@ -230,7 +232,7 @@ void CBoss::Update(void)
 //====================================
 void CBoss::Draw(void)
 {
-#if 0
+#if 1
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -268,6 +270,7 @@ void CBoss::Draw(void)
 	CDebugproc::Print("ボス右手座標 { %.2f,%.2f,%.2f }", GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._41, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._42, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._43);
 	CDebugproc::Draw(0, 300);
 
+	// デバッグフォント
 	m_pMotion->Debug();
 }
 //====================================

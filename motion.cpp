@@ -658,7 +658,7 @@ void CMotion::SetPartsMotion(std::ifstream& file, CMotion* pMotion, int nCntMoti
 			// nNumKeyを代入
 			pMotion->m_aMotionInfo[nCntMotion].nNumKey = numKeys;
 
-			// ↑上の処理でそのモーションのキー全体が上の処理でわかるのでその分のサイズを設定したい
+			// 上の処理でそのモーションのキー全体が上の処理でわかるのでその分のサイズを設定
 			pMotion->m_aMotionInfo[nCntMotion].aKeyInfo.resize(numKeys);
 
 			//	キー数の上限に達するまで

@@ -19,6 +19,7 @@
 #include "player.h"
 #include "meshimpact.h"
 #include "gage.h"
+#include "ui.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -137,7 +138,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
 	// シリンダー生成
-	m_pMeshCylinder = m_pMeshCylinder->Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
+	m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
 
 	// ドーム生成
 	CMeshDome::Create(D3DXVECTOR3(0.0f,-70.0f,0.0f), 800.0f);
@@ -146,7 +147,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
 
 	// ボス生成
-	m_pBoss = m_pBoss->Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f),60.0f);
+	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f),60.0f);
 
 	// プレイヤー生成
 	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
@@ -155,7 +156,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
 
 	// ブロック配置
-	m_pBlock = m_pBlock->Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);
+	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);
+
+	//  CUi::Create(VECTOR3_NULL, 0, 640.0f, 400.0f);
 
 	//CGage::Create(D3DXVECTOR3(100.0f, 100.0f, 0.0f), 300.0f, 100.0f);
 

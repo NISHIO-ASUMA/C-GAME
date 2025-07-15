@@ -34,9 +34,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 	// マネージャーのインスタンスを生成
 	CManager* pManager = NULL;
 
-	// メモリ確保
-	pManager = new CManager;
-
 	// FPSカウント
 	int nCountFPS = 0;
 
@@ -84,6 +81,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 		NULL,
 		hInstance,						// インスタンスハンドル
 		NULL);							// ウインドウ作成データ
+
+	// メモリ確保
+	pManager = new CManager;
 
 	// マネージャーの初期化処理
 	pManager->Init(hInstance, hWnd, TRUE);

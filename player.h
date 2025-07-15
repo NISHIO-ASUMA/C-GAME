@@ -75,6 +75,7 @@ private:
 	void UpdateNeutralAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
 	void UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard);   // 移動更新関数
 	void UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove);
+	void Collision(void);
 
 	D3DXVECTOR3 m_move;		// 移動量
 	D3DXVECTOR3 m_rotDest;  // 目的角

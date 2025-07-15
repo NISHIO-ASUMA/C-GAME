@@ -319,67 +319,8 @@ void CPlayer::Update(void)
 	// 現在の状態をセットする
 	m_pState->SetState(m_State);
 
-	//=============================
-	// インパクトとの当たり判定
-	//=============================
-	// オブジェクト取得
-	CObject* pObj = CObject::GetTop(static_cast<int>(CObject::PRIORITY::IMPACT));
-
-	// nullptrじゃないとき
-	while (pObj != nullptr)
-	{
-		// メッシュタイプを取得
-		if (pObj->GetObjType() == CObject::TYPE_MESH)
-		{
-			// インパクトにキャスト
-			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
-
-			// コリジョンした かつ 状態が通常時
-			if (pImpact->Collision(&m_pos) == true)
-			{
-				// 現在状態がNORMALなら
-				if (m_State == m_pState->STATE_NORMAL)
-				{
-					// 当たったらダメージモーションに切り替え
-					m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
-
-					// 状態更新
-					m_pState->SetState(CState::STATE_DAMAGE);
-
-					// ダメージ処理
-					m_pParameter->HitDamage(1);
-
-					// 一回当たったら抜ける
-					break;
-				}
-			}
-		}
-
-		// 次のオブジェクトを検出する
-		pObj = pObj->GetNext();
-	}
-
-	//=============================
-	// ボス右手の当たり判定
-	//=============================
-	CBoss* pBoss = CManager::GetBoss();  // マネージャー経由でボスを取得する
-
-	// 当たり判定の距離
-	if (pBoss->CollisionRightHand(&m_pos))
-	{
-		// 状態が通常の時のみ
-		if (m_State == m_pState->STATE_NORMAL)
-		{
-			// ダメージモーション
-			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
-
-			// 状態更新
-			m_pState->SetState(CState::STATE_DAMAGE);
-
-			// 体力を減らす
-			m_pParameter->HitDamage(1);
-		}
-	}
+	// 当たり判定処理関数
+	Collision();
 
 	// 現在のy座標が0.0f以下の時
 	if (m_pos.y <= 0.0f)
@@ -425,11 +366,13 @@ void CPlayer::Update(void)
 		m_isShadow = true;
 	}
 
-	// ステンシルシャドウが存在する場合、プレイヤーに追従させる
+	// ステンシルシャドウが存在 かつ MAINプレイヤー
 	if (m_pShadowS && m_nIdxPlayer == NUMBER_MAIN)
 	{
+		// 影座標をMAINプレイヤー座標に設定
 		D3DXVECTOR3 shadowPos = CPlayer::GetIdxPlayer(0)->GetPos();
 
+		// オブジェクト設定
 		m_pShadowS->SetPos(shadowPos);
 		m_pShadowS->SetRot(CPlayer::GetIdxPlayer(0)->GetRot()); 
 	}
@@ -779,6 +722,73 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 
 			// ジャンプ可能状態に変更
 			m_isJump = false;
+		}
+	}
+}
+//=============================
+// コリジョン処理関数
+//=============================
+void CPlayer::Collision(void)
+{
+	//=============================
+	// インパクトとの当たり判定
+	//=============================
+	// オブジェクト取得
+	CObject* pObj = CObject::GetTop(static_cast<int>(CObject::PRIORITY::IMPACT));
+
+	// nullptrじゃないとき
+	while (pObj != nullptr)
+	{
+		// メッシュタイプを取得
+		if (pObj->GetObjType() == CObject::TYPE_MESH)
+		{
+			// インパクトにキャスト
+			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
+
+			// コリジョンした時
+			if (pImpact->Collision(&m_pos) == true)
+			{
+				// 現在状態がNORMALなら
+				if (m_State == m_pState->STATE_NORMAL)
+				{
+					// 当たったらダメージモーションに切り替え
+					m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+
+					// 状態更新
+					m_pState->SetState(CState::STATE_DAMAGE);
+
+					// ダメージ処理
+					m_pParameter->HitDamage(1);
+
+					// 一回当たったら抜ける
+					break;
+				}
+			}
+		}
+
+		// 次のオブジェクトを検出する
+		pObj = pObj->GetNext();
+	}
+
+	//=============================
+	// ボス右手の当たり判定
+	//=============================
+	CBoss* pBoss = CManager::GetBoss();  // マネージャー経由でボスを取得する
+
+	// 当たり判定の距離
+	if (pBoss->CollisionRightHand(&m_pos))
+	{
+		// 状態が通常の時のみ
+		if (m_State == m_pState->STATE_NORMAL)
+		{
+			// ダメージモーション
+			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+
+			// 状態更新
+			m_pState->SetState(CState::STATE_DAMAGE);
+
+			// 体力を減らす
+			m_pParameter->HitDamage(1);
 		}
 	}
 }

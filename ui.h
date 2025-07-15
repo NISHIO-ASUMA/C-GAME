@@ -18,6 +18,17 @@
 class CUi : public CObject2D
 {
 public:
+
+	//**********************************************
+	// UIの種類定義  ( TODO : 後ほど列挙名の変更 )
+	//***********************************************
+	enum SCENETYPE
+	{
+		SCENETYPE_NONE,
+		SCENETYPE_GAME,
+		SCENETYPE_MAX
+	};
+
 	CUi(int nPriority = static_cast<int>(CObject::PRIORITY::UI));
 	~CUi();
 
@@ -26,17 +37,22 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CUi* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType);
+	static CUi* Create(D3DXVECTOR3 pos, int nType, float fWidth, float fHeight);
 
-	void SetTexture(void);
-	void SetBasePos(D3DXVECTOR3 pos) { m_BasePos = pos; }
+	void SetTexture(int nType);
 
 private:
-	D3DXVECTOR3 m_BasePos;    // 解像度に依存しない基準座標
-	float m_BaseWidth;  // 基準サイズの横幅
-	float m_BaseHeight; // 基準サイズの高さ
-	bool m_bUseBasePos; // 基準座標設定
+	int m_nTexIdxType;		// テクスチャインデックス
 
+	//****************
+	// UI構造体定義  
+	//****************
+	struct UI
+	{
+
+	};
+
+	UI* m_pUi; // 構造体変数
 };
 
 #endif
