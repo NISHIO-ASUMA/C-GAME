@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "explosion.h"
-#include "Manager.h"
+#include "manager.h"
 
 //***********************************
 // マクロ定義

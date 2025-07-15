@@ -10,7 +10,7 @@
 //**********************
 #include "object2D.h"
 #include "renderer.h"
-#include "Manager.h"
+#include "manager.h"
 #include "player.h"
 #include "enemy.h"
 

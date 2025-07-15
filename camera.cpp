@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "camera.h"
-#include "Manager.h"
+#include "manager.h"
 #include "input.h"
 #include "player.h"
 #include "debugproc.h"

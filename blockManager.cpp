@@ -9,7 +9,7 @@
 // インクルードファイル宣言
 //*******************************
 #include "blockManager.h"
-#include "Manager.h"
+#include "manager.h"
 #include "json.hpp"
 
 //*******************************

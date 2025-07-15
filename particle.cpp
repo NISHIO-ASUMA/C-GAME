@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "particle.h"
-#include "Manager.h"
+#include "manager.h"
 #include "effect.h"
 
 //===============================

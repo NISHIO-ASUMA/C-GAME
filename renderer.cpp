@@ -11,7 +11,7 @@
 #include "renderer.h"
 #include "object.h"
 #include "object2D.h"
-#include "Manager.h"
+#include "manager.h"
 #include "input.h"
 
 //******************************************

@@ -9,8 +9,9 @@
 // インクルードファイル
 //**********************
 #include "object.h"
-#include "Manager.h"
+#include "manager.h"
 #include "debugproc.h"
+#include "shadowS.h"
 
 //**********************
 // 静的メンバ変数宣言

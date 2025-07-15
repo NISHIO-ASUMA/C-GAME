@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "score.h"
-#include "Manager.h"
+#include "manager.h"
 
 //**************************
 // 定数宣言

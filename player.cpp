@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "player.h"
-#include "Manager.h"
+#include "manager.h"
 #include "texture.h"
 #include "boss.h"
 #include "particle.h"
@@ -66,6 +66,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_isJump = false;
 	m_isAttack = false;
 	m_isMoving = false;
+	m_isShadow = false;
 }
 //===============================
 // デストラクタ
@@ -100,6 +101,7 @@ CPlayer* CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,int nLife,const int nI
 		// nullチェック
 		if (pPlayer->m_pParameter != nullptr)
 		{
+			// 体力パラメーターを設定
 			pPlayer->m_pParameter->SetHp(nLife);
 		}
 	}
@@ -111,7 +113,8 @@ CPlayer* CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,int nLife,const int nI
 		// nullptrチェック
 		if (pMain != nullptr)
 		{
-			pPlayer->m_pParameter = pMain->m_pParameter;  // ポインタを共有
+			// ポインタを共有
+			pPlayer->m_pParameter = pMain->m_pParameter; 
 		}
 	}
 
@@ -171,12 +174,6 @@ HRESULT CPlayer::Init(void)
 
 	// 状態管理を生成
 	m_pState = CState::Create();
-
-	// ステンシルシャドウ生成
-	// m_pShadowS = CShadowS::Create("data\\MODEL\\STAGEOBJ\\Shadowmodel.x",m_pos,m_rot);
-
-	// 影の生成
-	// m_pShadow = m_pShadow->Create(m_pos, m_rot);
 
 	return S_OK;
 }
@@ -414,26 +411,27 @@ void CPlayer::Update(void)
 		// 状態管理を更新
 		m_pState->Update();
 
-		// 影の座標を更新
-		//m_pShadow->UpdatePos(D3DXVECTOR3(m_pos.x, 2.0f, m_pos.z));
-
 		// モーション全体を更新
 		m_pMotion->Update(m_apModel, MAX_MODEL);
 	}
 
-	if (pInput->GetTrigger(DIK_F8) && m_nIdxPlayer == NUMBER_MAIN)
+	// 一人目 かつ フラグが未使用判定なら
+	if (m_nIdxPlayer == NUMBER_MAIN && m_isShadow == false)
 	{
 		// ステンシルシャドウ生成
 		m_pShadowS = CShadowS::Create("data\\MODEL\\STAGEOBJ\\Shadowmodel.x", CPlayer::GetIdxPlayer(0)->GetPos(), CPlayer::GetIdxPlayer(0)->GetRot());
+		
+		// フラグを有効化
+		m_isShadow = true;
 	}
 
 	// ステンシルシャドウが存在する場合、プレイヤーに追従させる
 	if (m_pShadowS && m_nIdxPlayer == NUMBER_MAIN)
 	{
 		D3DXVECTOR3 shadowPos = CPlayer::GetIdxPlayer(0)->GetPos();
-		//shadowPos.y = 0.0f;
+
 		m_pShadowS->SetPos(shadowPos);
-		m_pShadowS->SetRot(CPlayer::GetIdxPlayer(0)->GetRot()); // 回転も必要なら
+		m_pShadowS->SetRot(CPlayer::GetIdxPlayer(0)->GetRot()); 
 	}
 }
 //===============================

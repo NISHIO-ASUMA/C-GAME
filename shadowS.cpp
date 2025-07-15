@@ -168,7 +168,7 @@ void CShadowS::Draw(void)
 
 	// ポリゴンの描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-
+	
 //*******************************************************
 
 	// ステンシルテストを無効化にする

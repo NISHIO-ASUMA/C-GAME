@@ -11,7 +11,7 @@
 #include "debugproc.h"
 #include <time.h>
 #include <stdio.h>
-#include "Manager.h"
+#include "manager.h"
 
 //***********************************
 // Ã“Iƒƒ“ƒo•Ï”

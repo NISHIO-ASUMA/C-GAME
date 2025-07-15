@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "shadow.h"
-#include "Manager.h"
+#include "manager.h"
 
 //**********************
 // マクロ定義

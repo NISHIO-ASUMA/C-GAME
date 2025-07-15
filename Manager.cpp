@@ -1,6 +1,6 @@
 //====================================
 //
-// マネージャー処理 [ Manager.cpp ]
+// マネージャー処理 [ manager.cpp ]
 // Author: Asuma Nishio
 //
 //=====================================
@@ -8,7 +8,7 @@
 //**************************
 // インクルードファイル宣言
 //**************************
-#include "Manager.h"
+#include "manager.h"
 #include "score.h"
 #include "time.h"
 #include "objectX.h"

@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "bg.h"
-#include "Manager.h"
+#include "manager.h"
 #include "object.h"
 
 //===============================

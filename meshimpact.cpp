@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "meshimpact.h"
-#include "Manager.h"
+#include "manager.h"
 #include "debugproc.h"
 #include "player.h"
 #include "effect.h"

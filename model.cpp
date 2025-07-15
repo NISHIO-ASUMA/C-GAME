@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "model.h"
-#include "Manager.h"
+#include "manager.h"
 #include "texture.h"
 
 //=================================

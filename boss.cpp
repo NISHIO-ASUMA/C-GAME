@@ -11,7 +11,7 @@
 #include "boss.h"
 #include "motion.h"
 #include "debugproc.h"
-#include "Manager.h"
+#include "manager.h"
 #include <ctime>
 
 //****************************

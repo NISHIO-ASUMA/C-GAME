@@ -10,7 +10,7 @@
 //**********************
 #include "gage.h"
 #include "texture.h"
-#include "Manager.h"
+#include "manager.h"
 
 //===============================
 // オーバーロードコンストラクタ

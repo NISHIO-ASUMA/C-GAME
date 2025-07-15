@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "objectX.h"
-#include "Manager.h"
+#include "manager.h"
 
 //=============================
 // コンストラクタ

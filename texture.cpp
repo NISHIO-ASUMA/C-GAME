@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "texture.h"
-#include "Manager.h"
+#include "manager.h"
 
 //**********************
 // 静的メンバ変数

@@ -170,7 +170,7 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="manager.cpp" />
     <ClCompile Include="meshcylinder.cpp" />
     <ClCompile Include="meshdome.cpp" />
     <ClCompile Include="meshfield.cpp" />
@@ -198,6 +198,7 @@
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="ui.cpp" />
+    <ClCompile Include="uimanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bg.h" />
@@ -219,7 +220,7 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="Manager.h" />
+    <ClInclude Include="manager.h" />
     <ClInclude Include="meshcylinder.h" />
     <ClInclude Include="meshdome.h" />
     <ClInclude Include="meshfield.h" />
@@ -245,6 +246,7 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="ui.h" />
+    <ClInclude Include="uimanager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

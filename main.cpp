@@ -13,7 +13,7 @@
 #include <crtdbg.h>
 #include "main.h"
 #include "renderer.h"
-#include "Manager.h"
+#include "manager.h"
 #include "debugproc.h"
 
 //******************************

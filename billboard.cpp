@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "billboard.h"
-#include "Manager.h"
+#include "manager.h"
 
 //================================
 // コンストラクタ

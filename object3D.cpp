@@ -10,7 +10,7 @@
 //**********************
 #include "object3D.h"
 #include "texture.h"
-#include "Manager.h"
+#include "manager.h"
 
 //===============================
 // コンストラクタ

@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "enemy.h"
-#include "Manager.h"
+#include "manager.h"
 #include "debugproc.h"
 #include "bullet.h"
 #include "particle.h"

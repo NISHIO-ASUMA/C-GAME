@@ -11,7 +11,7 @@
 #include "enemymanager.h"
 #include "input.h"
 #include "debugproc.h"
-#include "Manager.h"
+#include "manager.h"
 #include "player.h"
 
 //**************************************

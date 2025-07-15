@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "meshcylinder.h"
-#include "Manager.h"
+#include "manager.h"
 #include "texture.h"
 #include "debugproc.h"
 
