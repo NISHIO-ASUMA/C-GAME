@@ -9,6 +9,11 @@
 #define _UIEDIT_H_ // 2重インクルード防止のマクロ定義
 
 //******************************
+// インクルードファイル宣言
+//******************************
+#include <vector>
+
+//******************************
 // 前方宣言
 //******************************
 class CUi;
@@ -27,18 +32,27 @@ public:
 	void Update(void);
 	void Draw(void);
 
-private:
+	void AddUi(D3DXVECTOR3 pos, int type, float width, float height);
+	void SaveFile(const char* filename);
+	void ReloadFile(const char* filename);
+
 	//**********************
 	// 構造体定義
 	//**********************
 	struct EditInfo
 	{
-
+		D3DXVECTOR3 pos;// 座標
+		float fWidth;   // 横幅
+		float fHeight;	// 高さ
+		int nType;		// 種類
+		CUi* pUi; // UIポインタ
 	};
 
-	int m_nIdxCount;	// 配列インデックス番号
+	// ゲッター
+	std::vector<EditInfo>& GetEditInfoList() { return m_pUi; }
 
-	CUi* m_pUi;	// UIクラスのポインタ
+private:
+	std::vector<EditInfo> m_pUi; // ui動的配列
 };
 
 #endif
