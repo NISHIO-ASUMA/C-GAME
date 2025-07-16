@@ -24,6 +24,8 @@ class CCamera;
 class CState;
 class CParameter;
 class CShadowS;
+class CPlayerStateBase;
+class CStateMachine;
 
 //*************************
 // プレイヤークラスを定義
@@ -62,6 +64,7 @@ public:
 	D3DXVECTOR3 GetRotDest(void) { return m_rotDest; } // 目的角を取得
 
 	void SetRotDest(D3DXVECTOR3 rotDest) { m_rotDest = rotDest; }
+	bool IsJumping() const { return m_isJump; } 	// ジャンプ状態の確認
 
 	static CPlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
@@ -69,13 +72,24 @@ public:
 	CModel* GetModelPartType(CModel::PARTTYPE modelpart);
 	int GetType(void) { return m_type; }
 
+	void ChangeState(CPlayerStateBase* pNewState); // ステート変更
+	CStateMachine* GetStateMachine(){return m_pStateMachine;}	// プレイヤーのステートマシンを取得
+
+	CMotion* GetMotion(void) { return m_pMotion; }
+
+	void UpdateNeutralAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
+	void UpdateMove(const D3DXVECTOR3 DestPos, CInputKeyboard* pInputKeyboard);   // 移動更新関数
+	void UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove);
+	void Collision(void);
+	void AddMove(void) { m_pos += m_move; }
+
+	// 攻撃フラグ
+	void SetAttack(bool isAttack) { m_isAttack = isAttack; }
+	bool GetAttack() const { return m_isAttack; }
+
 	static inline constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 
 private:
-	void UpdateNeutralAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
-	void UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard);   // 移動更新関数
-	void UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove);
-	void Collision(void);
 
 	D3DXVECTOR3 m_move;		// 移動量
 	D3DXVECTOR3 m_rotDest;  // 目的角
@@ -108,7 +122,7 @@ private:
 
 	const char* m_pFilename; // 読み込むファイル名
 
-	CStateMachine* m_pStateMachine;
+	CStateMachine* m_pStateMachine;	// ステート基底クラスのポインタ
 
 };
 

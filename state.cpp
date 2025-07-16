@@ -179,6 +179,11 @@ void CStateMachine::Update(void)
 //==================================
 void CStateMachine::ChangeState(CStateBase* pNewState)
 {
+	if (m_pNowState == pNewState)
+	{
+		return;
+	}
+
 	// すでにステートがセットされてたら終了する
 	if (m_pNowState != nullptr)
 	{
@@ -191,5 +196,17 @@ void CStateMachine::ChangeState(CStateBase* pNewState)
 
 	// 新しいステートを開始する
 	m_pNowState->OnStart();
+}
+//==================================
+// ステート終了処理
+//==================================
+void CStateMachine::OnExit()
+{
+	// すでにステートがセットされてたら終了する
+	if (m_pNowState != nullptr)
+	{
+		delete m_pNowState;
+		m_pNowState = nullptr;
+	}
 }
 

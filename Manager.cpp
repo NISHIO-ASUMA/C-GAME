@@ -21,6 +21,7 @@
 #include "gage.h"
 #include "ui.h"
 #include "title.h"
+#include "game.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -130,31 +131,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pTexture->Load();
 
 	// シーンセット
-	SetScene(new CTitle());
-
-	//// スコアの生成
-	//CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
-
-	//// シリンダー生成
-	//m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
-
-	//// ドーム生成
-	//CMeshDome::Create(D3DXVECTOR3(0.0f,-70.0f,0.0f), 800.0f);
-
-	//// フィールド生成
-	//CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
-
-	//// ボス生成
-	//m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f),60.0f);
-
-	//// プレイヤー生成
-	//CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
-
-	//// プレイヤー生成
-	//CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
-
-	//// ブロック配置
-	//m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);
+	SetScene(new CGame());
 
 	return S_OK;
 }
@@ -258,7 +235,7 @@ void CManager::Uninit(void)
 	}
 
 	// nullptrじゃない
-	if (m_pScene)
+	if (m_pScene != nullptr)
 	{
 		// 終了処理
 		m_pScene->Uninit();
@@ -330,6 +307,11 @@ void CManager::Draw(void)
 //===========================
 void CManager::SetScene(CScene * pNewscene)
 {// TODO : ここにフェード処理が入るかも
+
+	if (m_pScene == pNewscene)
+	{
+		return;
+	}
 
 	// nullじゃない
 	if (m_pSound)

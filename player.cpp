@@ -22,6 +22,8 @@
 #include "debugproc.h"
 #include "shadowS.h"
 #include "game.h"
+#include "playerstate.h"
+#include "state.h"
 
 //**********************
 // 定数宣言
@@ -58,9 +60,9 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	// クラスポインタ
 	m_pMotion = nullptr;
 	m_pShadow = nullptr;
-	m_pState = nullptr;
 	m_pParameter = nullptr;
 	m_pShadowS = nullptr;
+	m_pStateMachine = nullptr;
 
 	// フラグメント
 	m_isLanding = false;
@@ -173,9 +175,13 @@ HRESULT CPlayer::Init(void)
 		}
 	}
 
-	// 状態管理を生成
-	m_pState = CState::Create();
+	// ステートマシンを生成
+	m_pStateMachine = new CStateMachine;	
 
+	// 初期状態をセット
+	ChangeState(new CPlayerStateNeutral); 
+
+	// 結果を返す
 	return S_OK;
 }
 //===============================
@@ -230,6 +236,19 @@ void CPlayer::Uninit(void)
 		m_pParameter = nullptr;
 	}
 
+	// nullptrチェック
+	if (m_pStateMachine != nullptr)
+	{
+		// 終了処理
+		m_pStateMachine->OnExit();
+
+		// ポインタの破棄
+		delete m_pStateMachine;
+
+		// nullptrにする
+		m_pStateMachine = nullptr;
+	}
+
 	// オブジェクト自身の破棄
 	CObject::Release();
 }
@@ -240,40 +259,6 @@ void CPlayer::Update(void)
 {
 	// 標準角度
 	static float fAngle = NULL;
-
-	// キーボードの入力取得
-	CInputKeyboard* pInput = CManager::GetInputKeyboard();
-
-	// シリンダー座標取得
-	D3DXVECTOR3 MeshPos = CGame::GetCylinder()->GetPos();
-
-	// ボス座標の取得
-	D3DXVECTOR3 BossPos = CGame::GetBoss()->GetPos();
-
-	// ボスの位置に対してプレイヤー座標からベクトルを取る
-	D3DXVECTOR3 VecBoss = BossPos - m_pos;
-
-	// 水平方向に合わせる
-	VecBoss.y = 0.0f;
-
-	// ベクトルの正規化
-	D3DXVec3Normalize(&VecBoss, &VecBoss);
-
-	// 正規化された値を弾の移動量に設定する
-	D3DXVECTOR3 BulletMove = VecBoss;
-
-	// プレイヤーの腕のワールドマトリックスを取得する
-	D3DXMATRIX mtxWorld = {};
-
-	// プレイヤー右腕モデルの取得
-	CModel* pModelWepon = CPlayer::GetModelPartType(CModel::PARTTYPE_WEAPON);
-
-	// nullじゃないなら
-	if (pModelWepon != nullptr)
-	{
-		// ワールドマトリックスをセット
-		mtxWorld = pModelWepon->GetMtxWorld();
-	}
 
 	// 現在体力の取得
 	int nLife = m_pParameter->GetHp();
@@ -298,27 +283,12 @@ void CPlayer::Update(void)
 		}
 	}
 
-	// 攻撃状態じゃない かつ 現在モーションがジャンプ攻撃じゃない時
-	if (!m_isAttack && m_pMotion->GetMotionType() != PLAYERMOTION_JUMPATTACK)
+	// nullptrじゃないとき
+	if (m_pStateMachine != nullptr)
 	{
-		// 移動更新関数
-		UpdateMove(MeshPos,pInput);
+		// ステート更新
+		m_pStateMachine->Update();
 	}
-
-	// 攻撃処理
-	UpdateNeutralAction(pInput,mtxWorld, BulletMove);
-	
-	// ジャンプ処理
-	UpdateJumpAction(pInput, mtxWorld, BulletMove);
-
-	// 移動加算処理
-	m_pos += m_move;
-
-	// 現在の状態を取得
-	m_State = m_pState->GetState();
-
-	// 現在の状態をセットする
-	m_pState->SetState(m_State);
 
 	// 当たり判定処理関数
 	Collision();
@@ -350,9 +320,6 @@ void CPlayer::Update(void)
 	}
 	else
 	{
-		// 状態管理を更新
-		m_pState->Update();
-
 		// モーション全体を更新
 		m_pMotion->Update(m_apModel, MAX_MODEL);
 	}
@@ -371,11 +338,11 @@ void CPlayer::Update(void)
 	if (m_pShadowS && m_nIdxPlayer == NUMBER_MAIN)
 	{
 		// 影座標をMAINプレイヤー座標に設定
-		D3DXVECTOR3 shadowPos = CPlayer::GetIdxPlayer(0)->GetPos();
+		D3DXVECTOR3 shadowPos = GetIdxPlayer(0)->GetPos();
 
 		// オブジェクト設定
 		m_pShadowS->SetPos(shadowPos);
-		m_pShadowS->SetRot(CPlayer::GetIdxPlayer(0)->GetRot()); 
+		m_pShadowS->SetRot(GetIdxPlayer(0)->GetRot()); 
 	}
 }
 //===============================
@@ -489,6 +456,19 @@ CModel* CPlayer::GetModelPartType(CModel::PARTTYPE modelpart)
 	// 該当なし
 	return nullptr;
 }
+
+//=========================================
+// ステート変更
+//=========================================
+void CPlayer::ChangeState(CPlayerStateBase* pNewState)
+{
+	// 自分自身を代入
+	pNewState->SetOwner(this);
+
+	// ステート変更
+	m_pStateMachine->ChangeState(pNewState);
+}
+
 //=========================================
 // 識別番号ごとの攻撃更新処理
 //=========================================

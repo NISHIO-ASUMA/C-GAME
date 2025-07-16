@@ -17,6 +17,7 @@
 #include "player.h"
 #include "meshimpact.h"
 #include "debugproc.h"
+#include "title.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -65,8 +66,8 @@ HRESULT CGame::Init(void)
 	// プレイヤー生成
 	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
 
-	// ブロック配置
-	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
+	//// ブロック配置
+	//m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
 
     return S_OK;
 }
@@ -75,7 +76,9 @@ HRESULT CGame::Init(void)
 //==================================
 void CGame::Uninit(void)
 {
-	// 破棄
+	m_pBlock = nullptr;
+	m_pBoss = nullptr;
+	m_pMeshCylinder = nullptr;
 }
 //==================================
 // 更新処理
@@ -90,6 +93,13 @@ void CGame::Update(void)
 		// 衝撃波を生成
 		CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
 	}
+
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
+	{
+		// 画面遷移
+		CManager::SetScene(new CTitle());
+	}
+
 }
 //==================================
 // 描画処理

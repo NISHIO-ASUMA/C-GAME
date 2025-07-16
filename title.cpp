@@ -28,7 +28,7 @@ HRESULT CTitle::Init(void)
 
 void CTitle::Uninit(void)
 {
-
+	
 }
 
 void CTitle::Update(void)

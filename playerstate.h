@@ -12,14 +12,10 @@
 // インクルードファイル宣言
 //**************************
 #include "state.h"
-
-//**************************
-// 前方宣言
-//**************************
-class CPlayer;
+#include "player.h"
 
 //*********************************
-// プレイヤーの状態管理
+// プレイヤーのベース状態管理
 //*********************************
 class CPlayerStateBase : public CStateBase
 {
@@ -40,6 +36,45 @@ public:
 
 protected:
 	CPlayer* m_pPlayer;		// プレイヤーのポインタ
+};
+
+//*********************************
+// 待機状態時の状態管理
+//*********************************
+class CPlayerStateNeutral : public CPlayerStateBase
+{
+public:
+	CPlayerStateNeutral();
+	~CPlayerStateNeutral();
+
+	// ステートが始まるときに一度だけ呼ばれる関数
+	void OnStart();
+
+	// ステートが更新されるときに呼ばれる関数
+	void OnUpdate();
+
+	// ステートが終了する時に一度だけ呼ばれる関数
+	void OnExit();
+
+};
+
+//*********************************
+// 待機状態時の状態管理
+//*********************************
+class CPlayerStateAction : public CPlayerStateBase
+{
+public:
+	CPlayerStateAction();
+	~CPlayerStateAction();
+
+	// ステートが始まるときに一度だけ呼ばれる関数
+	void OnStart();
+
+	// ステートが更新されるときに呼ばれる関数
+	void OnUpdate();
+
+	// ステートが終了する時に一度だけ呼ばれる関数
+	void OnExit();
 };
 
 #endif
