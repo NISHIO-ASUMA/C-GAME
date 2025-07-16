@@ -59,7 +59,26 @@ public:
 };
 
 //*********************************
-// 待機状態時の状態管理
+// 移動時の状態管理
+//*********************************
+class CPlayerStateMove : public CPlayerStateBase
+{
+public:
+	CPlayerStateMove();
+	~CPlayerStateMove();
+
+	// ステートが始まるときに一度だけ呼ばれる関数
+	void OnStart();
+
+	// ステートが更新されるときに呼ばれる関数
+	void OnUpdate();
+
+	// ステートが終了する時に一度だけ呼ばれる関数
+	void OnExit();
+};
+
+//*********************************
+// 攻撃時の状態管理
 //*********************************
 class CPlayerStateAction : public CPlayerStateBase
 {

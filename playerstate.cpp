@@ -85,11 +85,11 @@ void CPlayerStateNeutral::OnUpdate()
 	// nullじゃなかったら
 	if (pModelWepon != nullptr) mtxWorld = pModelWepon->GetMtxWorld();
 
-	// Enterキーで攻撃ステートへ遷移
+	// キー入力時
 	if (pInput->GetPress(DIK_RETURN))
 	{
-		// ステートをアクション状態に変更する
-		m_pPlayer->ChangeState(new CPlayerStateAction());
+		// ステート変更
+		m_pPlayer->ChangeState(new CPlayerStateAction);
 
 		// ここで処理を返す
 		return;
@@ -106,7 +106,6 @@ void CPlayerStateNeutral::OnUpdate()
 //==================================
 void CPlayerStateNeutral::OnExit()
 {
-	// 無し
 }
 
 
@@ -129,7 +128,8 @@ CPlayerStateAction::~CPlayerStateAction()
 //==================================
 void CPlayerStateAction::OnStart()
 {
-	m_pPlayer->SetAttack(true);
+	// 攻撃モーションに変更
+	m_pPlayer->SetAttack(false);
 	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_ACTION);
 }
 //==================================
@@ -156,35 +156,65 @@ void CPlayerStateAction::OnUpdate()
 	// 正規化
 	D3DXVec3Normalize(&VecBoss, &VecBoss);
 
-	// 攻撃フラグが立っていなければ初期化
-	if (!m_pPlayer->GetAttack())
-	{
-		// 攻撃を有効状態にする
-		m_pPlayer->SetAttack(true);
+	// キーフラグをセット
+	bool isKeyPress = false;
 
-		// 攻撃モーションに変更
-		m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_ACTION);
+	//====================
+	// 攻撃処理
+	//====================
+	if (pInput->GetPress(DIK_RETURN) && m_pPlayer->GetMotion()->GetMotionType() != CPlayer::PLAYERMOTION_JUMPATTACK)
+	{
+		// キーフラグをセット
+		isKeyPress = true;
+
+		// 15フレーム攻撃キーを入力していたら
+		if (pInput->GetRepeat(DIK_RETURN, keyRepeatCount))
+		{
+			// 弾を生成
+			CBullet::Create(D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43), VecBoss, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
+		}
+
+		// 攻撃状態じゃないとき
+		if (!m_pPlayer->GetAttack())
+		{
+			// 攻撃フラグを有効化する
+			m_pPlayer->SetAttack(true);
+
+			// 地上攻撃モーションに変更
+			m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_ACTION);
+		}
+		else if (m_pPlayer->GetAttack() && !m_pPlayer->GetMotion()->GetFinishMotion()) // 攻撃状態 かつ モーション終了判定がfalseの時
+		{
+			// 攻撃フラグを無効化する
+			m_pPlayer->SetAttack(false);
+
+			// ニュートラルモーションに変更
+			m_pPlayer->ChangeState(new CPlayerStateNeutral());
+
+			// キー入力フラグを無効にする
+			isKeyPress = false;
+
+			return; // ここで処理を返す
+		}
 	}
+	else if (!isKeyPress && m_pPlayer->GetMotion()->GetMotionType() == CPlayer::PLAYERMOTION_ACTION)
+	{// キーフラグが無効 かつ 現在のモーションが攻撃モーションなら
 
-	// 攻撃キー入力
-	if (pInput->GetRepeat(DIK_RETURN, keyRepeatCount))
-	{
-		// 15フレームたったら生成
-		CBullet::Create(
-			D3DXVECTOR3(mtxWorld._41, mtxWorld._42, mtxWorld._43),
-			VecBoss, 
-			CBullet::BTYPE_PLAYER, 
-			5.0f, 5.0f, 60);
-	}
-
-	// モーション終了でニュートラルに戻す
-	if (m_pPlayer->GetMotion()->GetFinishMotion())
-	{
-		// 攻撃終了
+		// 攻撃状態を解除
 		m_pPlayer->SetAttack(false);
 
-		// ニュートラルステートを生成
+		// ニュートラルモーションに変更
 		m_pPlayer->ChangeState(new CPlayerStateNeutral());
+
+		return; // ここで処理を返す
+
+	}
+
+	// 攻撃状態 かつ モーションの状態が攻撃じゃなかったら
+	if (m_pPlayer->GetAttack() && m_pPlayer->GetMotion()->GetMotionType() != CPlayer::PLAYERMOTION_ACTION)
+	{
+		// 攻撃状態を解除
+		m_pPlayer->SetAttack(false);
 	}
 }
 //==================================
@@ -193,4 +223,40 @@ void CPlayerStateAction::OnUpdate()
 void CPlayerStateAction::OnExit()
 {
 	// 無し
+}
+
+
+//==================================
+// 移動状態コンストラクタ
+//==================================
+CPlayerStateMove::CPlayerStateMove()
+{
+	// 無し
+}
+//==================================
+// 移動状態デストラクタ
+//==================================
+CPlayerStateMove::~CPlayerStateMove()
+{
+	// 無し
+}
+//==================================
+// 移動状態開始関数
+//==================================
+void CPlayerStateMove::OnStart()
+{
+	
+}
+//==================================
+// 移動状態更新関数
+//==================================
+void CPlayerStateMove::OnUpdate()
+{
+
+}
+//==================================
+// 移動状態終了関数
+//==================================
+void CPlayerStateMove::OnExit()
+{
 }

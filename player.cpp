@@ -472,7 +472,7 @@ void CPlayer::ChangeState(CPlayerStateBase* pNewState)
 //=========================================
 // 識別番号ごとの攻撃更新処理
 //=========================================
-void CPlayer::UpdateNeutralAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const D3DXVECTOR3 DestMove)
+void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const D3DXVECTOR3 DestMove)
 {
 	// キーフラグをセット
 	bool isKeyPress = false;

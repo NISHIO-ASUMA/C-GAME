@@ -77,9 +77,10 @@ public:
 
 	CMotion* GetMotion(void) { return m_pMotion; }
 
-	void UpdateNeutralAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
+	void UpdateAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
 	void UpdateMove(const D3DXVECTOR3 DestPos, CInputKeyboard* pInputKeyboard);   // 移動更新関数
 	void UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove);
+
 	void Collision(void);
 	void AddMove(void) { m_pos += m_move; }
 

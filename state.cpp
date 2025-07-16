@@ -179,6 +179,7 @@ void CStateMachine::Update(void)
 //==================================
 void CStateMachine::ChangeState(CStateBase* pNewState)
 {
+	// おんなじステートだったら
 	if (m_pNowState == pNewState)
 	{
 		return;
@@ -187,7 +188,13 @@ void CStateMachine::ChangeState(CStateBase* pNewState)
 	// すでにステートがセットされてたら終了する
 	if (m_pNowState != nullptr)
 	{
+		// 終了
 		m_pNowState->OnExit();
+
+		// ポインタの破棄
+		delete m_pNowState;
+
+		// nullptrに初期化する
 		m_pNowState = nullptr;
 	}
 
