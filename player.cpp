@@ -21,6 +21,7 @@
 #include "parameter.h"
 #include "debugproc.h"
 #include "shadowS.h"
+#include "game.h"
 
 //**********************
 // 定数宣言
@@ -244,10 +245,10 @@ void CPlayer::Update(void)
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
 	// シリンダー座標取得
-	D3DXVECTOR3 MeshPos = CManager::GetCylinder()->GetPos();
+	D3DXVECTOR3 MeshPos = CGame::GetCylinder()->GetPos();
 
 	// ボス座標の取得
-	D3DXVECTOR3 BossPos = CManager::GetBoss()->GetPos();
+	D3DXVECTOR3 BossPos = CGame::GetBoss()->GetPos();
 
 	// ボスの位置に対してプレイヤー座標からベクトルを取る
 	D3DXVECTOR3 VecBoss = BossPos - m_pos;
@@ -281,7 +282,7 @@ void CPlayer::Update(void)
 	if (m_isAttack)
 	{
 		// ボスからプレイヤーへのベクトル生成
-		D3DXVECTOR3 BossDir = CManager::GetBoss()->GetPos() - m_pos;
+		D3DXVECTOR3 BossDir = CGame::GetBoss()->GetPos() - m_pos;
 
 		// y軸方向は一定
 		BossDir.y = 0.0f;
@@ -558,7 +559,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 	static float fAngle = NULL;
 
 	// 円柱の半径を取得
-	float fRadius = CManager::GetCylinder()->GetRadius();
+	float fRadius = CGame::GetCylinder()->GetRadius();
 
 	// 識別番号で処理を分別する
 	switch (m_nIdxPlayer)
@@ -773,7 +774,7 @@ void CPlayer::Collision(void)
 	//=============================
 	// ボス右手の当たり判定
 	//=============================
-	CBoss* pBoss = CManager::GetBoss();  // マネージャー経由でボスを取得する
+	CBoss* pBoss = CGame::GetBoss();  // マネージャー経由でボスを取得する
 
 	// 当たり判定の距離
 	if (pBoss->CollisionRightHand(&m_pos))

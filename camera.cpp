@@ -15,6 +15,7 @@
 #include "debugproc.h"
 #include "object.h"
 #include "boss.h"
+#include "game.h"
 
 //**********************
 // マクロ定義
@@ -86,7 +87,7 @@ void CCamera::Update(void)
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
 	// ボス取得
-	CBoss* pBoss = CManager::GetBoss();
+	CBoss* pBoss = CGame::GetBoss();
 
 	// プレイヤー取得
 	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);

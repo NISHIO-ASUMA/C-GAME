@@ -15,6 +15,7 @@
 #include "effect.h"
 #include "boss.h"
 #include "particle.h"
+#include "game.h"
 
 //***********************************
 // 定数宣言
@@ -192,10 +193,7 @@ void CBullet::Draw(void)
 bool CBullet::Collision(D3DXVECTOR3 pos)
 {
 	// ボス取得
-	CBoss* pBoss = CManager::GetBoss();
-
-	// 現在のオブジェクトの最大数を取得
-	int nNum = CObject::GetNumAll();
+	CBoss* pBoss = CGame::GetBoss();
 
 	// オブジェクトが取得できたら
 	if (pBoss != nullptr)

@@ -167,6 +167,7 @@
     <ClCompile Include="enemymanager.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="gage.cpp" />
+    <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -189,7 +190,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="playerstate.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="shadowS.cpp" />
@@ -197,6 +200,7 @@
     <ClCompile Include="state.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="time.cpp" />
+    <ClCompile Include="title.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="uiedit.cpp" />
     <ClCompile Include="uimanager.cpp" />
@@ -217,6 +221,7 @@
     <ClInclude Include="enemymanager.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="gage.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="light.h" />
@@ -237,7 +242,9 @@
     <ClInclude Include="particle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="playerstate.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="shadowS.h" />
@@ -246,6 +253,7 @@
     <ClInclude Include="template.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="time.h" />
+    <ClInclude Include="title.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="uiedit.h" />
     <ClInclude Include="uimanager.h" />

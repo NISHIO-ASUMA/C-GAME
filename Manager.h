@@ -28,6 +28,7 @@
 #include "collision.h"
 #include "meshcylinder.h"
 #include "boss.h"
+#include "scene.h"
 
 //**************************
 // マネージャークラス宣言
@@ -43,36 +44,28 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CObject3D* GetObj3D(void);
 	static CRenderer* GetRenderer(void);
 	static CInputKeyboard* GetInputKeyboard(void);
 	static CJoyPad* GetJoyPad(void);
 	static CSound* GetSound(void);
 	static CInputMouse* GetMouse(void);
-	static CEnemymanager* GetEnemyManager(void);
 	static CTexture* GetTexture(void);
 	static CCamera* GetCamera(void);
 	static CLight* GetLight(void);
-	static CBlockManager* GetBlockManager(void) {return m_pBlockManager;}
-	static CBlock* GetBlock(void) { return m_pBlock; }
-	static CCollision* GetCollision(void) { return m_pCollision; }
-	static CMeshCylinder* GetCylinder(void) {return m_pMeshCylinder;}
-	static CBoss* GetBoss(void) { return m_pBoss; }
+
+	static void SetScene(CScene * pNewScene); // インスタンスを入れる
+	static CScene::MODE GetScene(void);
+
 private:
 	static CRenderer* m_pRenderer;			 // レンダラークラスのポインタ
 	static CInputKeyboard* m_pInputKeyboard; // キーボードクラスのポインタ
 	static CJoyPad* m_pJoyPad;				 // ジョイパッドクラスのポインタ
 	static CSound* m_pSound;				 // サウンドオブジェクトのポインタ
 	static CInputMouse* m_pInputMouse;		 // マウスクラスのポインタ
-	static CEnemymanager* m_pEnemyManager;	 // 敵管理クラス
 	static CTexture* m_pTexture;			 // テクスチャクラス
 	static CCamera* m_pCamera;				 // カメラクラス
 	static CLight* m_pLight;				 // ライトクラス
-	static CObject3D* m_pobj;
-	static CBlockManager* m_pBlockManager;
-	static CBlock* m_pBlock;
-	static CCollision* m_pCollision;
-	static CMeshCylinder* m_pMeshCylinder;		// シリンダー
-	static CBoss* m_pBoss;
+
+	static CScene* m_pScene;		// シーン管理
 };
 #endif

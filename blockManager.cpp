@@ -55,6 +55,7 @@ void CBlockManager::Uninit(void)
 //===============================
 void CBlockManager::Update(void)
 {
+
 }
 //===============================
 // ê∂ê¨

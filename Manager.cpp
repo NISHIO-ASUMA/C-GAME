@@ -20,6 +20,7 @@
 #include "meshimpact.h"
 #include "gage.h"
 #include "ui.h"
+#include "title.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -29,16 +30,10 @@ CInputKeyboard* CManager::m_pInputKeyboard = nullptr;	// キーボードへのポインタ
 CJoyPad* CManager::m_pJoyPad = nullptr;					// ジョイパッドクラスへのポインタ
 CSound* CManager::m_pSound = nullptr;					// サウンドへのポインタ
 CInputMouse* CManager::m_pInputMouse = nullptr;			// マウスへのポインタ
-CEnemymanager* CManager::m_pEnemyManager = nullptr;		// 敵マネージャーへのポインタ
 CTexture* CManager::m_pTexture = nullptr;				// テクスチャクラスへのポインタ
 CCamera* CManager::m_pCamera = nullptr;					// カメラクラスへのポインタ
 CLight* CManager::m_pLight = nullptr;					// ライトクラスへのポインタ
-CObject3D* CManager::m_pobj = nullptr;
-CBlockManager* CManager::m_pBlockManager = nullptr;
-CBlock* CManager::m_pBlock = nullptr;
-CCollision* CManager::m_pCollision = nullptr;
-CMeshCylinder* CManager::m_pMeshCylinder = nullptr;
-CBoss* CManager::m_pBoss = nullptr;
+CScene* CManager::m_pScene = nullptr;
 
 //===========================
 // コンストラクタ
@@ -134,33 +129,32 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// テクスチャ全読み込み
 	m_pTexture->Load();
 
-	// スコアの生成
-	CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
+	// シーンセット
+	SetScene(new CTitle());
 
-	// シリンダー生成
-	m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
+	//// スコアの生成
+	//CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
-	// ドーム生成
-	CMeshDome::Create(D3DXVECTOR3(0.0f,-70.0f,0.0f), 800.0f);
+	//// シリンダー生成
+	//m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
 
-	// フィールド生成
-	CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
+	//// ドーム生成
+	//CMeshDome::Create(D3DXVECTOR3(0.0f,-70.0f,0.0f), 800.0f);
 
-	// ボス生成
-	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f),60.0f);
+	//// フィールド生成
+	//CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
 
-	// プレイヤー生成
-	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
+	//// ボス生成
+	//m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f),60.0f);
 
-	// プレイヤー生成
-	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
+	//// プレイヤー生成
+	//CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
 
-	// ブロック配置
-	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);
+	//// プレイヤー生成
+	//CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
 
-	//  CUi::Create(VECTOR3_NULL, 0, 640.0f, 400.0f);
-
-	//CGage::Create(D3DXVECTOR3(100.0f, 100.0f, 0.0f), 300.0f, 100.0f);
+	//// ブロック配置
+	//m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL,80.0f);
 
 	return S_OK;
 }
@@ -171,19 +165,6 @@ void CManager::Uninit(void)
 {
 	// 全オブジェクトの破棄
 	CObject::ReleaseAll();
-
-	// NULLチェック
-	if (m_pEnemyManager != nullptr)
-	{
-		// 敵マネージャーの終了処理
-		m_pEnemyManager->Uninit();
-
-		// 敵マネージャーの破棄
-		delete m_pEnemyManager;
-
-		// NULLにする
-		m_pEnemyManager = nullptr;
-	}
 
 	// NULLチェック
 	if (m_pInputKeyboard != nullptr)
@@ -276,6 +257,19 @@ void CManager::Uninit(void)
 		m_pTexture = nullptr;
 	}
 
+	// nullptrじゃない
+	if (m_pScene)
+	{
+		// 終了処理
+		m_pScene->Uninit();
+
+		// ポインタの破棄
+		delete m_pScene;
+
+		// nullptrにする
+		m_pScene = nullptr;
+	}
+
 	// NULLチェック
 	if (m_pRenderer != nullptr)
 	{
@@ -303,8 +297,11 @@ void CManager::Update()
 	// マウスの更新処理
 	m_pInputMouse->Update();
 
-	//カメラ更新
+	// カメラ更新
 	m_pCamera->Update();
+
+	// シーンの更新
+	m_pScene->Update();
 
 	// レンダラーの更新処理
 	m_pRenderer->Update();
@@ -315,20 +312,88 @@ void CManager::Update()
 		// 衝撃波を生成
 		CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
 	}
-	
-#ifdef _DEBUG
-	// ブロックマネージャー更新
-	m_pBlockManager->Update();
-#endif
 }
 //===========================
 // マネージャーの描画処理
 //===========================
 void CManager::Draw(void)
 {
+	// シーンの描画
+	m_pScene->Draw();
+
 	// レンダラーの描画処理
 	m_pRenderer->Draw();
 }
+
+//===========================
+// シーンのセット
+//===========================
+void CManager::SetScene(CScene * pNewscene)
+{// TODO : ここにフェード処理が入るかも
+
+	// nullじゃない
+	if (m_pSound)
+	{
+		// サウンドの停止
+		m_pSound->StopSound();
+	}
+
+	// nullptrじゃない
+	if (m_pScene)
+	{
+		// 終了処理
+		m_pScene->Uninit();
+
+		// ポインタの破棄
+		delete m_pScene;
+
+		// nullptrにする
+		m_pScene = nullptr;
+	}
+	
+	// 全オブジェクト破棄
+	CObject::ReleaseAll();
+
+	// 新しいシーンをセットする
+	m_pScene = pNewscene;
+
+	// 生成失敗時
+	if (m_pScene == nullptr)
+	{
+		MessageBox(GetActiveWindow(), "シーン生成失敗 (Cmanager::SetMode)", "例外スロー", MB_OK);
+
+		// ウィンドウ終了
+		PostQuitMessage(0);
+
+		return;
+	}
+
+	// シーンの初期化
+	if (FAILED(m_pScene->Init()))
+	{
+		// 失敗時
+		MessageBox(GetActiveWindow(), "シーン初期化失敗", "例外スロー", MB_OK);
+
+		// 破棄
+		delete m_pScene;
+
+		// nullptr代入
+		m_pScene = nullptr;
+	}
+}
+//===========================
+// 現在シーン取得
+//===========================
+CScene::MODE CManager::GetScene(void)
+{
+	// nullptrじゃない
+	if (m_pScene)
+		return m_pScene->GetScene(); // 現在シーン
+	else
+		return CScene::MODE_NONE;	 // 何もないシーン
+}
+
+
 //===========================
 // レンダラーの取得
 //===========================
@@ -365,13 +430,6 @@ CInputMouse* CManager::GetMouse(void)
 	return m_pInputMouse;
 }
 //===========================
-// 敵マネージャーの取得
-//===========================
-CEnemymanager* CManager::GetEnemyManager(void)
-{
-	return m_pEnemyManager;
-}
-//===========================
 // テクスチャの取得
 //===========================
 CTexture* CManager::GetTexture(void)
@@ -391,11 +449,4 @@ CCamera* CManager::GetCamera(void)
 CLight* CManager::GetLight(void)
 {
 	return m_pLight;
-}
-//===========================
-// オブジェクト3Dの取得
-//===========================
-CObject3D* CManager::GetObj3D(void)
-{
-	return m_pobj;
 }

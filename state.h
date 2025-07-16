@@ -44,4 +44,41 @@ private:
 	int m_StateCount;	// カウンター
 };
 
+//*********************************
+// ステートベースクラス
+//*********************************
+class CStateBase
+{
+public:
+	CStateBase();
+	virtual ~CStateBase();
+
+	// ステートが始まるときに一度だけ呼ばれる関数
+	virtual void OnStart() {}
+
+	// ステートが更新されるときに呼ばれる関数
+	virtual void OnUpdate() {}
+
+	// ステートが終了する時に一度だけ呼ばれる関数
+	virtual void OnExit() {}
+};
+
+//*********************************
+// ステートマシンクラス
+//*********************************
+class CStateMachine
+{
+public:
+	CStateMachine();
+	~CStateMachine();
+
+	void Update(void);						 // 更新処理
+	void ChangeState(CStateBase* pNewState); // ステート変更
+
+private:
+	CStateBase* m_pNowState;	// 基底クラスのステートポインタ
+};
+
+
+
 #endif

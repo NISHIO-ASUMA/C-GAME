@@ -128,3 +128,68 @@ CState* CState::Create(void)
 	// 生成されたポインタを返す
 	return pState;
 }
+
+
+
+//==================================
+// ステートベースコンストラクタ
+//==================================
+CStateBase::CStateBase()
+{
+	// 無し
+}
+//==================================
+// ステートベースデストラクタ
+//==================================
+CStateBase::~CStateBase()
+{
+	// 無し
+}
+
+
+//==================================
+// ステートマシンコンストラクタ
+//==================================
+CStateMachine::CStateMachine()
+{
+	// 値のクリア
+	m_pNowState = nullptr;
+}
+//==================================
+// ステートマシンデストラクタ
+//==================================
+CStateMachine::~CStateMachine()
+{
+	// 無し
+}
+//==================================
+// ステートマシン更新処理
+//==================================
+void CStateMachine::Update(void)
+{
+	// nullptrじゃなかったら
+	if (m_pNowState != nullptr)
+	{
+		// 更新開始
+		m_pNowState->OnUpdate();
+	}
+}
+//==================================
+// ステート変更処理
+//==================================
+void CStateMachine::ChangeState(CStateBase* pNewState)
+{
+	// すでにステートがセットされてたら終了する
+	if (m_pNowState != nullptr)
+	{
+		m_pNowState->OnExit();
+		m_pNowState = nullptr;
+	}
+
+	// 新しいステートをセットする
+	m_pNowState = pNewState;
+
+	// 新しいステートを開始する
+	m_pNowState->OnStart();
+}
+

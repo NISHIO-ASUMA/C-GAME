@@ -107,6 +107,9 @@ private:
 	int m_nIdxPlayer;   // プレイヤーの識別番号
 
 	const char* m_pFilename; // 読み込むファイル名
+
+	CStateMachine* m_pStateMachine;
+
 };
 
 #endif

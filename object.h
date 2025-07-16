@@ -39,6 +39,7 @@ public:
 	enum PRIORITY
 	{
 		NONE, // 初期状態
+		SCENE,// シーン
 		MESH, // メッシュ
 		BLOCK, // ブロック
 		BULLET,// 弾
