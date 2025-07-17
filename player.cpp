@@ -724,7 +724,6 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 		}
 	}
 
-
 	if (m_pMotion->GetMotionType() == PLAYERMOTION_LANDING && m_pMotion->GetFinishMotion())
 	{
 		// ニュートラルに変更
@@ -733,7 +732,6 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 		// ここで処理を返す
 		return;
 	}
-
 }
 //=============================
 // コリジョン処理関数
@@ -758,21 +756,14 @@ void CPlayer::Collision(void)
 			// コリジョンした時
 			if (pImpact->Collision(&m_pos) == true)
 			{
-				// 現在状態がNORMALなら
-				if (m_State == m_pState->STATE_NORMAL)
-				{
-					// 当たったらダメージモーションに切り替え
-					m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+				// 当たったらダメージモーションに切り替え
+				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-					// 状態更新
-					m_pState->SetState(CState::STATE_DAMAGE);
+				// ダメージ処理
+				m_pParameter->HitDamage(1);
 
-					// ダメージ処理
-					m_pParameter->HitDamage(1);
-
-					// 一回当たったら抜ける
-					break;
-				}
+				// 一回当たったら抜ける
+				break;
 			}
 		}
 
@@ -788,18 +779,12 @@ void CPlayer::Collision(void)
 	// 当たり判定の距離
 	if (pBoss->CollisionRightHand(&m_pos))
 	{
-		// 状態が通常の時のみ
-		if (m_State == m_pState->STATE_NORMAL)
-		{
-			// ダメージモーション
-			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
-
-			// 状態更新
-			m_pState->SetState(CState::STATE_DAMAGE);
-
-			// 体力を減らす
-			m_pParameter->HitDamage(1);
-		}
+		
+		// ダメージモーション
+		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+		// 体力を減らす
+		m_pParameter->HitDamage(1);
+		
 	}
 }
 //===============================
