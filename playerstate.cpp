@@ -80,15 +80,15 @@ void CPlayerStateNeutral::OnUpdate()
 		return;
 	}
 
-	// ジャンプキー入力時
-	if (pInput->GetPress(DIK_SPACE))
-	{
-		// ステート変更
-		m_pPlayer->ChangeState(new CPlayerStateJump);
+	//// ジャンプキー入力時
+	//if (pInput->GetPress(DIK_SPACE))
+	//{
+	//	// ステート変更
+	//	m_pPlayer->ChangeState(new CPlayerStateJump);
 
-		// ここで処理を返す
-		return;
-	}
+	//	// ここで処理を返す
+	//	return;
+	//}
 }
 //==================================
 // 待機状態時終了関数
@@ -198,16 +198,15 @@ void CPlayerStateMove::OnUpdate()
 		return;
 	}
 
-	// ジャンプキー入力時
-	if (pInput->GetTrigger(DIK_SPACE))
-	{
-		// ステート変更
-		m_pPlayer->ChangeState(new CPlayerStateJump);
+	//// ジャンプキー入力時
+	//if (pInput->GetTrigger(DIK_SPACE))
+	//{
+	//	// ステート変更
+	//	m_pPlayer->ChangeState(new CPlayerStateJump);
 
-		// ここで処理を返す
-		return;
-	}
-
+	//	// ここで処理を返す
+	//	return;
+	//}
 }
 //==================================
 // 移動状態終了関数

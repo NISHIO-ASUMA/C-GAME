@@ -266,6 +266,19 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(void)
 {
+	// 攻撃中はボスの方向に体を向ける
+	if (m_isAttack)
+	{
+		D3DXVECTOR3 BossDir = CGame::GetBoss()->GetPos() - m_pos;
+		BossDir.y = 0.0f;
+
+		if (D3DXVec3LengthSq(&BossDir) > 0.0001f)
+		{
+			D3DXVec3Normalize(&BossDir, &BossDir);
+			m_rot.y = atan2f(-BossDir.x, -BossDir.z);
+		}
+	}
+
 	// 現在体力の取得
 	int nLife = m_pParameter->GetHp();
 
@@ -275,6 +288,17 @@ void CPlayer::Update(void)
 		// ステート更新
 		m_pStateMachine->Update();
 	}
+
+	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+
+	// 武器のワールドマトリックスとボス方向取得
+	CModel* pModelWeapon = GetModelPartType(CModel::PARTTYPE_WEAPON);
+	if (!pModelWeapon) return;
+
+	D3DXMATRIX mtxWorld = pModelWeapon->GetMtxWorld();
+	D3DXVECTOR3 vecToBoss = VecToBoss(m_pos);
+
+	UpdateJumpAction(pInput, mtxWorld, vecToBoss);
 
 	// 当たり判定処理関数
 	Collision();
@@ -649,18 +673,22 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 		m_move.y -= 0.7f;
 	}
 
-	//// ジャンプキー入力 かつ ジャンプフラグがfalseの時
-	//if (!m_isJump)
-	//{
-	//	// フラグを有効化
-	//	m_isJump = true;
+	// ジャンプキー入力 かつ ジャンプフラグがfalseの時
+	if (!m_isJump)
+	{
+		if (pInputKeyboard->GetTrigger(DIK_SPACE))
+		{
+			// フラグを有効化
+			m_isJump = true;
 
-	//	// 未着地判定に変更
-	//	m_isLanding = false;
+			// 未着地判定に変更
+			m_isLanding = false;
 
-	//	// 上昇値を設定
-	//	m_move.y = PLAYER_JUMPVALUE;
-	//}
+			// 上昇値を設定
+			m_move.y = PLAYER_JUMPVALUE;
+
+		}
+	}
 
 	// 高さ更新
 	AddMove();
