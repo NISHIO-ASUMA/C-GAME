@@ -96,4 +96,23 @@ public:
 	void OnExit();
 };
 
+//*********************************
+// ジャンプ時の状態管理
+//*********************************
+class CPlayerStateJump : public CPlayerStateBase
+{
+public:
+	CPlayerStateJump();
+	~CPlayerStateJump();
+
+	// ステートが始まるときに一度だけ呼ばれる関数
+	void OnStart();
+
+	// ステートが更新されるときに呼ばれる関数
+	void OnUpdate();
+
+	// ステートが終了する時に一度だけ呼ばれる関数
+	void OnExit();
+};
+
 #endif

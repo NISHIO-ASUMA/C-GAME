@@ -145,7 +145,7 @@ void CBullet::Update(void)
 	// 弾の座標を取得
 	D3DXVECTOR3 BulletPos = GetPos();
 
-	// 寿命カウント
+	// 寿命を徐々に減らす
 	m_nLife--;
 
 	// カラーセット

@@ -188,6 +188,10 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		return;
 	}
 
+	// 現在モーションキー計算
+	m_motiontype = Clump(m_motiontype, 0, m_nNumMotion);
+	m_nNextKey = Wrap(m_nKey + 1, 0, m_aMotionInfo[m_motiontype].nNumKey - 1);
+
 	// フラグを生成
 	bool isPlayer = false;
 	bool isBoss = false;
@@ -195,19 +199,14 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	// 最大モデル数で回す
 	for (int nCnt = 0; nCnt < nNumModel; nCnt++)
 	{
-		// プレイヤーモデルかどうか判定
-		isPlayer = ppModel[nCnt] && ppModel[nCnt]->IsPlayer();
+		// モデルのポインタ
+		CModel* pModel = ppModel[nCnt];
 
-		// ボスモデルかどうか判定
-		isBoss = ppModel[nCnt] && ppModel[nCnt]->IsBoss();
+		// nulなら
+		if (!pModel) continue;
 
-		// 現在モーションキー計算
-		m_motiontype = Clump(m_motiontype, 0, m_nNumMotion);
-		m_nNextKey = Wrap(m_nKey + 1, 0, m_aMotionInfo[m_motiontype].nNumKey -1);
-
-		//// ブレンドのモーション設定
-		//m_motiontypeBlend = Clump(m_motiontypeBlend, 0, 1);
-		//m_nNextKeyBlend = Wrap(m_nKeyBlend + 1, 0, m_aMotionInfo[m_motiontypeBlend].nNumKey - 1);
+		if (pModel->IsPlayer()) isPlayer = true; 	// プレイヤーモデルかどうか判定
+		if (pModel->IsBoss()) isBoss = true; 		// ボスモデルかどうか判定
 
 		// 現在のモーション更新
 		UpdateCurrentMotion(ppModel, nCnt);
@@ -269,10 +268,24 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	}
 
 	// ボスの時
-	if (isBoss && m_motiontype != CBoss::PATTERN_NONE)
+	if (isBoss && m_motiontype != CBoss::PATTERN_NONE )
 	{
 		// 終了フラグを立てる
 		m_isFinishMotion = true;
+	}
+
+	// 着地モーションの終了判定
+	if (isPlayer && m_motiontype == CPlayer::PLAYERMOTION_LANDING)
+	{
+		// 最後のキー
+		int lastKey = m_aMotionInfo[m_motiontype].nNumKey - 1;
+
+		// 最後のキーに達していて、カウンターも終了フレームを超えていたら
+		if (m_nKey >= lastKey - 1 &&
+			m_nCounterMotion >= m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame)
+		{
+			m_isFinishMotion = true;
+		}
 	}
 
 	// Loopがfalse かつ キー数が超えたら

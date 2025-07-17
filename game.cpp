@@ -61,13 +61,13 @@ HRESULT CGame::Init(void)
 	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f);
 
 	// プレイヤー生成
-	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
+	CPlayer::Create(D3DXVECTOR3(0.0f,0.0f,-550.0f), VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
 
 	// プレイヤー生成
-	CPlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
+	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 550.0f), VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
 
-	//// ブロック配置
-	//m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
+	// ブロック配置
+	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
 
     return S_OK;
 }

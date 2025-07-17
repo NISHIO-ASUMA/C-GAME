@@ -212,7 +212,10 @@ void CStateMachine::OnExit()
 	// すでにステートがセットされてたら終了する
 	if (m_pNowState != nullptr)
 	{
+		// 破棄
 		delete m_pNowState;
+
+		// null初期化
 		m_pNowState = nullptr;
 	}
 }
