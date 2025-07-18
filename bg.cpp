@@ -140,14 +140,14 @@ void CBg::SetTexture(int nType)
 	switch (nType)
 	{
 	case BG_BACK:
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\bg100.png");
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\field000.jpeg");
 		break;
 	case BG_CENTER:
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\bg101.png");
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\field000.jpeg");
 		break;
 
 	case BG_FRONT:
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\bg102.png");
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\field000.jpeg");
 		break;
 
 	default:

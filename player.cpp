@@ -188,7 +188,7 @@ HRESULT CPlayer::Init(void)
 	m_pStateMachine = new CStateMachine;	
 
 	// 初期状態をセット
-	ChangeState(new CPlayerStateNeutral); 
+	ChangeState(new CPlayerStateNeutral,CPlayerStateBase::ID_NEUTRAL); 
 
 	// 結果を返す
 	return S_OK;
@@ -399,7 +399,7 @@ void CPlayer::Draw(void)
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 340);
 
-	if (pInput->GetPress(DIK_F9) && m_nIdxPlayer == NUMBER_MAIN)
+	if (pInput->GetPress(DIK_F8) && m_nIdxPlayer == NUMBER_MAIN)
 	{
 		CDebugproc::Print("ステンシル影 { %.2f,%.2f,%.2f }", m_pShadowS->GetPos().x, m_pShadowS->GetPos().y, m_pShadowS->GetPos().z);
 		CDebugproc::Draw(0, 360);
@@ -462,7 +462,7 @@ CModel* CPlayer::GetModelPartType(CModel::PARTTYPE modelpart)
 //=========================================
 // ステート変更
 //=========================================
-void CPlayer::ChangeState(CPlayerStateBase* pNewState)
+void CPlayer::ChangeState(CPlayerStateBase* pNewState,int id)
 {
 	// 自分自身を代入
 	pNewState->SetOwner(this);
@@ -512,7 +512,7 @@ void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const 
 			isKeyPress = false;
 
 			// ニュートラルモーションに変更
-			ChangeState(new CPlayerStateNeutral());
+			ChangeState(new CPlayerStateNeutral(), CPlayerStateBase::ID_NEUTRAL);
 
 			// ここで処理を返す
 			return; 
@@ -525,7 +525,7 @@ void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const 
 		m_isAttack = false;
 
 		// ニュートラルモーションに変更
-		ChangeState(new CPlayerStateNeutral());
+		ChangeState(new CPlayerStateNeutral(), CPlayerStateBase::ID_NEUTRAL);
 
 		// ここで処理を返す
 		return;
@@ -545,6 +545,12 @@ void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const 
 //=========================================
 void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard)
 {
+	// ジャンプ中かつ攻撃中なら移動処理を禁止
+	if (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK)
+	{
+		return; // この時は移動や方向変更なし
+	}
+
 	// キー入力時の角度計算
 	static float fAngle = NULL;
 
@@ -711,6 +717,17 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 
 			// ジャンプ攻撃モーションに変更
 			m_pMotion->SetMotion(PLAYERMOTION_JUMPATTACK);
+
+			// 方向をボスに向かせる
+			D3DXVECTOR3 BossDir = CGame::GetBoss()->GetPos() - m_pos;
+			BossDir.y = 0.0f;
+
+			if (D3DXVec3LengthSq(&BossDir) > 0.0001f)
+			{
+				D3DXVec3Normalize(&BossDir, &BossDir);
+				m_rot.y = atan2f(-BossDir.x, -BossDir.z);
+			}
+
 		}
 
 		// 着地時の処理
@@ -724,10 +741,11 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 		}
 	}
 
+	// モーション終了時　かつ 種類が着地モーション
 	if (m_pMotion->GetMotionType() == PLAYERMOTION_LANDING && m_pMotion->GetFinishMotion())
 	{
 		// ニュートラルに変更
-		ChangeState(new CPlayerStateNeutral());
+		ChangeState(new CPlayerStateNeutral(), CPlayerStateBase::ID_NEUTRAL);
 
 		// ここで処理を返す
 		return;
@@ -753,14 +771,14 @@ void CPlayer::Collision(void)
 			// インパクトにキャスト
 			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
 
-			// コリジョンした時
-			if (pImpact->Collision(&m_pos) == true)
+			// コリジョンした時 かつ IDがダメージ以外
+			if (pImpact->Collision(&m_pos) == true )
 			{
 				// 当たったらダメージモーションに切り替え
 				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-				// ダメージ処理
-				m_pParameter->HitDamage(1);
+				// ステート変更 ( TODO : のちにダメージ管理に変更 )
+				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 
 				// 一回当たったら抜ける
 				break;
@@ -779,12 +797,11 @@ void CPlayer::Collision(void)
 	// 当たり判定の距離
 	if (pBoss->CollisionRightHand(&m_pos))
 	{
-		
-		// ダメージモーション
+		// 当たったらダメージモーションに切り替え
 		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
-		// 体力を減らす
-		m_pParameter->HitDamage(1);
-		
+
+		// ステート変更 ( TODO : のちにダメージ管理に変更 )
+		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 	}
 }
 //===============================

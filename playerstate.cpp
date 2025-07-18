@@ -12,6 +12,9 @@
 #include "state.h"
 #include "manager.h"
 #include "game.h"
+#include "parameter.h"
+
+constexpr int DAMAGECOUNT = 60;
 
 //==================================
 // プレイヤー状態コンストラクタ
@@ -20,6 +23,7 @@ CPlayerStateBase::CPlayerStateBase()
 {
 	// 値のクリア
 	m_pPlayer = nullptr;
+	m_ID = ID_NONE;
 }
 //==================================
 // プレイヤー状態デストラクタ
@@ -35,7 +39,8 @@ CPlayerStateBase::~CPlayerStateBase()
 //==================================
 CPlayerStateNeutral::CPlayerStateNeutral()
 {
-	// 無し
+	// セット
+	SetID(ID_NEUTRAL);
 }
 //==================================
 // 待機状態時デストラクタ
@@ -64,7 +69,7 @@ void CPlayerStateNeutral::OnUpdate()
 	if (m_pPlayer->isMoveInputKey(pInput))
 	{
 		// 状態変更
-		m_pPlayer->ChangeState(new CPlayerStateMove);
+		m_pPlayer->ChangeState(new CPlayerStateMove,ID_MOVE);
 
 		// ここで処理を返す
 		return;
@@ -74,7 +79,7 @@ void CPlayerStateNeutral::OnUpdate()
 	if (pInput->GetPress(DIK_RETURN))
 	{
 		// ステート変更
-		m_pPlayer->ChangeState(new CPlayerStateAction);
+		m_pPlayer->ChangeState(new CPlayerStateAction,ID_ACTION);
 
 		// ここで処理を返す
 		return;
@@ -192,88 +197,76 @@ void CPlayerStateMove::OnUpdate()
 	if (!m_pPlayer->isMoveInputKey(pInput))
 	{
 		// ニュートラルに遷移
-		m_pPlayer->ChangeState(new CPlayerStateNeutral);
+		m_pPlayer->ChangeState(new CPlayerStateNeutral,ID_NEUTRAL);
 
 		// ここで処理を返す
 		return;
 	}
-
-	//// ジャンプキー入力時
-	//if (pInput->GetTrigger(DIK_SPACE))
-	//{
-	//	// ステート変更
-	//	m_pPlayer->ChangeState(new CPlayerStateJump);
-
-	//	// ここで処理を返す
-	//	return;
-	//}
 }
 //==================================
 // 移動状態終了関数
 //==================================
 void CPlayerStateMove::OnExit()
 {
-
+	// 無し
 }
 
 
 //==================================
-// ジャンプ状態コンストラクタ
+// ダメージ状態コンストラクタ
 //==================================
-CPlayerStateJump::CPlayerStateJump()
+CPlayerStateDamage::CPlayerStateDamage(int nDamage)
+{
+	// 値のクリア
+	m_nStateCount = NULL;
+	m_nDamage = nDamage;
+}
+//==================================
+// ダメージ状態デストラクタ
+//==================================
+CPlayerStateDamage::~CPlayerStateDamage()
 {
 	// 無し
 }
 //==================================
-// ジャンプ状態デストラクタ
+// ダメージ状態開始関数
 //==================================
-CPlayerStateJump::~CPlayerStateJump()
+void CPlayerStateDamage::OnStart()
 {
-	// 無し
-}
-//==================================
-// ジャンプ状態開始関数
-//==================================
-void CPlayerStateJump::OnStart()
-{
-	// フラグセット
-	m_pPlayer->SetJump(false);
-	m_pPlayer->StartJump();
-}
-//==================================
-// ジャンプ状態更新関数
-//==================================
-void CPlayerStateJump::OnUpdate()
-{
-	CInputKeyboard* pInput = CManager::GetInputKeyboard();
-
-	// 武器のワールドマトリックスとボス方向取得
-	CModel* pModelWeapon = m_pPlayer->GetModelPartType(CModel::PARTTYPE_WEAPON);
-	if (!pModelWeapon) return;
-
-	D3DXMATRIX mtxWorld = pModelWeapon->GetMtxWorld();
-	D3DXVECTOR3 vecToBoss = m_pPlayer->VecToBoss(m_pPlayer->GetPos());
-
-	// ジャンプ
-	if (m_pPlayer->IsJumping())
+	// 一体目のプレイヤーの時
+	if (m_pPlayer->GetPlayerIndex() == 0)
 	{
-		m_pPlayer->UpdateJumpAction(pInput, mtxWorld, vecToBoss);
+		// パラメーター取得
+		CParameter* pParamet = m_pPlayer->GetParameter();
+
+		// 体力を減らす
+		pParamet->HitDamage(m_nDamage);
 	}
 
-	// 着地時 かつ モーション終了していたら
-	if (m_pPlayer->GetMotion()->GetMotionType() == CPlayer::PLAYERMOTION_LANDING && m_pPlayer->GetMotion()->GetFinishMotion())
-	{
-		// ニュートラルに変更
-		m_pPlayer->ChangeState(new CPlayerStateNeutral());
+	// 状態変更
+	m_nStateCount = DAMAGECOUNT;
+}
+//==================================
+// ダメージ状態更新関数
+//==================================
+void CPlayerStateDamage::OnUpdate()
+{
+	// 状態管理カウンターをデクリメント
+	m_nStateCount--;
 
-		// ここで処理を返す
-		return;
+	if (m_nStateCount <= NULL)
+	{
+		// カウントを変更
+		m_nStateCount = DAMAGECOUNT; 
+
+		// 状態変更
+		m_pPlayer->ChangeState(new CPlayerStateNeutral(), ID_NEUTRAL);
 	}
 }
 //==================================
-// ジャンプ状態終了関数
+// ダメージ状態更新関数
 //==================================
-void CPlayerStateJump::OnExit()
+void CPlayerStateDamage::OnExit()
 {
 	// 無し
 }

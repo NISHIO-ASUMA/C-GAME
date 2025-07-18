@@ -178,11 +178,18 @@ void CStateMachine::Update(void)
 // ステート変更処理
 //==================================
 void CStateMachine::ChangeState(CStateBase* pNewState)
-{
-	// おんなじステートだったら
-	if (m_pNowState == pNewState)
+{	
+	// ポインタが存在するとき
+	if (m_pNowState != nullptr && pNewState != nullptr)
 	{
-		return;
+		// ID が同じなら
+		if (m_pNowState->GetID() == pNewState->GetID())
+		{
+			delete pNewState;
+
+			// ここで処理を返す
+			return;
+		}
 	}
 
 	// すでにステートがセットされてたら終了する

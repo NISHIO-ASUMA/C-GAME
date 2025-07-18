@@ -20,6 +20,22 @@
 class CPlayerStateBase : public CStateBase
 {
 public:
+
+	//***************************
+	// 状態管理ID列挙型
+	//***************************
+	enum ID
+	{
+		ID_NONE, // 設定なし
+		ID_NEUTRAL, // 待機
+		ID_MOVE, // 移動
+		ID_ACTION, // 攻撃
+		ID_JUMP, // ジャンプ
+		ID_AVOID, // 回避
+		ID_DAMAGE,// ダメージ
+		ID_MAX
+	};
+
 	CPlayerStateBase();
 	~CPlayerStateBase();
 
@@ -34,8 +50,15 @@ public:
 	// ステートが終了する時に一度だけ呼ばれる関数
 	virtual void OnExit() {}
 
+	// ゲッター
+	int GetID() const override { return m_ID; }
+	void SetID(ID id) { m_ID = id; }
+
 protected:
 	CPlayer* m_pPlayer;		// プレイヤーのポインタ
+
+private:
+	ID m_ID;		// 列挙型のポインタ
 };
 
 //*********************************
@@ -55,7 +78,6 @@ public:
 
 	// ステートが終了する時に一度だけ呼ばれる関数
 	void OnExit();
-
 };
 
 //*********************************
@@ -97,13 +119,26 @@ public:
 };
 
 //*********************************
-// ジャンプ時の状態管理
+// ダメージ状態時の管理
 //*********************************
-class CPlayerStateJump : public CPlayerStateBase
+class CPlayerStateDamage : public CPlayerStateBase
 {
 public:
-	CPlayerStateJump();
-	~CPlayerStateJump();
+
+	//**************************
+	// 状態列挙型
+	//**************************
+	enum DAMAGESTATE
+	{
+		DAMAGESTATE_NONE,
+		DAMAGESTATE_NORMAL,
+		DAMAGESTATE_DAMAGE,
+		DAMAGESTATE_INVINCIBLE,
+		DAMAGESTATE_MAX
+	};
+
+	CPlayerStateDamage(int nDamage);
+	~CPlayerStateDamage();
 
 	// ステートが始まるときに一度だけ呼ばれる関数
 	void OnStart();
@@ -113,6 +148,11 @@ public:
 
 	// ステートが終了する時に一度だけ呼ばれる関数
 	void OnExit();
+
+private:
+	int m_nStateCount;	// 管理カウント
+	int m_nDamage;// ダメージ数
+	int m_nCurrentstate;	// 現在状態
 };
 
 #endif

@@ -380,12 +380,6 @@ void CRenderer::Draw(void)
 		// 全オブジェクト描画
 		CObject::DrawAll();
 
-		// フォントセット
-		m_pDebug->Print("FPS : %d",m_fps);
-
-		// デバッグフォントの描画
-		m_pDebug->Draw(0,0);
-
 		//if (m_isbuller)
 		//{
 		//	// Texture[1]番のポリゴンを描画
@@ -415,9 +409,21 @@ void CRenderer::Draw(void)
 		//	m_apRenderMT[1] = pRenderWk;
 		// }
 
+
+		// フォントセット
+		m_pDebug->Print("FPS : %d", m_fps);
+
+		// デバッグフォントの描画
+		m_pDebug->Draw(0, 0);
+
+		// フェード描画
+		CManager::GetFade()->Draw();
+
 		// 描画終了
 		m_pD3DDevice->EndScene();
 	}
+
+
 
 	// バックバッファとフロントバッファの入れ替え
 	m_pD3DDevice->Present(nullptr, nullptr, nullptr, nullptr);

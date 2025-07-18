@@ -50,6 +50,7 @@
 
 #define VECTOR3_NULL (D3DXVECTOR3(0.0f,0.0f,0.0f)) // D3DXVECTOR3初期化用のマクロ定義
 #define COLOR_WHITE (D3DXCOLOR (1.0f,1.0f,1.0f,1.0f)) // 白
+#define COLOR_BLACK (D3DXCOLOR (0.0f,0.0f,0.0f,1.0f)) // 黒
 #define COLOR_NULL (D3DXCOLOR(0.0f,0.0f,0.0f,0.0f)) // 完全透明
 #define MAX_WORD (512)			// 最大文字数
 

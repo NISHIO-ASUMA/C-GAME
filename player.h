@@ -24,8 +24,9 @@ class CCamera;
 class CState;
 class CParameter;
 class CShadowS;
-class CPlayerStateBase;
 class CStateMachine;
+class CPlayerStateBase;
+
 
 //*************************
 // プレイヤークラスを定義
@@ -73,10 +74,11 @@ public:
 	CModel* GetModelPartType(CModel::PARTTYPE modelpart);
 	int GetType(void) { return m_type; }
 
-	void ChangeState(CPlayerStateBase* pNewState); // ステート変更
+	void ChangeState(CPlayerStateBase* pNewState,int Id); // ステート変更
 	CStateMachine* GetStateMachine(){return m_pStateMachine;}	// プレイヤーのステートマシンを取得
 
 	CMotion* GetMotion(void) { return m_pMotion; }
+	CParameter* GetParameter(void) { return m_pParameter;}
 
 	void UpdateAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
 	void UpdateMove(const D3DXVECTOR3 DestPos, CInputKeyboard* pInputKeyboard);   // 移動更新関数

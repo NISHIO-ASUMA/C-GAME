@@ -48,6 +48,9 @@ HRESULT CGame::Init(void)
 	// スコアの生成
 	CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
+	// タイマー生成
+	CTime::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), 120.0f, 60.0f);
+
 	// シリンダー生成
 	m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
 
@@ -84,9 +87,7 @@ void CGame::Uninit(void)
 // 更新処理
 //==================================
 void CGame::Update(void)
-{
-	// TODO : 状態によってゲーム終了など
-	
+{	
 	// 検証用インパクト
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
 	{
@@ -94,10 +95,19 @@ void CGame::Update(void)
 		CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
 	}
 
+	// 検証用画面遷移
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
 	{
-		// 画面遷移
-		CManager::SetScene(new CTitle());
+		// ゲームシーンに遷移
+		// CManager::SetScene(new CTitle());
+
+		CFade* pFade = CManager::GetFade();
+
+		if (pFade != nullptr)
+		{
+			// 画面遷移
+			pFade->SetFade(new CTitle());
+		}
 	}
 
 }

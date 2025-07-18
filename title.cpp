@@ -11,6 +11,7 @@
 #include "title.h"
 #include "manager.h"
 #include "game.h"
+#include "bg.h"
 
 CTitle::CTitle() : CScene(CScene::MODE_TITLE)
 {
@@ -23,6 +24,9 @@ CTitle::~CTitle()
 
 HRESULT CTitle::Init(void)
 {
+	// ”wŒi¶¬
+	CBg::Create(1);
+
 	return S_OK;
 }
 
@@ -38,7 +42,7 @@ void CTitle::Update(void)
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_Y))
 	{
 		// ƒQ[ƒ€ƒV[ƒ“‚É‘JˆÚ
-		CManager::SetScene(new CGame());
+		CManager::GetFade()->SetFade(new CGame());
 	}
 }
 

@@ -29,6 +29,7 @@
 #include "meshcylinder.h"
 #include "boss.h"
 #include "scene.h"
+#include "fade.h"
 
 //**************************
 // マネージャークラス宣言
@@ -56,6 +57,8 @@ public:
 	static void SetScene(CScene * pNewScene); // インスタンスを入れる
 	static CScene::MODE GetScene(void);
 
+	static CFade* GetFade(void);
+
 private:
 	static CRenderer* m_pRenderer;			 // レンダラークラスのポインタ
 	static CInputKeyboard* m_pInputKeyboard; // キーボードクラスのポインタ
@@ -67,5 +70,6 @@ private:
 	static CLight* m_pLight;				 // ライトクラス
 
 	static CScene* m_pScene;		// シーン管理
+	static CFade* m_pFade;
 };
 #endif

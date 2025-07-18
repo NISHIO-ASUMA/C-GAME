@@ -35,6 +35,7 @@ CTexture* CManager::m_pTexture = nullptr;				// テクスチャクラスへのポインタ
 CCamera* CManager::m_pCamera = nullptr;					// カメラクラスへのポインタ
 CLight* CManager::m_pLight = nullptr;					// ライトクラスへのポインタ
 CScene* CManager::m_pScene = nullptr;
+CFade* CManager::m_pFade = nullptr;
 
 //===========================
 // コンストラクタ
@@ -124,6 +125,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return -1;
 	}
 
+	// フェード生成
+	m_pFade = new CFade;
+
+	// 初期化失敗時
+	if (FAILED(m_pFade->Init()))
+	{
+		// -1を返す
+		return -1;
+	}
+
 	// テクスチャ生成
 	m_pTexture = new CTexture;
 
@@ -131,7 +142,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pTexture->Load();
 
 	// シーンセット
-	SetScene(new CGame());
+	m_pFade->SetFade(new CGame());
 
 	return S_OK;
 }
@@ -247,6 +258,29 @@ void CManager::Uninit(void)
 		m_pScene = nullptr;
 	}
 
+	// nullptrじゃない
+	if (m_pFade != nullptr)
+	{
+		// 終了処理
+		m_pFade->Uninit();
+
+		// ポインタの破棄
+		delete m_pFade;
+
+		// nullptrにする
+		m_pFade = nullptr;
+	}
+
+	// nullptrじゃない
+	if (m_pScene != nullptr)
+	{
+		m_pScene->Uninit();
+
+		delete m_pScene;
+
+		m_pScene = nullptr;
+	}
+
 	// NULLチェック
 	if (m_pRenderer != nullptr)
 	{
@@ -277,27 +311,26 @@ void CManager::Update()
 	// カメラ更新
 	m_pCamera->Update();
 
-	// シーンの更新
+	// フェードの更新
+	m_pFade->Update();
+
 	m_pScene->Update();
 
 	// レンダラーの更新処理
 	m_pRenderer->Update();
 
-	// TODO : 検証用インパクト
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
-	{
-		// 衝撃波を生成
-		CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
-	}
+	//// TODO : 検証用インパクト
+	//if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
+	//{
+	//	// 衝撃波を生成
+	//	CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
+	//}
 }
 //===========================
 // マネージャーの描画処理
 //===========================
 void CManager::Draw(void)
 {
-	// シーンの描画
-	m_pScene->Draw();
-
 	// レンダラーの描画処理
 	m_pRenderer->Draw();
 }
@@ -306,10 +339,46 @@ void CManager::Draw(void)
 // シーンのセット
 //===========================
 void CManager::SetScene(CScene * pNewscene)
-{// TODO : ここにフェード処理が入るかも
-
-	if (m_pScene == pNewscene)
+{
+	// もしシーンが無かったら
+	if (m_pScene == nullptr)
 	{
+		// 新しいシーンをセットする
+		m_pScene = pNewscene;
+
+		// 生成失敗時
+		if (m_pScene == nullptr)
+		{
+			MessageBox(GetActiveWindow(), "シーン生成失敗 (Cmanager::SetMode)", "例外スロー", MB_OK);
+
+			// ウィンドウ終了
+			PostQuitMessage(0);
+
+			return;
+		}
+
+		// シーンの初期化
+		if (FAILED(m_pScene->Init()))
+		{
+			// 失敗時
+			MessageBox(GetActiveWindow(), "シーン初期化失敗", "例外スロー", MB_OK);
+
+			// 破棄
+			delete m_pScene;
+
+			// nullptr代入
+			m_pScene = nullptr;
+		}
+
+		// ここで処理を返す
+		return;
+	}
+
+	// 同シーンだったら
+	if (m_pScene->GetScene() == pNewscene->GetScene())
+	{
+		delete pNewscene;
+
 		return;
 	}
 
@@ -431,4 +500,11 @@ CCamera* CManager::GetCamera(void)
 CLight* CManager::GetLight(void)
 {
 	return m_pLight;
+}
+//===========================
+// フェード取得
+//===========================
+CFade* CManager::GetFade(void)
+{
+	return m_pFade;
 }

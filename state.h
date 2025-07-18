@@ -25,6 +25,9 @@ public:
 
 	// ステートが終了する時に一度だけ呼ばれる関数
 	virtual void OnExit() {}
+
+	// ID取得用関数
+	virtual int GetID() const = 0;
 };
 
 //*********************************

@@ -50,6 +50,7 @@ private:
 		"data\\TEXTURE\\DomeTex.jpg",
 		"data\\TEXTURE\\shadow000.jpg",
 		"data\\TEXTURE\\lifebar_gage.png",
+		"data\\TEXTURE\\score001.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[MAX_TEXTURE];	// テクスチャポインタ
