@@ -159,6 +159,7 @@
     <ClCompile Include="blockManager.cpp" />
     <ClCompile Include="boss.cpp" />
     <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="bullethorming.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="character.cpp" />
     <ClCompile Include="collision.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="blockManager.h" />
     <ClInclude Include="boss.h" />
     <ClInclude Include="bullet.h" />
+    <ClInclude Include="bullethorming.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="character.h" />
     <ClInclude Include="collision.h" />
