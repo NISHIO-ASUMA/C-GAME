@@ -182,6 +182,7 @@ HRESULT CPlayer::Init(void)
 		m_pShadowS = CShadowS::Create("data\\MODEL\\STAGEOBJ\\Shadowmodel.x", CPlayer::GetIdxPlayer(0)->GetPos(), CPlayer::GetIdxPlayer(0)->GetRot());
 	}
 
+	// 初期座標の向きを設定
 	InitPos(0.0f);
 
 	// ステートマシンを生成
@@ -289,6 +290,7 @@ void CPlayer::Update(void)
 		m_pStateMachine->Update();
 	}
 
+	// 入力取得
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
 	// 武器のワールドマトリックスとボス方向取得
@@ -398,12 +400,6 @@ void CPlayer::Draw(void)
 	CDebugproc::Print("プレイヤーの体力 { %d } ", m_pParameter->GetHp());
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 340);
-
-	if (pInput->GetPress(DIK_F8) && m_nIdxPlayer == NUMBER_MAIN)
-	{
-		CDebugproc::Print("ステンシル影 { %.2f,%.2f,%.2f }", m_pShadowS->GetPos().x, m_pShadowS->GetPos().y, m_pShadowS->GetPos().z);
-		CDebugproc::Draw(0, 360);
-	}
 }
 
 //=========================================
@@ -777,7 +773,7 @@ void CPlayer::Collision(void)
 				// 当たったらダメージモーションに切り替え
 				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-				// ステート変更 ( TODO : のちにダメージ管理に変更 )
+				// ステート変更
 				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 
 				// 一回当たったら抜ける
@@ -800,7 +796,7 @@ void CPlayer::Collision(void)
 		// 当たったらダメージモーションに切り替え
 		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-		// ステート変更 ( TODO : のちにダメージ管理に変更 )
+		// ステート変更
 		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 	}
 }

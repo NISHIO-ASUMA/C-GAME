@@ -23,10 +23,6 @@
 #include <assert.h>					// アサート関数ヘッダー
 #include <stdlib.h>
 #include <cstdio>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sstream>
 
 //**************************
 // ライブラリのリンク宣言
@@ -40,6 +36,15 @@
 #pragma comment(lib,"shlwapi.lib")
 
 //**************************
+// 定数宣言
+//**************************
+const D3DXVECTOR3 VECTOR3_NULL = { 0.0f, 0.0f, 0.0f }; // 座標初期化
+const D3DXCOLOR COLOR_WHITE = { 1.0f, 1.0f, 1.0f, 1.0f }; // 白
+const D3DXCOLOR COLOR_BLACK = { 0.0f, 0.0f, 0.0f, 1.0f };// 黒
+const D3DXCOLOR COLOR_NULL = { 0.0f, 0.0f, 0.0f, 0.0f } ; // 完全透明
+inline constexpr int MAX_WORD = 512;			// 最大文字配列数
+
+//**************************
 // マクロ定義
 //**************************
 #define SCREEN_WIDTH (1280)					// ウインドウの幅
@@ -47,12 +52,6 @@
 #define FVF_VERTEX_2D (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)				// 頂点フォーマット[2D]
 #define FVF_VERTEX_3D (D3DFVF_XYZ | D3DFVF_NORMAL |  D3DFVF_DIFFUSE | D3DFVF_TEX1)  // 座標,法線,カラー,テクスチャ
 #define FVF_VERTEX_3D_MULTI (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2) // 座標,法線,カラー,マルチテクスチャ
-
-#define VECTOR3_NULL (D3DXVECTOR3(0.0f,0.0f,0.0f)) // D3DXVECTOR3初期化用のマクロ定義
-#define COLOR_WHITE (D3DXCOLOR (1.0f,1.0f,1.0f,1.0f)) // 白
-#define COLOR_BLACK (D3DXCOLOR (0.0f,0.0f,0.0f,1.0f)) // 黒
-#define COLOR_NULL (D3DXCOLOR(0.0f,0.0f,0.0f,0.0f)) // 完全透明
-#define MAX_WORD (512)			// 最大文字数
 
 //**********************
 // 頂点情報[2D]の構造体

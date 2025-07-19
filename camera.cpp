@@ -18,10 +18,10 @@
 #include "game.h"
 
 //**********************
-// マクロ定義
+// 定数宣言
 //**********************
-#define MAX_VIEWUP (3.0f)   // カメラの制限
-#define MAX_VIEWDOWN (0.1f) // カメラの制限
+constexpr float MAX_VIEWUP = 3.0f; // カメラの角度制限値
+constexpr float MAX_VIEWDOWN = 0.1f; // カメラの角度制限値
 
 //=================================
 // コンストラクタ
@@ -65,9 +65,10 @@ HRESULT CCamera::Init(void)
 	// 視点から注視点までの距離
 	m_pCamera.fDistance = sqrtf((fRotx * fRotx) + (fRoty * fRoty) + (fRotz * fRotz));
 
+#ifdef _DEBUG
 	// 初期モードセット
 	m_pCamera.nMode = MODE_NONE;
-
+#endif
 	return S_OK;
 }
 //=================================
@@ -180,23 +181,24 @@ void CCamera::Update(void)
 		pPlayerSub->SetRotDest(D3DXVECTOR3(0.0f, fAngleSubToBoss, 0.0f));
 
 		// カメラ位置をMAINプレイヤーの後方へ
-		D3DXVECTOR3 camOffset = -VecToBoss * 400.0f;
+		D3DXVECTOR3 camOffset = -VecToBoss * 350.0f;
 
-		// 高さを設定
-		camOffset.y = 180.0f;
+		// 高さを低めに設定
+		camOffset.y = 80.0f;
 
 		// カメラの目的位置
 		D3DXVECTOR3 desiredPosV = playerPos + camOffset;
 
-		// ターゲット座標をボス座標に設定
+		// ターゲット座標（ボスに加え高さもやや高めに）
 		D3DXVECTOR3 targetBoss = bossPos;
+		targetBoss.y = playerPos.y + 150.0f;  // 視点の上方向を強調（元は+50）
 
-		// 高さをプレイヤーの高さに合わせる
-		targetBoss.y = playerPos.y + 50.0f;
-
-		// カメラに適用する
+		// カメラに適用する（滑らかに補間）
 		m_pCamera.posV += (desiredPosV - m_pCamera.posV) * 0.3f;
-		m_pCamera.posR += (targetBoss - m_pCamera.posR) * 0.3f; 
+		m_pCamera.posR += (targetBoss - m_pCamera.posR) * 0.3f;
+
+		// ロックオン専用のカメラ角度を調整
+		m_pCamera.rot.x = D3DX_PI * 0.42f;  // 約75度：下から見上げる角度	
 	}
 		break;
 

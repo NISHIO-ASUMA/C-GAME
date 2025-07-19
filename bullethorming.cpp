@@ -10,13 +10,16 @@
 //**************************
 #include "bullethorming.h"
 #include "manager.h"
+#include "player.h"
+#include "playerstate.h"
 
 //==================================
 // コンストラクタ
 //==================================
 CBulletHorming::CBulletHorming()
 {
-
+	// 値のクリア
+	m_fRange = NULL;
 }
 //==================================
 // デストラクタ
@@ -74,7 +77,52 @@ void CBulletHorming::Uninit(void)
 //==================================
 void CBulletHorming::Update(void)
 {
-	// 無し
+	// 現在の座標を取得
+	D3DXVECTOR3 NowPos = GetPos();
+
+	// プレイヤー取得
+	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
+	if (pPlayer == nullptr) return;			// nullだったら処理をとおさない
+
+	// 座標を取得
+	D3DXVECTOR3 PlayerPos = pPlayer->GetPos();
+
+	// 衝突判定
+	if (Collision(PlayerPos))
+	{
+		// ダメージ変更
+		pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_DAMAGE);
+
+		// ステート変更
+		pPlayer->ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+
+		// ここで抜ける
+		return;
+	}
+
+	// プレイヤーと弾のベクトルを生成
+	D3DXVECTOR3 VecPlayer = PlayerPos - NowPos;
+
+	// ベクトルの長さ取得
+	float fLength = D3DXVec3Length(&VecPlayer);
+
+	// 離れすぎていたら追従しないようにする
+	m_fRange = 40.0; 
+
+	// 追従距離上限より小さくなったら追従しない
+	if (fLength < m_fRange) return;
+
+	// ベクトルを正規化する
+	D3DXVec3Normalize(&VecPlayer, &VecPlayer);
+
+	// 弾の移動速度を設定する
+	float fMove = 5.0f;
+
+	// 移動ベクトルを加算
+	NowPos += VecPlayer * fMove;
+
+	// 現在の座標にセットする
+	SetPos(NowPos);
 }
 //==================================
 // 描画処理
@@ -83,5 +131,34 @@ void CBulletHorming::Draw(void)
 {
 	// オブジェクト描画処理
 	CObjectX::Draw();
+}
+//==================================
+// 当たり判定処理
+//==================================
+bool CBulletHorming::Collision(D3DXVECTOR3 DestPos)
+{
+	// 弾の現在位置を取得
+	D3DXVECTOR3 BulletPos = GetPos();
+
+	// ベクトルを計算
+	D3DXVECTOR3 vec = DestPos - BulletPos;
+
+	// 距離を求める
+	float fDistance = D3DXVec3Length(&vec);
+
+	// ヒット判定半径
+	const float fHitRadius = 100.0f;
+
+	// 距離がヒット半径以内なら当たり
+	if (fDistance <= fHitRadius)
+	{
+		// オブジェクトを消す
+		Uninit();
+
+		// 当たり
+		return true; 
+	}
+
+	return false; // 当たらない
 }
 

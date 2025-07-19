@@ -14,7 +14,10 @@
 #include "game.h"
 #include "parameter.h"
 
-constexpr int DAMAGECOUNT = 60;
+//******************************
+// 定数宣言
+//******************************
+constexpr int DAMAGECOUNT = 80;	// 最大ステートカウント
 
 //==================================
 // プレイヤー状態コンストラクタ

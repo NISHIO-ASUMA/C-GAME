@@ -12,6 +12,10 @@
 // インクルードファイル
 //**********************
 #include "model.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <sstream>
 #include <vector>
 
 //*****************************

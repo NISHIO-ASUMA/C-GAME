@@ -18,6 +18,7 @@
 #include "meshimpact.h"
 #include "debugproc.h"
 #include "title.h"
+#include "bullethorming.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -108,6 +109,13 @@ void CGame::Update(void)
 			// 画面遷移
 			pFade->SetFade(new CTitle());
 		}
+	}
+
+	// 検証用弾
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_L))
+	{
+		// ホーミングを生成
+		CBulletHorming::Create("data\\MODEL\\ATTACKMODEL\\bulletobject000.x", D3DXVECTOR3(0.0f, 400.0f, 0.0f));
 	}
 
 }

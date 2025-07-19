@@ -37,8 +37,6 @@ void CTitle::Uninit(void)
 
 void CTitle::Update(void)
 {
-	int n = 0;
-
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_Y))
 	{
 		// ƒQ[ƒ€ƒV[ƒ“‚É‘JˆÚ
