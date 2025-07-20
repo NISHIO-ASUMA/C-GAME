@@ -11,6 +11,38 @@
 #include "time.h"
 #include "manager.h"
 
+//**********************
+// インクルードファイル
+//**********************
+constexpr int NUMTIME = 100;	// 最大タイマー
+
+//===============================
+// オーバーロードコンストラクタ
+//===============================
+CTime::CTime(int nPriority) : CObject(nPriority)
+{
+	// 値のクリア
+	m_pos = VECTOR3_NULL;
+	m_fHeight = 0;
+	m_fWidth = 0;
+	m_nAllTime = 0;
+	m_nCurrentTime = 0;
+	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_rot = VECTOR3_NULL;
+	m_nIdxTexture = NULL;
+
+	for (int nCnt = 0; nCnt < DIGIT_TIME; nCnt++)
+	{
+		m_pNumber[nCnt] = nullptr;
+	}
+}
+//===============================
+// デストラクタ
+//===============================
+CTime::~CTime()
+{
+	// 無し
+}
 //===============================
 // 生成処理
 //===============================
@@ -19,7 +51,10 @@ CTime* CTime::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 	// タイムクラスのインスタンス生成
 	CTime* pTime = new CTime;
 
-	// セット
+	// nullptrだったら
+	if (pTime == nullptr) return nullptr;
+
+	// メンバ変数にセット
 	pTime->m_fHeight = fHeight;
 	pTime->m_fWidth = fWidth;
 	pTime->m_pos = pos;
@@ -27,9 +62,6 @@ CTime* CTime::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 	// 初期化失敗時
 	if (FAILED(pTime->Init()))
 	{
-		// 破棄
-		delete pTime;
-
 		// nullptr代入
 		pTime = nullptr;
 	}
@@ -38,29 +70,19 @@ CTime* CTime::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 	return pTime;
 }
 //===============================
-// テクスチャセット
-//===============================
-void CTime::SetTexture(void)
-{
-	// テクスチャポインタ取得
-	CTexture* pTexture = CManager::GetTexture();
-
-	m_nIdxTexture = pTexture->Register("data\\TEXTURE\\score001.png");
-}
-//===============================
 // 初期化処理
 //===============================
 HRESULT CTime::Init(void)
 {
 	// メンバ変数の初期化
-	m_nAllTime = 100;
-	m_nCurrentTime = 0;
+	m_nAllTime = NUMTIME;
+	m_nCurrentTime = NULL;
 
 	// 横幅計算
-	float fTexPos = m_fWidth / NUM_TIME;
+	float fTexPos = m_fWidth / DIGIT_TIME;
 
 	// 桁数分回す
-	for (int nCnt = 0; nCnt < NUM_TIME; nCnt++)
+	for (int nCnt = 0; nCnt < DIGIT_TIME; nCnt++)
 	{
 		// インスタンス生成
 		m_pNumber[nCnt] = new CNumber;
@@ -84,7 +106,7 @@ HRESULT CTime::Init(void)
 void CTime::Uninit(void)
 {
 	// 使った分破棄
-	for (int nCnt = 0; nCnt < NUM_TIME; nCnt++)
+	for (int nCnt = 0; nCnt < DIGIT_TIME; nCnt++)
 	{
 		// nullptrチェック
 		if (m_pNumber[nCnt] != nullptr)
@@ -128,7 +150,7 @@ void CTime::Update(void)
 	int time = m_nAllTime;
 
 	// 一の位から百の位まで順に分解
-	for (int nCnt = 0; nCnt < NUM_TIME; nCnt++)
+	for (int nCnt = 0; nCnt < DIGIT_TIME; nCnt++)
 	{
 		// 桁数計算
 		int digit = time % 10;
@@ -154,37 +176,23 @@ void CTime::Draw(void)
 	CTexture* pTexture = CManager::GetTexture();
 
 	// 桁数分描画
-	for (int nCnt = 0; nCnt < NUM_TIME; nCnt++)
+	for (int nCnt = 0; nCnt < DIGIT_TIME; nCnt++)
 	{
+		// テクスチャ設定
 		pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
 
+		// タイマー描画
 		m_pNumber[nCnt]->Draw();
 	}
 }
 //===============================
-// オーバーロードコンストラクタ
+// テクスチャセット
 //===============================
-CTime::CTime(int nPriority) : CObject(nPriority)
+void CTime::SetTexture(void)
 {
-	// 値のクリア
-	m_pos = VECTOR3_NULL;
-	m_fHeight = 0;
-	m_fWidth = 0;
-	m_nAllTime = 0;
-	m_nCurrentTime = 0;
-	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_rot = VECTOR3_NULL;
-	m_nIdxTexture = NULL;
+	// テクスチャポインタ取得
+	CTexture* pTexture = CManager::GetTexture();
 
-	for (int nCnt = 0; nCnt < NUM_TIME; nCnt++)
-	{
-		m_pNumber[nCnt] = nullptr;
-	}
-}
-//===============================
-// デストラクタ
-//===============================
-CTime::~CTime()
-{
-	// 無し
+	// テクスチャ割り当て
+	m_nIdxTexture = pTexture->Register("data\\TEXTURE\\score001.png");
 }

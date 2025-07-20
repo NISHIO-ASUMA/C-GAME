@@ -61,16 +61,16 @@ HRESULT CNumber::Init(D3DXVECTOR3 pos,float fwidth,float fheight)
 	pVtx[3].pos = D3DXVECTOR3(pos.x + fwidth, pos.y + fheight, 0.0f);
 
 	// rhwの設定(1.0fで固定)
-	pVtx[0].rhw = 1.0f;
-	pVtx[1].rhw = 1.0f;
-	pVtx[2].rhw = 1.0f;
+	pVtx[0].rhw = 
+	pVtx[1].rhw = 
+	pVtx[2].rhw = 
 	pVtx[3].rhw = 1.0f;
 
 	// 頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[0].col = COLOR_WHITE;
+	pVtx[1].col = COLOR_WHITE;
+	pVtx[2].col = COLOR_WHITE;
+	pVtx[3].col = COLOR_WHITE;
 
 	//テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);

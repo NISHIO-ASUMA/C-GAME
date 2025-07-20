@@ -76,9 +76,9 @@ CBg* CBg::Create(int nIdxBg)
 	}
 
 	// 2D•`‰æÝ’è
-	//pBg->SetRot(D3DXVECTOR3(VECTOR3_NULL));
-	//pBg->SetSize((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT);
-	//pBg->SetPos(D3DXVECTOR3(SCREEN_WIDTH * HALF, SCREEN_HEIGHT * HALF, 0.0f));
+	pBg->SetRot(D3DXVECTOR3(VECTOR3_NULL));
+	pBg->SetSize((float)SCREEN_WIDTH, (float)SCREEN_HEIGHT);
+	pBg->SetPos(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 
 	// ”wŒi‚Ìƒ|ƒCƒ“ƒ^‚ð•Ô‚·
 	return pBg;

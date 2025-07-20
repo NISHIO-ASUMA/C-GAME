@@ -99,11 +99,10 @@ void CGame::Update(void)
 	// 検証用画面遷移
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
 	{
-		// ゲームシーンに遷移
-		// CManager::SetScene(new CTitle());
-
+		// フェード取得
 		CFade* pFade = CManager::GetFade();
 
+		// 取得できたら
 		if (pFade != nullptr)
 		{
 			// 画面遷移
@@ -114,7 +113,7 @@ void CGame::Update(void)
 	// 検証用弾
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_L))
 	{
-		// ホーミングを生成
+		// ホーミング弾を生成
 		CBulletHorming::Create("data\\MODEL\\ATTACKMODEL\\bulletobject000.x", D3DXVECTOR3(0.0f, 400.0f, 0.0f));
 	}
 
@@ -134,15 +133,12 @@ CGame* CGame::Create(void)
 	// インスタンス生成
 	CGame* pGame = new CGame;
 
+	// nullptrだったら
+	if (pGame == nullptr) return nullptr;
+
 	// 初期化失敗時
 	if (FAILED(pGame->Init()))
 	{
-		// ポインタの破棄
-		delete pGame;
-
-		// nullptr代入
-		pGame = nullptr;
-
 		// ポインタを返す
 		return nullptr;
 	}

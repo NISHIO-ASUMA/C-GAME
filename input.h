@@ -8,11 +8,6 @@
 #ifndef _INPUT_H_ // このマクロ定義がされてなかったら
 #define _INPUT_H_ // 2重インクルード防止のマクロ定義
 
-//********************************
-// マクロ定義
-//********************************
-#define NUM_KEY_MAX (256)   // キー数
-
 //*******************************
 // 入力クラスを定義
 //*******************************
@@ -51,9 +46,11 @@ public:
 	bool GetRelease(int nKey);
 	bool GetRepeat(int nKey,int nMaxTime);
 
+	static inline constexpr int KEY_MAX = 256;
+
 private:
-	BYTE m_aKeystate[NUM_KEY_MAX]; // キー入力状態
-	BYTE m_aOldState[NUM_KEY_MAX]; // 過去の入力内容を保存
+	BYTE m_aKeystate[KEY_MAX]; // キー入力状態
+	BYTE m_aOldState[KEY_MAX]; // 過去の入力内容を保存
 
 	int m_nKeyPressCount;
 };

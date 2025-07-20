@@ -15,11 +15,6 @@
 #include "number.h"
 #include "object.h"
 
-//**********************
-// マクロ定義
-//**********************
-#define NUM_TIME (3) // 時間の桁数
-
 //**********************************
 // タイムクラスを定義
 //**********************************
@@ -42,6 +37,7 @@ public:
 
 	void SetTexture(void);
 
+	static inline constexpr int DIGIT_TIME = 3;
 private:
 	D3DXVECTOR3 m_pos;		// 座標
 	D3DXCOLOR m_col;
@@ -50,7 +46,7 @@ private:
 	int m_nCurrentTime;		// 経過時間
 	int m_nAllTime;			// 最大時間
 
-	CNumber* m_pNumber[NUM_TIME];	// ナンバー型の静的変数
+	CNumber* m_pNumber[DIGIT_TIME];	// ナンバー型の静的変数
 
 	float m_fHeight, m_fWidth;				// 横幅,高さ
 	int m_nIdxTexture;

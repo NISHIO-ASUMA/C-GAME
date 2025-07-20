@@ -57,19 +57,16 @@ CBoss* CBoss::Create(D3DXVECTOR3 pos,float fSize)
 	// インスタンス生成
 	CBoss* pBoss = new CBoss;
 
-	// セット
+	// 生成失敗時
+	if (pBoss == nullptr) return nullptr;
+
+	// オブジェクトセット
 	pBoss->m_pos = pos;
 	pBoss->m_fSize = fSize;
 
 	// 初期化失敗時
 	if (FAILED(pBoss->Init()))
 	{
-		// 破棄
-		delete pBoss;
-
-		// nullptr代入
-		pBoss = nullptr;
-
 		// nullポインタを返す
 		return nullptr;
 	}
@@ -93,7 +90,7 @@ CModel* CBoss::GetModelPartType(CModel::PARTTYPE modelpart)
 		}
 	}
 
-	// 該当なし
+	// 該当なしの場合
 	return nullptr;
 }
 //====================================

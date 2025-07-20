@@ -55,6 +55,9 @@ CMeshField* CMeshField::Create(D3DXVECTOR3 pos, float fRadius)
 	// インスタンス生成
 	CMeshField* pMeshField = new CMeshField;
 
+	// nullptrだったら
+	if (pMeshField == nullptr) return nullptr;
+
 	// 座標代入
 	pMeshField->m_pos = pos;
 
@@ -67,12 +70,6 @@ CMeshField* CMeshField::Create(D3DXVECTOR3 pos, float fRadius)
 	// 初期化失敗時
 	if (FAILED(pMeshField->Init()))
 	{
-		// 破棄
-		delete pMeshField;
-
-		// nullptr代入
-		pMeshField = nullptr;
-
 		// nullポインタを返す
 		return nullptr;
 	}

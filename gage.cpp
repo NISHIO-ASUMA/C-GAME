@@ -78,15 +78,12 @@ CGage* CGage::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 	// インスタンス生成
 	CGage* pGage = new CGage;
 
+	// 生成できなかったら
+	if (pGage == nullptr) return nullptr;
+
 	// 初期化失敗時
 	if (FAILED(pGage->Init()))
 	{
-		// ポインタの破棄
-		delete pGage;
-
-		// nullptrにする
-		pGage = nullptr;
-
 		// nullポインタを返す
 		return nullptr;
 	}

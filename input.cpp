@@ -14,7 +14,7 @@
 //********************************
 // マクロ定義
 //********************************
-#define STICK_PREV (1000) // Lスティックのしきい値
+constexpr int PREVSTICK = 1000;// Lスティックのしきい値
 
 //********************************
 // 静的メンバ変数宣言
@@ -89,7 +89,7 @@ LPDIRECTINPUTDEVICE8 CInput::GetInputDevice(void)
 CInputKeyboard::CInputKeyboard()
 {
 	// 値のクリア
-	for (int nCnt = 0; nCnt < NUM_KEY_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < KEY_MAX; nCnt++)
 	{
 		m_aKeystate[nCnt] = {};
 		m_aOldState[nCnt] = {};
@@ -152,9 +152,9 @@ void CInputKeyboard::Uninit(void)
 void CInputKeyboard::Update(void)
 {
 	// キーボードの入力情報格納用変数
-	BYTE aKeyState[NUM_KEY_MAX];
+	BYTE aKeyState[KEY_MAX];
 
-	for (int nCntkey = 0; nCntkey < NUM_KEY_MAX; nCntkey++)
+	for (int nCntkey = 0; nCntkey < KEY_MAX; nCntkey++)
 	{
 		m_aOldState[nCntkey] = m_aKeystate[nCntkey];	// キーボードのプレス情報を保存
 	}
@@ -162,7 +162,7 @@ void CInputKeyboard::Update(void)
 	//入力デバイスからデータを取得
 	if (SUCCEEDED(m_pDevice->GetDeviceState(sizeof(aKeyState), &aKeyState[0])))
 	{
-		for (int nCnt = 0; nCnt < NUM_KEY_MAX; nCnt++)
+		for (int nCnt = 0; nCnt < KEY_MAX; nCnt++)
 		{
 			m_aKeystate[nCnt] = aKeyState[nCnt];	// キーボードのプレス情報を保存
 		}
@@ -349,10 +349,10 @@ bool CJoyPad::GetLeftStick(void)
 	bool isLstick = false;
 
 	// スティックの入力値がしきい値を超えていなければ
-	if (m_joyKeyState.Gamepad.sThumbLX >=  STICK_PREV  ||
-		m_joyKeyState.Gamepad.sThumbLX <= -STICK_PREV  ||
-		m_joyKeyState.Gamepad.sThumbLY >=  STICK_PREV  ||
-		m_joyKeyState.Gamepad.sThumbLY <= -STICK_PREV)
+	if (m_joyKeyState.Gamepad.sThumbLX >=  PREVSTICK  ||
+		m_joyKeyState.Gamepad.sThumbLX <= -PREVSTICK  ||
+		m_joyKeyState.Gamepad.sThumbLY >=  PREVSTICK  ||
+		m_joyKeyState.Gamepad.sThumbLY <= -PREVSTICK)
 	{
 		isLstick = true;
 	}
@@ -436,8 +436,10 @@ void CInputMouse::Update(void)
 	// 最新のマウスの状態を更新
 	HRESULT	hr = m_pDevice->GetDeviceState(sizeof(DIMOUSESTATE), &m_CurrentMouseState);
 
+	// 取得できなかった場合
 	if (FAILED(hr))
 	{
+		// マウスデバイスの解放
 		m_pDevice->Acquire();
 	}
 
@@ -536,6 +538,7 @@ bool CInputMouse::GetState(DIMOUSESTATE* mouseState)
 
 			// 再取得を試みる
 			hr = pMouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)mouseState);
+
 			if (FAILED(hr))
 			{
 				return false;

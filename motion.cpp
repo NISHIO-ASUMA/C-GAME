@@ -492,6 +492,7 @@ void CMotion::SetModels(std::istringstream& iss, int& nModel, int nMaxParts)
 	if (nModel > nMaxParts)
 	{
 		MessageBox(NULL, "最大モデル数を超えています", "モデル数エラー", MB_OK);
+
 		return;
 	}
 }

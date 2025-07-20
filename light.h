@@ -9,16 +9,6 @@
 #define _LIGHT_H_ // 2重インクルード防止のマクロ定義
 
 //**********************
-// インクルードファイル
-//**********************
-
-
-//**********************
-// マクロ定義
-//**********************
-#define NUM_LIGHT (3)
-
-//**********************
 // ライトクラスを定義
 //**********************
 class CLight
@@ -31,9 +21,11 @@ public:
 	void Uninit(void);
 	void Update(void);
 
+	static inline constexpr int NUMLIGHT = 3;
+
 private:
-	D3DLIGHT9 m_aLight[NUM_LIGHT]; // ライト数
-	D3DXVECTOR3 m_vecDir[NUM_LIGHT];	// ベクトル
+	D3DLIGHT9 m_aLight[NUMLIGHT]; // ライト数
+	D3DXVECTOR3 m_vecDir[NUMLIGHT];	// ベクトル
 };
 
 #endif

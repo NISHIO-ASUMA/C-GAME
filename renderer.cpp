@@ -191,19 +191,20 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		&m_pVtxMT,
 		NULL);
 
+	// 幅,高さを設定
+	float fWidth = SCREEN_WIDTH * 0.5f;
+	float fHeight = SCREEN_HEIGHT * 0.5f;
+
 	// 頂点座標の設定
 	VERTEX_2D* pVtx = {};
 
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
 	m_pVtxMT->Lock(0, 0, (void**)&pVtx, 0);
 
-	//基準値
-	D3DXVECTOR3 pos = D3DXVECTOR3(640.0f, 360.0f, 0.0f);
+	// 基準値
+	D3DXVECTOR3 pos = D3DXVECTOR3(fWidth, fHeight, 0.0f);
 
-	// 幅,高さ
-	float fWidth = SCREEN_WIDTH * 0.5f;
-	float fHeight = SCREEN_HEIGHT * 0.5f;
-
+	// 各ポリゴンの設定
 	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
 	{
 		// 頂点座標の設定

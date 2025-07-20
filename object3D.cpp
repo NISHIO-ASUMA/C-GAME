@@ -42,20 +42,21 @@ CObject3D* CObject3D::Create(D3DXVECTOR3 pos)
 	// インスタンス生成
 	CObject3D* pObj3D = new CObject3D;
 
+	// nullptrだったら
+	if (pObj3D == nullptr) return nullptr;
+
 	// オブジェクト設定
-	pObj3D->SetTexture();
 	pObj3D->SetPos(pos);
+	pObj3D->SetTexture();
 
 	// 初期化処理失敗時
 	if (FAILED(pObj3D->Init()))
 	{
-		// 破棄
-		delete pObj3D;
-
 		// nullptr代入
 		pObj3D = nullptr;
 	}
 
+	// 生成されたポインタを返す
 	return pObj3D;
 }
 //===============================
@@ -92,10 +93,10 @@ HRESULT CObject3D::Init(void)
 	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);		// 4つ目の法線情報
 
 	// 頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[0].col = COLOR_WHITE;
+	pVtx[1].col = COLOR_WHITE;
+	pVtx[2].col = COLOR_WHITE;
+	pVtx[3].col = COLOR_WHITE;
 
 	// テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -147,10 +148,10 @@ void CObject3D::Update(void)
 	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);		// 4つ目の法線情報
 
 	// 頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[0].col = COLOR_WHITE;
+	pVtx[1].col = COLOR_WHITE;
+	pVtx[2].col = COLOR_WHITE;
+	pVtx[3].col = COLOR_WHITE;
 
 	// テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);

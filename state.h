@@ -50,41 +50,4 @@ private:
 	CStateBase* m_pNowState;	// 基底クラスのステートポインタ
 };
 
-//**********************
-// 状態管理クラスを定義
-//**********************
-class CState
-{
-public:
-	//***********************
-	// 状態の種類
-	//***********************
-	enum STATE
-	{
-		STATE_NONE,
-		STATE_NORMAL,
-		STATE_DAMAGE,
-		STATE_INVINCIBLE,
-		STATE_DEATH,
-		STATE_MAX
-	};
-
-	CState();
-	~CState();
-
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-
-	static CState* Create(void);
-
-	void SetState(int state) { m_state = state; }
-	int GetState(void) { return m_state; }
-
-private:
-	int m_state;		// 状態管理変数
-	int m_StateCount;	// カウンター
-};
-
-
 #endif

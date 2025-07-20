@@ -111,7 +111,8 @@ void CFade::Update(void)
 	if (m_fade == FADE_IN)
 	{
 		// フェードイン状態
-		m_col.a -= 0.03f;		// 透明にしていく
+		m_col.a -= 0.03f;
+
 		if (m_col.a <= 0.0f)
 		{
 			m_col.a = 0.0f;
@@ -123,6 +124,7 @@ void CFade::Update(void)
 	{
 		// フェードアウト状態
 		m_col.a += 0.03f;
+
 		if (m_col.a >= 1.0f)
 		{
 			m_col.a = 1.0f;
@@ -147,7 +149,6 @@ void CFade::Update(void)
 
 	// アンロック
 	m_pVtx->Unlock();
-
 }
 //==============================
 // 描画処理

@@ -46,6 +46,9 @@ CEffect* CEffect::Create(D3DXVECTOR3 pos, D3DXCOLOR col, D3DXVECTOR3 move, int n
 	// エフェクトポインタ
 	CEffect* pEffect = new CEffect;
 
+	// nullptrだったら
+	if (pEffect == nullptr) return nullptr;
+
 	// テクスチャセット
 	pEffect->SetTexture();
 

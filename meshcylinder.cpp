@@ -185,7 +185,7 @@ void CMeshCylinder::Uninit(void)
 //===============================
 void CMeshCylinder::Update(void)
 {
-	// 一旦なし
+	// なし
 }
 //===============================
 // 描画処理
@@ -256,6 +256,9 @@ CMeshCylinder* CMeshCylinder::Create(D3DXVECTOR3 pos, float fRadius)
 	// インスタンス生成
 	CMeshCylinder* pMesh = new CMeshCylinder;
 
+	// nullptrだったら
+	if (pMesh == nullptr) return nullptr;
+
 	// 代入
 	pMesh->SetTexture();
 	pMesh->m_pos = pos;
@@ -264,12 +267,6 @@ CMeshCylinder* CMeshCylinder::Create(D3DXVECTOR3 pos, float fRadius)
 	// 初期化失敗時
 	if (FAILED(pMesh->Init()))
 	{
-		// 破棄
-		delete pMesh;
-
-		// nullptr代入
-		pMesh = nullptr;
-
 		// nullポインタを返す
 		return nullptr;
 	}

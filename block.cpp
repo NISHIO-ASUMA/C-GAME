@@ -15,6 +15,7 @@
 //===============================
 CBlock::CBlock(int nPriority)
 {
+	// 値のクリア
 	m_size = 0.0f;
 }
 //===============================
@@ -66,6 +67,9 @@ CBlock* CBlock::Create(const char* pFileName, D3DXVECTOR3 pos,D3DXVECTOR3 rot,fl
 	// インスタンスを生成
 	CBlock* pBlock = new CBlock;
 
+	// nullptrだったら
+	if (pBlock == nullptr) return nullptr;
+
 	// オブジェクト設定
 	pBlock->SetFilePass(pFileName);
 	pBlock->SetPos(pos);
@@ -78,12 +82,6 @@ CBlock* CBlock::Create(const char* pFileName, D3DXVECTOR3 pos,D3DXVECTOR3 rot,fl
 	// 初期化に失敗したら
 	if (FAILED(pBlock->Init()))
 	{
-		// ポインタの破棄
-		delete pBlock;
-
-		// nullptr代入
-		pBlock = nullptr;
-
 		// nullptrを返す
 		return nullptr;
 	}

@@ -18,6 +18,7 @@
 //***********************************
 LPD3DXFONT CDebugproc::m_pFont = nullptr;  // フォントへのポインタ
 char CDebugproc::m_aStr[MAX_WORD] = {};	   // 文字列を格納するバッファ
+inline constexpr int FontSize = 20;
 
 //===============================
 // コンストラクタ
@@ -42,7 +43,7 @@ HRESULT CDebugproc::Init(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// デバッグ表示用のフォントを設定
-	D3DXCreateFont(pDevice, 20, 0, 0, 0,
+	D3DXCreateFont(pDevice, FontSize, 0, 0, 0,
 		FALSE,
 		DEFAULT_CHARSET,
 		OUT_DEFAULT_PRECIS,
@@ -63,7 +64,10 @@ void CDebugproc::Uninit(void)
 	// NULLチェック
 	if (m_pFont != nullptr)
 	{
+		// 解放
 		m_pFont->Release();
+
+		// nullptrにする
 		m_pFont = nullptr;
 	}
 }

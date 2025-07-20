@@ -41,15 +41,15 @@ public:
 	void ChangeTarget(D3DXVECTOR3 posV, D3DXVECTOR3 posR, D3DXVECTOR3 vecU);
 	LPDIRECT3DTEXTURE9 GetTextureFeedMT(void) { return m_apTextureMT[0]; }
 
-	static constexpr int NUM_FEEDBACKPOLYGON = 2; // フィードバック用ポリゴン
+	static inline constexpr int NUM_FEEDBACKPOLYGON = 2; // フィードバック用ポリゴン
 
 private:
-	LPDIRECT3D9 m_pD3D;				    // Direct3Dオブジェクトへのポインタ
-	LPDIRECT3DDEVICE9 m_pD3DDevice;	    // Direct3Dデバイスへのポインタ
+	LPDIRECT3D9 m_pD3D;					// Direct3Dオブジェクトへのポインタ
+	LPDIRECT3DDEVICE9 m_pD3DDevice;		// Direct3Dデバイスへのポインタ
 	static CDebugproc* m_pDebug;		// デバッグ
 	static int m_fps;					// fps
 	bool m_isDeviceLost;				// デバイスロスト対処
-	bool m_isbuller;
+	bool m_isbuller;					// ブラーかどうか
 
 	D3DPRESENT_PARAMETERS m_d3dpp;
 	UINT m_Width;

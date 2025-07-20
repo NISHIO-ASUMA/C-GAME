@@ -52,6 +52,9 @@ CScore* CScore::Create(D3DXVECTOR3 pos,float fWidth,float fHeight)
 	// スコアインスタンス生成
 	CScore* pScore = new CScore;
 
+	// nullptrだったら
+	if (pScore == nullptr) return nullptr;
+
 	// 座標,サイズ設定
 	pScore->m_pos = pos;
 	pScore->m_fWidth = fWidth;
@@ -60,12 +63,6 @@ CScore* CScore::Create(D3DXVECTOR3 pos,float fWidth,float fHeight)
 	// 初期化失敗時
 	if (FAILED(pScore->Init()))
 	{
-		// 破棄
-		delete pScore;
-
-		// nullptr代入
-		pScore = nullptr;
-
 		// nullptrを返す
 		return nullptr;
 	}

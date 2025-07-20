@@ -217,14 +217,14 @@ CModel* CModel::Create(D3DXVECTOR3 pos,D3DXVECTOR3 rot, const char* pFilename)
 	// インスタンス生成
 	CModel* pModel = new CModel;
 
+	// nullだったら
+	if (pModel == nullptr) return nullptr;
+
 	// 初期化失敗時
 	if (FAILED(pModel->Init(pos, rot,pFilename)))
 	{
-		// ポインタの破棄
-		delete pModel;
-
-		// 未使用状態にする
-		pModel = nullptr; 
+		// nullptrセット
+		return  nullptr;
 	}
 
 	// ポインタを返す

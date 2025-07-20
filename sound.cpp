@@ -13,8 +13,8 @@
 //**************************
 // マクロ定義
 //**************************
-#define CHUNK_HEADER_SIZE (sizeof(DWORD) * 2) // 基本サイズ定義
-#define RIFF_FORMAT_READ_SIZE (4)			  // WAVE部分の読み込みサイズ
+constexpr DWORD CHUNK_HEADER_SIZE = sizeof(DWORD) * 2;	// 基本サイズ定義
+constexpr int  RIFF_FORMAT_READ_SIZE = 4;				// WAVE部分の読み込みサイズ
 
 //============================
 // コンストラクタ

@@ -17,7 +17,6 @@
 // 静的メンバ変数宣言
 //**********************
 int CObject::m_nNumAll = NULL;					// オブジェクト総数
-
 CObject* CObject::m_pTop[PRIORITY_MAX] = {};	// 先頭アドレス
 CObject* CObject::m_pCur[PRIORITY_MAX] = {};	// 最後尾アドレス
 

@@ -13,12 +13,6 @@
 //**********************
 #include "object.h"
 
-//**********************
-// マクロ定義
-//**********************
-#define DIGIT_X (30)		// X面の分割数
-#define DIGIT_Z (1)			// Z面の分割数
-
 //**********************************
 // メッシュシリンダークラスを定義
 //**********************************
@@ -40,6 +34,9 @@ public:
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	float GetRadius(void) const { return m_fRadius; }
+
+	static inline constexpr int DIGIT_X = 30;
+	static inline constexpr int DIGIT_Z = 1;
 
 private:
 	int m_nTexIdx;		// テクスチャインデックス

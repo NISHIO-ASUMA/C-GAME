@@ -30,7 +30,7 @@ CParticle::CParticle(int nPriority) : CObject(nPriority)
 //===============================
 CParticle::~CParticle()
 {
-	// 値のクリア
+	// 無し
 }
 //===============================
 // 生成処理
@@ -40,15 +40,12 @@ CParticle* CParticle::Create(D3DXVECTOR3 pos, D3DXCOLOR col, int nMaxParticle,in
 	// パーティクルのポインタを宣言
 	CParticle* pParticle = new CParticle;
 
+	// nullだったら
+	if (pParticle == nullptr) return nullptr;
+
 	// 初期化失敗時
 	if (FAILED(pParticle->Init()))
 	{
-		// 破棄
-		delete pParticle;
-
-		// nullptrにする
-		pParticle = nullptr;
-
 		// nullポインタを返す
 		return nullptr;
 	}

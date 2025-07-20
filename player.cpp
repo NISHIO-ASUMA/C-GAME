@@ -124,12 +124,6 @@ CPlayer* CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,int nLife,const int nI
 	// プレイヤー初期化処理
 	if (FAILED(pPlayer->Init()))
 	{
-		// 破棄
-		delete pPlayer;
-
-		// nullptr代入
-		pPlayer = nullptr;
-
 		// nullptrを返す
 		return nullptr;
 	}
@@ -151,6 +145,7 @@ HRESULT CPlayer::Init(void)
 	// モーション種類数を代入
 	m_type = PLAYERMOTION_MAX;
 
+	// 角度初期化
 	m_fAngle = NULL;
 
 	// フラグを設定
@@ -224,16 +219,6 @@ void CPlayer::Uninit(void)
 
 		// nullptrにする
 		m_pMotion = nullptr;
-	}
-
-	// nullptrチェック
-	if (m_pState != nullptr)
-	{
-		// ポインタの破棄
-		delete m_pState;
-
-		// nullptrにする
-		m_pState = nullptr;
 	}
 
 	// nullptrチェック

@@ -314,17 +314,11 @@ void CManager::Update()
 	// フェードの更新
 	m_pFade->Update();
 
+	// シーンの更新
 	m_pScene->Update();
 
 	// レンダラーの更新処理
 	m_pRenderer->Update();
-
-	//// TODO : 検証用インパクト
-	//if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
-	//{
-	//	// 衝撃波を生成
-	//	CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
-	//}
 }
 //===========================
 // マネージャーの描画処理
@@ -377,8 +371,10 @@ void CManager::SetScene(CScene * pNewscene)
 	// 同シーンだったら
 	if (m_pScene->GetScene() == pNewscene->GetScene())
 	{
+		// シーンの破棄
 		delete pNewscene;
 
+		// ここで処理を返す
 		return;
 	}
 

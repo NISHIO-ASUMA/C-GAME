@@ -61,7 +61,6 @@ CExplosion* CExplosion::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,D3DX
 	pExplsion->SetRot(rot);
 	pExplsion->SetSize(EXPLOSION_SIZE_X, EXPLOSION_SIZE_Y);
 	pExplsion->SetPos(pos);
-	// pExplsion->SetUV(0.0f, 0.125f, 1.0f);
 	pExplsion->SetCol(col);
 
 	return pExplsion;

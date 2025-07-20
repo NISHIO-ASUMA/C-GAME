@@ -11,7 +11,6 @@
 //**********************
 // インクルードファイル
 //**********************
-
 #include "object2D.h"
 #include "object.h"
 #include "motion.h"

@@ -21,7 +21,6 @@
 class CShadow;
 class CInputKeyboard;
 class CCamera;
-class CState;
 class CParameter;
 class CShadowS;
 class CStateMachine;
@@ -110,7 +109,6 @@ private:
 	CModel* m_apModel[MAX_MODEL]; // 使うモデルのポインタ
 	CMotion* m_pMotion;		// モーションのポインタ
 	CShadow* m_pShadow;		// 影クラスのポインタ変数
-	CState* m_pState;		// 状態管理クラスのポインタ
 	CParameter* m_pParameter; // パラメータークラスポインタ
 	CShadowS* m_pShadowS;	// ステンシルシャドウクラスポインタ
 

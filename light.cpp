@@ -17,7 +17,7 @@
 CLight::CLight()
 {
 	// 値のクリア
-	for (int nCnt = 0; nCnt < NUM_LIGHT; nCnt++)
+	for (int nCnt = 0; nCnt < NUMLIGHT; nCnt++)
 	{
 		m_aLight[nCnt] = {};
 		m_vecDir[nCnt] = {};
@@ -38,13 +38,14 @@ HRESULT CLight::Init(void)
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-	// ライトのクリア処理(ゼロメモリー関数)
+	// ライトのクリア処理( ゼロメモリー関数 )
 	ZeroMemory(&m_aLight, sizeof(m_aLight));
 
 	// ライトの種類を設定
-	for (int nCnt = 0; nCnt < NUM_LIGHT; nCnt++)
+	for (int nCnt = 0; nCnt < NUMLIGHT; nCnt++)
 	{
-		m_aLight[nCnt].Type = D3DLIGHT_DIRECTIONAL;	// 平行光源
+		// 平行光源
+		m_aLight[nCnt].Type = D3DLIGHT_DIRECTIONAL;	
 
 		// ライトの拡散光
 		m_aLight[nCnt].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -56,7 +57,7 @@ HRESULT CLight::Init(void)
 	m_vecDir[2] = D3DXVECTOR3(1.0f, -0.5f, 0.4f);
 
 	// 正規化する
-	for (int nCnt1 = 0; nCnt1 < NUM_LIGHT; nCnt1++)
+	for (int nCnt1 = 0; nCnt1 < NUMLIGHT; nCnt1++)
 	{	
 		// ベクトルの大きさを1にする
 		D3DXVec3Normalize(&m_vecDir[nCnt1], &m_vecDir[nCnt1]); 

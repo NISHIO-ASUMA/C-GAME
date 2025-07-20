@@ -39,6 +39,9 @@ CShadow* CShadow::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	// インスタンス生成
 	CShadow* pShadow = new CShadow;
 
+	// nullptrだったら
+	if (pShadow == nullptr) return nullptr;
+
 	// オブジェクト設定
 	pShadow->SetPos(pos);
 	pShadow->SetRot(rot);
@@ -48,12 +51,6 @@ CShadow* CShadow::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	// 初期化失敗時
 	if (FAILED(pShadow->Init()))
 	{
-		// 破棄
-		delete pShadow;
-
-		// nullptr代入
-		pShadow = nullptr;
-
 		// 処理を返す
 		return nullptr;
 	}

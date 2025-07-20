@@ -19,7 +19,7 @@
 class CEffect : public CBillboard
 {
 public:
-	CEffect(int nPriority = 5);
+	CEffect(int nPriority = static_cast<int>(CObject::PRIORITY::EFFECT));
 	~CEffect();
 
 	HRESULT Init(void);

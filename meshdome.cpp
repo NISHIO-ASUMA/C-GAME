@@ -109,8 +109,8 @@ HRESULT CMeshDome::Init(void)
 
 			// テクスチャ座標を設定
 			pVtx[nCntV * (MeshDome_X_BLOCK + 1) + nCntH].tex = D3DXVECTOR2(
-				(float)nCntH / MeshDome_X_BLOCK,                           // U座標（円周方向）
-				1.0f - (float)nCntV / MeshDome_Z_BLOCK                     // V座標（高さ方向）
+				(float)nCntH / MeshDome_X_BLOCK,						// U座標（円周方向）
+				1.0f - (float)nCntV / MeshDome_Z_BLOCK				    // V座標（高さ方向）
 			);
 		}
 	}
@@ -129,10 +129,10 @@ HRESULT CMeshDome::Init(void)
 
 	for (int nCntV = 0; nCntV < MeshDome_Z_BLOCK; nCntV++)
 	{
-		for (int x = 0; x < MeshDome_X_BLOCK; x++)
+		for (int nCntX = 0; nCntX < MeshDome_X_BLOCK; nCntX++)
 		{
 			// 基準のインデックス
-		    int baseIndex = nCntV * (MeshDome_X_BLOCK + 1) + x;
+		    int baseIndex = nCntV * (MeshDome_X_BLOCK + 1) + nCntX;
 
 			// 三角形1
 			pIdx[idx++] = baseIndex;
@@ -224,7 +224,7 @@ void CMeshDome::Draw(void)
 	// ポリゴンの描画
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, MeshDome_VERTEX_NUM, 0, MeshDome_INDEX_NUM);
 
-	// テクスチャnULL
+	// テクスチャNULL
 	pDevice->SetTexture(0, NULL);
 }
 //==================================
@@ -235,6 +235,9 @@ CMeshDome* CMeshDome::Create(D3DXVECTOR3 pos, float nRadius)
 	// インスタンス生成
 	CMeshDome* pMeshDome = new CMeshDome;
 
+	// nullptrだったら
+	if (pMeshDome == nullptr) return nullptr;
+
 	// オブジェクト設定
 	pMeshDome->m_pos = pos;
 	pMeshDome->m_nRadius = nRadius;
@@ -243,13 +246,7 @@ CMeshDome* CMeshDome::Create(D3DXVECTOR3 pos, float nRadius)
 	// 初期化失敗時
 	if (FAILED(pMeshDome->Init()))
 	{
-		// 破棄
-		delete pMeshDome;
-
-		// nullptr代入
-		pMeshDome = nullptr;
-
-		// nullポインタを返す
+		// nulptrを返す
 		return nullptr;
 	}
 
@@ -264,6 +261,6 @@ void CMeshDome::SetTexture(void)
 	// テクスチャポインタ取得
 	CTexture* pTexture = CManager::GetTexture();
 
-	// テクスチャ登録
+	// テクスチャ割り当て
 	m_nTexIdx = pTexture->Register("data\\TEXTURE\\DomeTex.jpg");
 }

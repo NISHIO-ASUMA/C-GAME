@@ -13,6 +13,13 @@
 #include "player.h"
 #include "playerstate.h"
 
+//**************************
+// 定数宣言
+//**************************
+constexpr float MIN_RANGE = 40.0f;	// 最少距離
+constexpr float MOVESPEED = 5.0f;	// 追従スピード
+constexpr float HITRANGE = 70.0f;	// 当たり判定距離
+
 //==================================
 // コンストラクタ
 //==================================
@@ -107,7 +114,7 @@ void CBulletHorming::Update(void)
 	float fLength = D3DXVec3Length(&VecPlayer);
 
 	// 離れすぎていたら追従しないようにする
-	m_fRange = 40.0; 
+	m_fRange = MIN_RANGE;
 
 	// 追従距離上限より小さくなったら追従しない
 	if (fLength < m_fRange) return;
@@ -116,10 +123,16 @@ void CBulletHorming::Update(void)
 	D3DXVec3Normalize(&VecPlayer, &VecPlayer);
 
 	// 弾の移動速度を設定する
-	float fMove = 5.0f;
+	float fMove = MOVESPEED;
 
 	// 移動ベクトルを加算
 	NowPos += VecPlayer * fMove;
+
+	// 地面以下にならないようにする
+	if (NowPos.y <= PlayerPos.y + 50.0f)
+	{
+		NowPos.y = PlayerPos.y + 50.0f;
+	}
 
 	// 現在の座標にセットする
 	SetPos(NowPos);
@@ -147,7 +160,7 @@ bool CBulletHorming::Collision(D3DXVECTOR3 DestPos)
 	float fDistance = D3DXVec3Length(&vec);
 
 	// ヒット判定半径
-	const float fHitRadius = 100.0f;
+	const float fHitRadius = HITRANGE;
 
 	// 距離がヒット半径以内なら当たり
 	if (fDistance <= fHitRadius)

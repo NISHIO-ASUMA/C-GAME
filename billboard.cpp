@@ -41,7 +41,10 @@ CBillboard* CBillboard::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,float fWidth, fl
 	// インスタンス生成
 	CBillboard* pBillboard = new CBillboard;
 
-	// セットする
+	// nullptrだったら
+	if (pBillboard == nullptr) return nullptr;
+
+	// オブジェクトセット
 	pBillboard->SetPos(pos);
 	pBillboard->SetSize(fWidth, fHeight);
 	pBillboard->SetRot(rot);
@@ -49,11 +52,6 @@ CBillboard* CBillboard::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,float fWidth, fl
 	// 初期化失敗時
 	if (FAILED(pBillboard->Init()))
 	{
-		// メモリの破棄
-		delete pBillboard;
-
-		pBillboard = nullptr;
-
 		// 失敗結果を返す
 		return nullptr;
 	}
@@ -89,16 +87,16 @@ HRESULT CBillboard::Init(void)
 	pVtx[3].pos = D3DXVECTOR3(m_fWidth, -m_fHeight, 0.0f);
 
 	// 各頂点の法線(ベクトル)の設定
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);		// 1つ目の法線情報
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);		// 2つ目の法線情報
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);		// 3つ目の法線情報
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);		// 4つ目の法線情報
+	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);	// 1つ目の法線情報
+	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);	// 2つ目の法線情報
+	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);	// 3つ目の法線情報
+	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f,-1.0f);	// 4つ目の法線情報
 
 	// 頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[0].col = COLOR_WHITE;
+	pVtx[1].col = COLOR_WHITE;
+	pVtx[2].col = COLOR_WHITE;
+	pVtx[3].col = COLOR_WHITE;
 
 	// テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -119,7 +117,10 @@ void CBillboard::Uninit(void)
 	// 頂点バッファの破棄
 	if (m_pVtxBuff != nullptr)
 	{
+		// 解放
 		m_pVtxBuff->Release();
+
+		// nullptr初期化
 		m_pVtxBuff = nullptr;
 	}
 
@@ -144,10 +145,10 @@ void CBillboard::Update(void)
 	pVtx[3].pos = D3DXVECTOR3(m_fWidth, -m_fHeight, 0.0f);
 
 	// 各頂点の法線(ベクトル)の設定
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);		// 1つ目の法線情報
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);		// 2つ目の法線情報
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);		// 3つ目の法線情報
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);		// 4つ目の法線情報
+	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 1つ目の法線情報
+	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 2つ目の法線情報
+	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 3つ目の法線情報
+	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 4つ目の法線情報
 
 	// 頂点カラーの設定
 	pVtx[0].col = 

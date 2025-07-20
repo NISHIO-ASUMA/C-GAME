@@ -14,11 +14,6 @@
 #include "scene.h"
 
 //****************************
-// 前方宣言
-//****************************
-class CObject2D;
-
-//****************************
 // タイトルクラスを定義
 //****************************
 class CTitle :public CScene
@@ -35,7 +30,6 @@ public:
 	static CTitle* Create(void);
 
 private:
-	CObject2D* m_pObj;
 
 };
 #endif
