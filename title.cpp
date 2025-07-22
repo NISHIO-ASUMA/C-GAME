@@ -12,6 +12,8 @@
 #include "manager.h"
 #include "game.h"
 #include "ui.h"
+#include "objectX.h"
+#include "meshfield.h"
 
 //=====================================
 // コンストラクタ
@@ -34,6 +36,10 @@ HRESULT CTitle::Init(void)
 {
 	// UI生成
 	CUi::Create(VECTOR3_NULL, 0, 500.0f, 200.0f);
+
+	CObjectX::Create("data\\MODEL\\STAGEOBJ\\block000.x",VECTOR3_NULL);
+
+	CMeshField::Create(VECTOR3_NULL, 500.0f);
 
 	return S_OK;
 }

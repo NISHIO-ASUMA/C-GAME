@@ -42,6 +42,10 @@ public:
 
 	void EventWork(int nStartframe, int EndFrame);
 
+	void LockOn(void);
+	void PlayerFollow(void);
+	void Rotation(void);
+
 private:
 	// ƒJƒƒ‰\‘¢‘Ì‚ğ’è‹`
 	struct Camera

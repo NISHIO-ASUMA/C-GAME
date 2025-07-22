@@ -87,17 +87,15 @@ void CCamera::Update(void)
 	CInputMouse* pMouse = CManager::GetMouse();
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
-	// ボス取得
-	CBoss* pBoss = CGame::GetBoss();
+	// 現在シーンの取得
+	CScene::MODE pMode = CManager::GetScene();
 
-	// プレイヤー取得
-	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
-	CPlayer* pPlayerSub = CPlayer::GetIdxPlayer(1);
-
-	// nullptrチェック
-	if (pPlayer == nullptr || pPlayerSub == nullptr)
+	// タイトルなら
+	if (pMode == CScene::MODE_TITLE)
 	{
-		// ここで処理を返す
+		// カメラの旋回処理
+		Rotation();
+
 		return;
 	}
 
@@ -127,79 +125,13 @@ void CCamera::Update(void)
 		break;
 
 	case MODE_PLAYER:
-		// 追従カメラ用に設定
-		m_pCamera.posRDest.x = pPlayer->GetPos().x + sinf(pPlayer->GetRotDest().y) * 1.0f;
-		m_pCamera.posRDest.y = pPlayer->GetPos().y + cosf(pPlayer->GetRotDest().y) * 1.0f;
-		m_pCamera.posRDest.z = pPlayer->GetPos().z + cosf(pPlayer->GetRotDest().y) * 1.0f;
-
-		m_pCamera.posR.x += ((m_pCamera.posRDest.x - m_pCamera.posR.x) * 0.3f);
-		m_pCamera.posR.y += ((m_pCamera.posRDest.y - m_pCamera.posR.y) * 0.3f);
-		m_pCamera.posR.z += ((m_pCamera.posRDest.z - m_pCamera.posR.z) * 0.3f);
-
-		// カメラの視点の情報
-		m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * m_pCamera.fDistance;
-		m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * m_pCamera.fDistance;
-		m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * m_pCamera.fDistance;
-
+		// 追従
+		PlayerFollow();
 		break;
 
 	case MODE_LOCKON:
-	{
-		// MAINプレイヤー座標,SUBプレイヤー座標,ボス座標を取得
-		D3DXVECTOR3 playerPos = pPlayer->GetPos();				// MAIN座標
-		D3DXVECTOR3 subPlayerPos = pPlayerSub->GetPos();		// SUB座標
-		D3DXVECTOR3 bossPos = pBoss->GetPos();					// ボス座標
-
-		// MAINプレイヤー向き計算
-		D3DXVECTOR3 VecToBoss = bossPos - playerPos;
-
-		// 高さは無視
-		VecToBoss.y = 0.0f;
-
-		// ベクトルを正規化
-		D3DXVec3Normalize(&VecToBoss, &VecToBoss);
-
-		// ボスへの角度を計算
-		float fAngleToBoss = atan2f(VecToBoss.x, VecToBoss.z);
-
-		// プレイヤーの目的角に設定する
-		pPlayer->SetRotDest(D3DXVECTOR3(0.0f, fAngleToBoss, 0.0f));
-
-		// SUBプレイヤーの向き計算
-		D3DXVECTOR3 VecSubToBoss = bossPos - subPlayerPos;
-
-		// 高さは無視
-		VecSubToBoss.y = 0.0f;
-
-		// ベクトルを正規化する
-		D3DXVec3Normalize(&VecSubToBoss, &VecSubToBoss);
-
-		// ボスへの角度を計算
-		float fAngleSubToBoss = atan2f(-VecSubToBoss.x, -VecSubToBoss.z);
-
-		// SUBプレイヤーの目的角度を設定
-		pPlayerSub->SetRotDest(D3DXVECTOR3(0.0f, fAngleSubToBoss, 0.0f));
-
-		// カメラ位置をMAINプレイヤーの後方へ
-		D3DXVECTOR3 camOffset = -VecToBoss * 350.0f;
-
-		// 高さを低めに設定
-		camOffset.y = 80.0f;
-
-		// カメラの目的位置
-		D3DXVECTOR3 desiredPosV = playerPos + camOffset;
-
-		// ターゲット座標（ボスに加え高さもやや高めに）
-		D3DXVECTOR3 targetBoss = bossPos;
-		targetBoss.y = playerPos.y + 150.0f;  // 視点の上方向を強調（元は+50）
-
-		// カメラに適用する（滑らかに補間）
-		m_pCamera.posV += (desiredPosV - m_pCamera.posV) * 0.3f;
-		m_pCamera.posR += (targetBoss - m_pCamera.posR) * 0.3f;
-
-		// ロックオン専用のカメラ角度を調整
-		m_pCamera.rot.x = D3DX_PI * 0.42f;  // 約75度：下から見上げる角度	
-	}
+		// ロックオン
+		LockOn();
 		break;
 
 	default:
@@ -334,4 +266,123 @@ void CCamera::MouseView(CInputMouse * pMouse)
 		m_pCamera.rot.x += -D3DX_PI * 2.0f;
 	}
 
+}
+//=================================
+// ロックオン処理
+//=================================
+void CCamera::LockOn(void)
+{
+	// ボス取得
+	CBoss* pBoss = CGame::GetBoss();
+
+	// プレイヤー取得
+	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
+	CPlayer* pPlayerSub = CPlayer::GetIdxPlayer(1);
+
+	// nullptrチェック
+	if (pPlayer == nullptr || pPlayerSub == nullptr)
+	{
+		// ここで処理を返す
+		return;
+	}
+
+	// MAINプレイヤー座標,SUBプレイヤー座標,ボス座標を取得
+	D3DXVECTOR3 playerPos = pPlayer->GetPos();				// MAIN座標
+	D3DXVECTOR3 subPlayerPos = pPlayerSub->GetPos();		// SUB座標
+	D3DXVECTOR3 bossPos = pBoss->GetPos();					// ボス座標
+
+	// MAINプレイヤー向き計算
+	D3DXVECTOR3 VecToBoss = bossPos - playerPos;
+
+	// 高さは無視
+	VecToBoss.y = 0.0f;
+
+	// ベクトルを正規化
+	D3DXVec3Normalize(&VecToBoss, &VecToBoss);
+
+	// ボスへの角度を計算
+	float fAngleToBoss = atan2f(VecToBoss.x, VecToBoss.z);
+
+	// プレイヤーの目的角に設定する
+	pPlayer->SetRotDest(D3DXVECTOR3(0.0f, fAngleToBoss, 0.0f));
+
+	// SUBプレイヤーの向き計算
+	D3DXVECTOR3 VecSubToBoss = bossPos - subPlayerPos;
+
+	// 高さは無視
+	VecSubToBoss.y = 0.0f;
+
+	// ベクトルを正規化する
+	D3DXVec3Normalize(&VecSubToBoss, &VecSubToBoss);
+
+	// ボスへの角度を計算
+	float fAngleSubToBoss = atan2f(-VecSubToBoss.x, -VecSubToBoss.z);
+
+	// SUBプレイヤーの目的角度を設定
+	pPlayerSub->SetRotDest(D3DXVECTOR3(0.0f, fAngleSubToBoss, 0.0f));
+
+	// カメラ位置をMAINプレイヤーの後方へ
+	D3DXVECTOR3 camOffset = -VecToBoss * 350.0f;
+
+	// 高さを低めに設定
+	camOffset.y = 80.0f;
+
+	// カメラの目的位置
+	D3DXVECTOR3 desiredPosV = playerPos + camOffset;
+
+	// ターゲット座標（ボスに加え高さもやや高めに）
+	D3DXVECTOR3 targetBoss = bossPos;
+	targetBoss.y = playerPos.y + 150.0f;  // 視点の上方向を強調（元は+50）
+
+	// カメラに適用する（滑らかに補間）
+	m_pCamera.posV += (desiredPosV - m_pCamera.posV) * 0.3f;
+	m_pCamera.posR += (targetBoss - m_pCamera.posR) * 0.3f;
+
+	// ロックオン専用のカメラ角度を調整
+	m_pCamera.rot.x = D3DX_PI * 0.42f;
+}
+//=================================
+// プレイヤー追従処理
+//=================================
+void CCamera::PlayerFollow(void)
+{
+	// プレイヤー取得
+	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
+	CPlayer* pPlayerSub = CPlayer::GetIdxPlayer(1);
+
+	// nullptrチェック
+	if (pPlayer == nullptr || pPlayerSub == nullptr)
+	{
+		// ここで処理を返す
+		return;
+	}
+
+	// 追従カメラ用に設定
+	m_pCamera.posRDest.x = pPlayer->GetPos().x + sinf(pPlayer->GetRotDest().y) * 1.0f;
+	m_pCamera.posRDest.y = pPlayer->GetPos().y + cosf(pPlayer->GetRotDest().y) * 1.0f;
+	m_pCamera.posRDest.z = pPlayer->GetPos().z + cosf(pPlayer->GetRotDest().y) * 1.0f;
+
+	m_pCamera.posR.x += ((m_pCamera.posRDest.x - m_pCamera.posR.x) * 0.3f);
+	m_pCamera.posR.y += ((m_pCamera.posRDest.y - m_pCamera.posR.y) * 0.3f);
+	m_pCamera.posR.z += ((m_pCamera.posRDest.z - m_pCamera.posR.z) * 0.3f);
+
+	// カメラの視点の情報
+	m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * m_pCamera.fDistance;
+	m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * m_pCamera.fDistance;
+	m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * m_pCamera.fDistance;
+}
+//=================================
+// 常に回転するカメラの処理
+//=================================
+void CCamera::Rotation(void)
+{
+	m_pCamera.posV.z = -500.0f;
+	m_pCamera.posV.y = 800.0f;
+
+	m_pCamera.rot.y += 0.005f; // カメラの視点の情報
+	m_pCamera.rot.x = D3DX_PI * 0.75f;
+
+	m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * 1000.0f;
+	m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * 1000.0f;
+	m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * 1000.0f;
 }
