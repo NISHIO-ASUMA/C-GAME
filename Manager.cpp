@@ -142,7 +142,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pTexture->Load();
 
 	// シーンセット
-	m_pFade->SetFade(new CGame());
+	m_pFade->SetFade(new CTitle());
 
 	return S_OK;
 }

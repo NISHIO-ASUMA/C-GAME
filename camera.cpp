@@ -65,10 +65,20 @@ HRESULT CCamera::Init(void)
 	// 視点から注視点までの距離
 	m_pCamera.fDistance = sqrtf((fRotx * fRotx) + (fRoty * fRoty) + (fRotz * fRotz));
 
-#ifdef _DEBUG
-	// 初期モードセット
-	m_pCamera.nMode = MODE_NONE;
-#endif
+	// 現在シーンの取得
+	CScene::MODE pMode = CManager::GetScene();
+
+	// タイトルなら
+	if (pMode == CScene::MODE_TITLE)
+	{
+		m_pCamera.nMode = MODE_NONE;
+	}
+	else
+	{
+		// タイトル以外
+		m_pCamera.nMode = MODE_LOCKON;
+	}
+
 	return S_OK;
 }
 //=================================
@@ -332,7 +342,7 @@ void CCamera::LockOn(void)
 
 	// ターゲット座標（ボスに加え高さもやや高めに）
 	D3DXVECTOR3 targetBoss = bossPos;
-	targetBoss.y = playerPos.y + 150.0f;  // 視点の上方向を強調（元は+50）
+	targetBoss.y = playerPos.y + 150.0f;  // 視点の上方向を強調
 
 	// カメラに適用する（滑らかに補間）
 	m_pCamera.posV += (desiredPosV - m_pCamera.posV) * 0.3f;
@@ -381,8 +391,9 @@ void CCamera::Rotation(void)
 
 	m_pCamera.rot.y += 0.005f; // カメラの視点の情報
 	m_pCamera.rot.x = D3DX_PI * 0.75f;
+	m_pCamera.fDistance = 1000.0f;
 
-	m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * 1000.0f;
-	m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * 1000.0f;
-	m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * 1000.0f;
+	m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * m_pCamera.fDistance;
+	m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * m_pCamera.fDistance;
+	m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * m_pCamera.fDistance;
 }
