@@ -170,7 +170,7 @@ HRESULT CPlayer::Init(void)
 		}
 	}
 	
-	// 一人目 かつ フラグが未使用判定なら
+	// 一人目のプレイヤーなら
 	if (m_nIdxPlayer == NUMBER_MAIN)
 	{
 		// ステンシルシャドウ生成
@@ -285,10 +285,32 @@ void CPlayer::Update(void)
 	D3DXMATRIX mtxWorld = pModelWeapon->GetMtxWorld();
 	D3DXVECTOR3 vecToBoss = VecToBoss(m_pos);
 
+	// ジャンプ状態時の更新関数
 	UpdateJumpAction(pInput, mtxWorld, vecToBoss);
 
 	// 当たり判定処理関数
 	Collision();
+
+	// SUBプレイヤーだけ処理
+	if (m_nIdxPlayer == NUMBER_SUB)
+	{
+		// MAINプレイヤー取得
+		CPlayer* pMain = CPlayer::GetIdxPlayer(NUMBER_MAIN);
+
+		if (pMain)
+		{
+			// MAINがダメージステート中ならSUBもダメージステートに
+			if (pMain->GetNowMotion() == PLAYERMOTION_DAMAGE &&
+				m_pMotion->GetMotionType() != PLAYERMOTION_DAMAGE)
+			{
+				// モーション変更
+				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+
+				// ステート変更
+				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+			}
+		}
+	}
 
 	// 現在のy座標が0.0f以下の時
 	if (m_pos.y <= 0.0f)
@@ -847,6 +869,9 @@ void CPlayer::InitPos(float fAngle)
 	// 前フレーム座標をセット
 	m_posOld = m_pos;
 }
+//===============================
+// ジャンプ制御関数
+//===============================
 void CPlayer::StartJump(void)
 {
 	// ジャンプキー入力 かつ ジャンプフラグがfalseの時
@@ -861,4 +886,17 @@ void CPlayer::StartJump(void)
 		// 上昇値を設定
 		m_move.y = PLAYER_JUMPVALUE;
 	}
+}
+//===============================
+// 現在のモーション種類取得
+//===============================
+CPlayer::PLAYERMOTION CPlayer::GetNowMotion() const
+{
+	// nullじゃなかったら
+	if (m_pMotion)
+	{
+		return static_cast<CPlayer::PLAYERMOTION>(m_pMotion->GetMotionType());
+	}
+
+	return PLAYERMOTION_NEUTRAL; // デフォルト
 }

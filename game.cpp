@@ -19,6 +19,7 @@
 #include "debugproc.h"
 #include "title.h"
 #include "bullethorming.h"
+#include "playerlifegage.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -72,6 +73,10 @@ HRESULT CGame::Init(void)
 
 	// ブロック配置
 	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
+
+	// 体力ゲージ生成
+	CPlayerLifeGage::Create(D3DXVECTOR3(240.0f, 30.0f, 0.0f), 240.0f, 30.0f, CPlayerLifeGage::GAGE_FRAME);
+	CPlayerLifeGage::Create(D3DXVECTOR3(240.0f, 30.0f, 0.0f), 200.0f, 25.0f, CPlayerLifeGage::GAGE_BAR);
 
     return S_OK;
 }

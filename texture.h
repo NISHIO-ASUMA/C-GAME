@@ -49,7 +49,8 @@ private:
 		"data\\TEXTURE\\bg.jpeg",
 		"data\\TEXTURE\\DomeTex.jpg",
 		"data\\TEXTURE\\shadow000.jpg",
-		"data\\TEXTURE\\lifebar_gage.png",
+		"data\\TEXTURE\\lifegage.png",
+		"data\\TEXTURE\\lifeframe.png",
 		"data\\TEXTURE\\score001.png",
 	};
 

@@ -45,8 +45,9 @@ public:
 	BTYPE GetType(void) { return m_Type; }
 	void SetTexture(BTYPE type);
 
-private:
 	bool Collision(D3DXVECTOR3 pos); // “–‚½‚è”»’è—pŠÖ”
+
+private:
 	D3DXVECTOR3 m_move;		// ˆÚ“®—Ê
 	int m_nLife;			// ‘Ì—Í
 	BTYPE m_Type;			// í—Ş

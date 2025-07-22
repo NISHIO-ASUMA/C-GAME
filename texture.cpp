@@ -115,7 +115,7 @@ int CTexture::Register(const char* pFileName)
 	return nIdx;
 }
 //===============================
-//テクスチャ番号取得
+// テクスチャ番号取得
 //===============================
 LPDIRECT3DTEXTURE9 CTexture::GetAddress(int nIdx)
 {

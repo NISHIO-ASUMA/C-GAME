@@ -95,6 +95,7 @@ public:
 	
 	void GravityScal(void);
 	static inline constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
+	PLAYERMOTION GetNowMotion(void) const;
 
 private:
 
@@ -111,6 +112,7 @@ private:
 	CShadow* m_pShadow;		// 影クラスのポインタ変数
 	CParameter* m_pParameter; // パラメータークラスポインタ
 	CShadowS* m_pShadowS;	// ステンシルシャドウクラスポインタ
+	CStateMachine* m_pStateMachine;	// ステート基底クラスのポインタ
 
 	int m_type;				// モーションの種類変数
 	int m_nNumAll;		    // モデル総数
@@ -127,8 +129,6 @@ private:
 	int m_nIdxPlayer;		// プレイヤーの識別番号
 
 	const char* m_pFilename; // 読み込むファイル名
-
-	CStateMachine* m_pStateMachine;	// ステート基底クラスのポインタ
 
 };
 

@@ -19,7 +19,19 @@
 class CObject2D : public CObject
 {
 public:
-	CObject2D(int nPriority = 3);
+	//****************************
+	// アンカーポイントタイプ
+	//****************************
+	enum ANCHORTYPE
+	{
+		ANCHORTYPE_NONE,
+		ANCHORTYPE_CENTER,
+		ANCHORTYPE_LEFTSIDE,
+		ANCHORTYPE_RIGHTSIDE,
+		ANCHORTYPE_MAX
+	};
+
+	CObject2D(int nPriority = static_cast<int>(CObject::PRIORITY::UI));
 	~CObject2D();
 
 	HRESULT Init(void);
@@ -39,8 +51,15 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_Rot; } // 現在の角度を取得
 	D3DXCOLOR GetCol(void) { return m_col; } // 現在の色を取得
 
+	void SetAnchor(int Type) { m_nAnchorType = Type; }
+
+	void SetCenter(void);
+	void SetLeft(void);
+	void SetRight(void);
+
 private:
-	LPDIRECT3DTEXTURE9 m_pTexture;      // テクスチャポインタ
+
+	LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff; // 頂点バッファのポインタ
 
 	D3DXVECTOR3 m_Rot;	// 角度情報
@@ -49,6 +68,7 @@ private:
 
 	float m_fWidth;	// 横幅
 	float m_fHeight;// 高さ
+	int m_nAnchorType;	// 基準座標設定
 };
 
 #endif

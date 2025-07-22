@@ -193,6 +193,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="playerlifegage.cpp" />
     <ClCompile Include="playerstate.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="scene.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="particle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="playerlifegage.h" />
     <ClInclude Include="playerstate.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="scene.h" />
