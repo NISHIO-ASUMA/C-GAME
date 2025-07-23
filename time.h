@@ -11,7 +11,6 @@
 //**********************
 // インクルードファイル
 //**********************
-
 #include "number.h"
 #include "object.h"
 
@@ -21,7 +20,7 @@
 class CTime : public CObject
 {
 public:
-	CTime(int nPriority = 6);
+	CTime(int nPriority = static_cast<int>(CObject::PRIORITY::UI));
 	~CTime();
 
 	HRESULT Init(void);

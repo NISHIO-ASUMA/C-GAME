@@ -19,7 +19,7 @@
 class CObjectX : public CObject
 {
 public:
-	CObjectX(int nPriority = 3);
+	CObjectX(int nPriority = static_cast<int>(CObject::PRIORITY::BASENUMBER));
 	~CObjectX();
 
 	HRESULT Init(void);
@@ -36,6 +36,8 @@ public:
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 
+	void SetUseQuat(bool isFlags) { m_isUseQaut = isFlags; }
+
 private:
 	D3DXMATRIX m_mtxWorld; // ワールドマトリックス
 	LPD3DXMESH m_pMesh;	   // メッシュ情報
@@ -47,7 +49,20 @@ private:
 	int m_nIdxTexture;		// テクスチャインデックス
 	int* m_pTexture;		// テクスチャポインタ
 
-	const char* m_pFileName;	// ファイル名
+	const char* m_pFileName; // ファイル名
+
+	bool m_isUseQaut;		 // クォータニオンかどうか
+
+	D3DXMATRIX m_mtxRot;		// 回転マトリックス
+	D3DXQUATERNION m_quat;	// クォータニオン
+	D3DXVECTOR3 m_VecAxis;	// 回転軸
+	float fValueRot;		// 回転角度
+
+
+	D3DXVECTOR3 m_posOld;   // 前フレームの位置
+	float m_theta;          // 現在の角度
+	float m_radius;         // 円の半径
+
 };
 
 #endif

@@ -1,6 +1,6 @@
 //====================================
 //
-// Xファイル処理 [ objectX.h ]
+// Xファイル処理 [ objectX.cpp ]
 // Author: Asuma Nishio
 //
 //=====================================
@@ -26,6 +26,16 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	m_rot = VECTOR3_NULL;
 	m_pTexture = nullptr;
 	m_pFileName = {};
+
+	// クォータニオン用変数クリア
+	m_isUseQaut = false;
+	m_mtxRot = {};
+	fValueRot = NULL;
+	m_VecAxis = VECTOR3_NULL;
+	m_quat = {};
+	m_posOld = m_pos;
+	m_theta = 0.0f;
+	m_radius = 5.0f;
 }
 //=============================
 // デストラクタ
@@ -75,7 +85,8 @@ HRESULT CObjectX::Init(void)
 		}
 		else
 		{
-			m_pTexture[nCntMat] = -1; // テクスチャなし
+			// テクスチャなし
+			m_pTexture[nCntMat] = -1; 
 		}
 	}
 
@@ -101,11 +112,13 @@ void CObjectX::Uninit(void)
 		m_pBuffMat = nullptr;
 	}
 
-	// テクスチャポインタの破棄
+	// nullじゃなかったら
 	if (m_pTexture != nullptr)
 	{
+		// ポインタの破棄
 		delete m_pTexture;
 
+		// nullptrにする
 		m_pTexture = nullptr;
 	}
 
@@ -117,7 +130,36 @@ void CObjectX::Uninit(void)
 //=============================
 void CObjectX::Update(void)
 {
-	// 一旦無し
+	// クォータニオンなら
+	if (m_isUseQaut)
+	{
+		// 円運動の角度更新
+		m_theta += 0.01f;
+
+		if (m_theta > D3DX_PI * 2.0f)
+			m_theta -= D3DX_PI * 2.0f;
+
+		// 前回位置を保存
+		m_posOld = m_pos;
+
+		// 円状の新しい位置を計算
+		m_pos.x = cosf(m_theta) * 5.0f;
+		m_pos.z = sinf(m_theta) * 5.0f;
+
+		// 進行方向ベクトル（現在位置 - 前回位置）
+		D3DXVECTOR3 vDir = m_pos - m_posOld;
+		D3DXVec3Normalize(&vDir, &vDir);
+
+		// モデルの前方向（+Z軸と仮定）
+		D3DXVECTOR3 vFront = { 0.0f, 0.0f, 1.0f };
+
+		// 回転軸 = front × dir
+		D3DXVec3Cross(&m_VecAxis, &vFront, &vDir);
+		D3DXVec3Normalize(&m_VecAxis, &m_VecAxis);
+
+		m_VecAxis = { 0.0f, 1.0f, 0.0f }; // Y軸固定
+		fValueRot += 0.01f;
+	}
 }
 //=============================
 // 描画処理
@@ -139,9 +181,26 @@ void CObjectX::Draw(void)
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
-	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	// クォータニオン時
+	if (m_isUseQaut)
+	{
+		// クォータニオン生成
+		D3DXQuaternionRotationAxis(&m_quat, &m_VecAxis, fValueRot);
+
+		// 回転マトリックスを生成
+		D3DXMatrixRotationQuaternion(&m_mtxRot, &m_quat);
+
+		// 向きを反映
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxRot);
+	}
+	else
+	{
+		// 向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+		// 向きを反映7
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	}
+
 
 	// 位置を反映
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);

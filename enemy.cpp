@@ -120,11 +120,8 @@ HRESULT CEnemy::Init(void)
 	// オブジェクトの種類
 	SetObjType(TYPE_ENEMY);
 
-	// クォータニオン生成
-	D3DXQuaternionRotationAxis(&m_quat, &m_VecAxis, fValueRot);
-
-	// 回転マトリックスを生成
-	D3DXMatrixRotationQuaternion(&mtxRot, &m_quat);
+	// クォータニオン適用
+	SetUseQuat(true);
 
 	// 初期化結果を返す
 	return S_OK;
@@ -172,6 +169,7 @@ void CEnemy::Update(void)
 	float fRadius = CGame::GetCylinder()->GetRadius();
 
 	// 状態に応じて処理変更
+	CObjectX::Update();
 }
 //===============================
 // 敵の描画処理

@@ -42,6 +42,7 @@ public:
 		NONE, // 初期状態
 		SCENE,// シーン
 		MESH, // メッシュ
+		BASENUMBER, // 基準番号
 		BLOCK, // ブロック
 		BULLET,// 弾
 		BOSS, // ボス
