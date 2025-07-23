@@ -86,6 +86,11 @@ private:
 	static int m_NumEnemy;	// 敵数管理
 	int m_nMoveCount;		// 移動継続時間のカウント
 
+	D3DXMATRIX mtxRot;	// 回転マトリックス
+	D3DXQUATERNION m_quat;	// クォータニオン
+	D3DXVECTOR3 m_VecAxis;	// 回転軸
+	float fValueRot;		// 回転角度
+
 	CParameter* m_pParam;	// パラメータークラスポインタ
 	CStateMachine* m_pStateMachine;	// ステート基底クラスのポインタ
 

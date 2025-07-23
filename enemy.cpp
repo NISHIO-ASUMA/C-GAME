@@ -36,6 +36,12 @@ CEnemy::CEnemy(int nPriority) : CObjectX(nPriority)
 	m_nMoveCount = NULL;
 	m_pParam = nullptr;
 	m_pStateMachine = nullptr;
+
+	mtxRot = {};
+	m_VecAxis = VECTOR3_NULL;
+	m_quat = {};
+	fValueRot = NULL;
+
 }
 //===============================
 // デストラクタ
@@ -113,6 +119,12 @@ HRESULT CEnemy::Init(void)
 
 	// オブジェクトの種類
 	SetObjType(TYPE_ENEMY);
+
+	// クォータニオン生成
+	D3DXQuaternionRotationAxis(&m_quat, &m_VecAxis, fValueRot);
+
+	// 回転マトリックスを生成
+	D3DXMatrixRotationQuaternion(&mtxRot, &m_quat);
 
 	// 初期化結果を返す
 	return S_OK;
