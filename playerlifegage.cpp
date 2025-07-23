@@ -17,8 +17,8 @@
 //**********************
 // 定数宣言
 //**********************
-constexpr float GAGE_WIDTH = 40.0f; // 基準値に掛ける倍率
-constexpr float GAGE_HEIGHT = 30.0f; // ゲージの高さの固定値
+constexpr float GAGE_WIDTH = 46.0f; // 基準値に掛ける倍率
+constexpr float GAGE_HEIGHT = 38.0f; // ゲージの高さの固定値
 
 //========================
 // コンストラクタ
@@ -88,7 +88,7 @@ void CPlayerLifeGage::Update(void)
 		m_nLifeLength = pParam->GetHp();
 
 		// サイズセット
-		SetSize(m_nLifeLength * 25.0f, GAGE_HEIGHT);
+		SetSize(m_nLifeLength * GAGE_WIDTH, GAGE_HEIGHT);
 	}
 
 	// 親クラスの更新処理

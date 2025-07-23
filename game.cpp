@@ -20,6 +20,7 @@
 #include "title.h"
 #include "bullethorming.h"
 #include "playerlifegage.h"
+#include "enemy.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -75,8 +76,11 @@ HRESULT CGame::Init(void)
 	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
 
 	// 体力ゲージ生成
-	CPlayerLifeGage::Create(D3DXVECTOR3(240.0f, 30.0f, 0.0f), 240.0f, 30.0f, CPlayerLifeGage::GAGE_FRAME);
-	CPlayerLifeGage::Create(D3DXVECTOR3(240.0f, 30.0f, 0.0f), 200.0f, 25.0f, CPlayerLifeGage::GAGE_BAR);
+	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_FRAME);
+	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 2.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_BAR);
+
+	// 敵生成
+	CEnemy::Create("data\\MODEL\\ATTACKMODEL\\SpikeEnemy000.x", D3DXVECTOR3(0.0f, 0.0f, -550.0f), VECTOR3_NULL, CEnemy::TYPE_NONE, 2);
 
     return S_OK;
 }

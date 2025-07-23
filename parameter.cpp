@@ -16,8 +16,6 @@
 CParameter::CParameter()
 {
 	// 値のクリア
-	m_move = VECTOR3_NULL;
-	m_nDamage = NULL;
 	m_nHp = NULL;
 }
 //===========================
@@ -26,21 +24,4 @@ CParameter::CParameter()
 CParameter::~CParameter()
 {
 	// 無し
-}
-//===========================
-// 体力減少処理
-//===========================
-void CParameter::HitDamage(int nDamage)
-{
-	// 体力を減らす
-	m_nHp -= nDamage;
-
-	if (m_nHp >= 0)
-	{
-		// 終了条件
-	}
-	else
-	{// 他の処理
-		
-	}
 }

@@ -87,16 +87,6 @@ void CPlayerStateNeutral::OnUpdate()
 		// ここで処理を返す
 		return;
 	}
-
-	//// ジャンプキー入力時
-	//if (pInput->GetPress(DIK_SPACE))
-	//{
-	//	// ステート変更
-	//	m_pPlayer->ChangeState(new CPlayerStateJump);
-
-	//	// ここで処理を返す
-	//	return;
-	//}
 }
 //==================================
 // 待機状態時終了関数
@@ -239,11 +229,11 @@ void CPlayerStateDamage::OnStart()
 	// 一体目のプレイヤーの時
 	if (m_pPlayer->GetPlayerIndex() == 0)
 	{
-		// パラメーター取得
-		CParameter* pParamet = m_pPlayer->GetParameter();
+		//// パラメーター取得
+		//CParameter* pParamet = m_pPlayer->GetParameter();
 
 		// 体力を減らす
-		pParamet->HitDamage(m_nDamage);
+		m_pPlayer->HitDamage(m_nDamage);
 	}
 
 	// 状態変更
@@ -264,6 +254,9 @@ void CPlayerStateDamage::OnUpdate()
 
 		// 状態変更
 		m_pPlayer->ChangeState(new CPlayerStateNeutral(), ID_NEUTRAL);
+
+		// ここで処理を返す
+		return;
 	}
 }
 //==================================

@@ -178,7 +178,7 @@ HRESULT CPlayer::Init(void)
 	}
 
 	// 初期座標の向きを設定
-	InitPos(0.0f);
+	InitPos(NULL);
 
 	// ステートマシンを生成
 	m_pStateMachine = new CStateMachine;	
@@ -265,9 +265,6 @@ void CPlayer::Update(void)
 		}
 	}
 
-	// 現在体力の取得
-	int nLife = m_pParameter->GetHp();
-
 	// nullptrじゃないとき
 	if (m_pStateMachine != nullptr)
 	{
@@ -325,24 +322,6 @@ void CPlayer::Update(void)
 		m_move.y = 0.0f;
 	}
 
-	// 現在体力をセット
-	nLife = m_pParameter->GetHp();
-
-	// ゼロ以下
-	if (nLife <= 0)
-	{
-		// 終了処理
-		Uninit();
-
-		// ここで処理を返す
-		return;
-	}
-	else
-	{
-		// モーション全体を更新
-		m_pMotion->Update(m_apModel, MAX_MODEL);
-	}
-
 	// ステンシルシャドウが存在 かつ MAINプレイヤー
 	if (m_pShadowS && m_nIdxPlayer == NUMBER_MAIN)
 	{
@@ -353,15 +332,18 @@ void CPlayer::Update(void)
 		m_pShadowS->SetPos(ShadowPos);
 		m_pShadowS->SetRot(GetIdxPlayer(0)->GetRot()); 
 	}
+
+	int nHp = m_pParameter->GetHp();
+
+	if (nHp >= 0)
+	// モーションの全体更新
+	m_pMotion->Update(m_apModel, MAX_MODEL);
 }
 //===============================
 // プレイヤー描画処理
 //===============================
 void CPlayer::Draw(void)
 {
-	// キーボードの入力取得
-	CInputKeyboard* pInput = CManager::GetInputKeyboard();
-
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -806,6 +788,39 @@ void CPlayer::Collision(void)
 		// ステート変更
 		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 	}
+
+	//=============================
+	// 敵との当たり判定
+	//=============================
+	// オブジェクト取得
+	CObject* pObjEnemy = CObject::GetTop(static_cast<int>(CObject::PRIORITY::ENEMY));
+
+	// nullptrじゃないとき
+	while (pObjEnemy != nullptr)
+	{
+		// 敵のオブジェクトタイプを取得
+		if (pObjEnemy->GetObjType() == CObject::TYPE_ENEMY)
+		{
+			// 敵にキャスト
+			CEnemy* pEnemy = static_cast<CEnemy*>(pObjEnemy);
+
+			// コリジョンしたとき
+			if (pEnemy->Collision(&m_pos) == true)
+			{
+				// 当たったらダメージモーションに切り替え
+				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+
+				// ステート変更
+				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+
+				// 一回当たったら抜ける
+				break;
+			}
+		}
+
+		// 次のオブジェクトを検出する
+		pObjEnemy = pObjEnemy->GetNext();
+	}
 }
 //===============================
 // プレイヤーとボス間のベクトル
@@ -899,4 +914,33 @@ CPlayer::PLAYERMOTION CPlayer::GetNowMotion() const
 	}
 
 	return PLAYERMOTION_NEUTRAL; // デフォルト
+}
+//===============================
+// ヒット処理
+//===============================
+void CPlayer::HitDamage(int nDamage)
+{
+	// パラメーター取得
+	int nHp = m_pParameter->GetHp();
+
+	// 体力を減らす
+	nHp -= nDamage;
+
+	// 現在体力が0以下
+	if (nHp <= 0)
+	{
+		// プレイヤー処理終了
+		Uninit();
+
+		// ここで処理を返す
+		return;
+	}
+	else
+	{
+		// 現在体力をセット
+		m_pParameter->SetHp(nHp);
+
+		// モーションセット
+		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+	}
 }

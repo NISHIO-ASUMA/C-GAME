@@ -12,7 +12,6 @@
 #include "input.h"
 #include "debugproc.h"
 #include "manager.h"
-#include "player.h"
 
 //**************************************
 // ÉRÉìÉXÉgÉâÉNÉ^
@@ -35,8 +34,8 @@ CEnemymanager::~CEnemymanager()
 void CEnemymanager::Create(void)
 {
 	// ìGÇÃê∂ê¨
-	CEnemy::Create(D3DXVECTOR3(500.0f,300.0f,0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),CEnemy::ENEMYTYPE_FACE);
-	CEnemy::Create(D3DXVECTOR3(800.0f, 600.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_GOLD);
+	//CEnemy::Create(D3DXVECTOR3(500.0f,300.0f,0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),CEnemy::ENEMYTYPE_FACE);
+	//CEnemy::Create(D3DXVECTOR3(800.0f, 600.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_GOLD);
 
 }
 //**************************************
@@ -59,11 +58,11 @@ void CEnemymanager::Update(void)
 
 	if (m_nManagEnemy <= 0 && pInput->GetTrigger(DIK_M))
 	{
-		// ìGÇÃê∂ê¨
-		CEnemy::Create(D3DXVECTOR3(200.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_FACE);
-		CEnemy::Create(D3DXVECTOR3(400.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_GOLD);
-		CEnemy::Create(D3DXVECTOR3(600.0f, 250.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_FACE);
-		CEnemy::Create(D3DXVECTOR3(800.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_GOLD);
+		//// ìGÇÃê∂ê¨
+		//CEnemy::Create(D3DXVECTOR3(200.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_FACE);
+		//CEnemy::Create(D3DXVECTOR3(400.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_GOLD);
+		//CEnemy::Create(D3DXVECTOR3(600.0f, 250.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_FACE);
+		//CEnemy::Create(D3DXVECTOR3(800.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CEnemy::ENEMYTYPE_GOLD);
 	}
 }
 //**************************************

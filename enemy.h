@@ -11,22 +11,45 @@
 //**********************
 // インクルードファイル
 //**********************
-#include "character.h"
+#include "object.h"
+#include "objectX.h"
+
+//**************************
+// 前方宣言
+//**************************
+class CParameter;
+class CStateMachine;
+class CEnemyStateBase;
 
 //**************************
 // 敵クラスを定義
 //**************************
-class CEnemy : public CObject2D
+class CEnemy : public CObjectX
 {
 public:
-	typedef enum
+	//*********************
+	// 敵の行動管理列挙型  これをステートマシーンにする
+	//*********************
+	enum STATE
 	{
-		ENEMYTYPE_NONE = 0,
-		ENEMYTYPE_FACE,
-		ENEMYTYPE_GOLD,
-		ENEMYTYPE_MAX
-	}ENEMYTYPE;
+		STATE_FALL,
+		STATE_ROLLING,
+		STATE_DEATH,
+		STATE_MAX
+	};
 
+	//*********************
+	// 敵の種類列挙型
+	//*********************
+	enum TYPE
+	{
+		TYPE_NONE = 0,
+		TYPE_RIGHT,
+		TYPE_KEFT,
+		TYPE_MAX
+	};
+
+	// これは消す　ステートマシン作って
 	typedef enum
 	{
 		ENEMYSTATE_NONE = 0,
@@ -35,7 +58,7 @@ public:
 		ENEMYSTATE_MAX
 	}ENEMYSTATE;
 
-	CEnemy(int nPriority = 5);
+	CEnemy(int nPriority = static_cast<int>(CObject::PRIORITY::ENEMY));
 	~CEnemy();
 
 	HRESULT Init(void);
@@ -43,23 +66,28 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CEnemy* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, ENEMYTYPE nType);
+	static CEnemy* Create(const char* pFileName, const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, TYPE nType, int nHp);
 	static int GetEnemy(void) { return m_NumEnemy; }
 
-	void SetType(const ENEMYTYPE type);
-	ENEMYTYPE GetType(void) const { return m_Type; }
-	void HitEnemy(int nDamage);
+	void SetType(const TYPE type) { m_Type = type; }
+	TYPE GetType(void) const { return m_Type; }
 
-	void SetTexture(ENEMYTYPE Type);
+	void HitEnemy(int nDamage);
+	bool Collision(D3DXVECTOR3* pPos);
+
+	void ChangeState(CEnemyStateBase* pNewState, int id);
 
 private:
 	D3DXVECTOR3 m_move;		// 移動量
-	ENEMYTYPE m_Type;				// 種類
+	TYPE m_Type;			// 種類
 	ENEMYSTATE m_State;		// 敵の状態
 	int m_StateCount;		// 状態管理用
 
-	static int m_NumEnemy;			// 敵数管理
-	int m_nIdxTexture;
-	int m_nInterval;
+	static int m_NumEnemy;	// 敵数管理
+	int m_nMoveCount;		// 移動継続時間のカウント
+
+	CParameter* m_pParam;	// パラメータークラスポインタ
+	CStateMachine* m_pStateMachine;	// ステート基底クラスのポインタ
+
 };
 #endif

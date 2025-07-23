@@ -45,6 +45,7 @@ public:
 
 private:
 	float m_fRange;		// 追従距離計算用
+	bool m_isHit;		// 当たり判定フラグ
 
 };
 

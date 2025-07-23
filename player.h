@@ -97,6 +97,8 @@ public:
 	static inline constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 	PLAYERMOTION GetNowMotion(void) const;
 
+	void HitDamage(int nDamage);	// 判定処理
+
 private:
 
 	D3DXVECTOR3 m_move;		// 移動量

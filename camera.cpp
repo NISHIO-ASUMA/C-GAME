@@ -285,6 +285,13 @@ void CCamera::LockOn(void)
 	// ボス取得
 	CBoss* pBoss = CGame::GetBoss();
 
+	// nullptrチェック
+	if (pBoss == nullptr)
+	{
+		// ここで処理を返す
+		return;
+	}
+
 	// プレイヤー取得
 	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
 	CPlayer* pPlayerSub = CPlayer::GetIdxPlayer(1);

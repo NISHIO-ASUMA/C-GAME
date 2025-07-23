@@ -12,6 +12,7 @@
 #include "manager.h"
 #include "player.h"
 #include "playerstate.h"
+#include "particle.h"
 
 //**************************
 // 定数宣言
@@ -19,6 +20,7 @@
 constexpr float MIN_RANGE = 40.0f;	// 最少距離
 constexpr float MOVESPEED = 5.0f;	// 追従スピード
 constexpr float HITRANGE = 70.0f;	// 当たり判定距離
+constexpr float MIN_UNDER = 50.0f;	// 高さ制限
 
 //==================================
 // コンストラクタ
@@ -27,6 +29,7 @@ CBulletHorming::CBulletHorming()
 {
 	// 値のクリア
 	m_fRange = NULL;
+	m_isHit = false;
 }
 //==================================
 // デストラクタ
@@ -97,14 +100,23 @@ void CBulletHorming::Update(void)
 	// 衝突判定
 	if (Collision(PlayerPos))
 	{
-		// ダメージ変更
-		pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_DAMAGE);
+		if (!m_isHit)
+		{
+			// ダメージ変更
+			pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_DAMAGE);
 
-		// ステート変更
-		pPlayer->ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+			// ステート変更
+			pPlayer->ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 
-		// ここで抜ける
-		return;
+			// パーティクル生成
+			CParticle::Create(D3DXVECTOR3(PlayerPos.x, 20.0f, PlayerPos.z), D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f), 100, 30, 60, 100);
+
+			// フラグを有効化
+			m_isHit = true;
+
+			// ここで抜ける
+			return;
+		}
 	}
 
 	// プレイヤーと弾のベクトルを生成
@@ -129,9 +141,10 @@ void CBulletHorming::Update(void)
 	NowPos += VecPlayer * fMove;
 
 	// 地面以下にならないようにする
-	if (NowPos.y <= PlayerPos.y + 50.0f)
+	if (NowPos.y <= PlayerPos.y + MIN_UNDER)
 	{
-		NowPos.y = PlayerPos.y + 50.0f;
+		// 座標を代入
+		NowPos.y = PlayerPos.y + MIN_UNDER;
 	}
 
 	// 現在の座標にセットする

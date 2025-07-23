@@ -14,6 +14,7 @@
 #include "ui.h"
 #include <fstream>
 #include <iomanip> 
+#include <string>
 
 //===============================
 // コンストラクタ
@@ -183,6 +184,7 @@ void CUiedit::SaveFile(const char* filename)
 //===============================
 void CUiedit::ReloadFile(const char* filename)
 {
+#if 0
 	// 破棄
 	for (auto& UI : m_pUi) // 構造体の型でautoを使用
 	{
@@ -316,4 +318,5 @@ void CUiedit::ReloadFile(const char* filename)
 
 	// ファイルを閉じる
 	fStream.close();
+#endif
 }

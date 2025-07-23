@@ -29,6 +29,7 @@ public:
 		TYPE_MESH,
 		TYPE_BULLET,
 		TYPE_BOSS,
+		TYPE_ENEMY,
 		TYPE_BLOCK,
 		TYPE_MAX
 	};
@@ -44,6 +45,7 @@ public:
 		BLOCK, // ブロック
 		BULLET,// 弾
 		BOSS, // ボス
+		ENEMY, // 敵
 		SHADOW,//影
 		IMPACT, // 衝撃波
 		PLAYER, // プレイヤー
