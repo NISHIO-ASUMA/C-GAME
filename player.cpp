@@ -789,38 +789,40 @@ void CPlayer::Collision(void)
 		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 	}
 
-	////=============================
-	//// 敵との当たり判定
-	////=============================
-	//// オブジェクト取得
-	//CObject* pObjEnemy = CObject::GetTop(static_cast<int>(CObject::PRIORITY::ENEMY));
+	//=============================
+	// 敵との当たり判定
+	//=============================
+	// オブジェクト取得
+	CObject* pObjEnemy = CObject::GetTop(static_cast<int>(CObject::PRIORITY::ENEMY));
 
-	//// nullptrじゃないとき
-	//while (pObjEnemy != nullptr)
-	//{
-	//	// 敵のオブジェクトタイプを取得
-	//	if (pObjEnemy->GetObjType() == CObject::TYPE_ENEMY)
-	//	{
-	//		// 敵にキャスト
-	//		CEnemy* pEnemy = static_cast<CEnemy*>(pObjEnemy);
+	// nullptrじゃないとき
+	while (pObjEnemy != nullptr)
+	{
+		// 敵のオブジェクトタイプを取得
+		if (pObjEnemy->GetObjType() == CObject::TYPE_ENEMY)
+		{
+			// 敵にキャスト
+			CEnemy* pEnemy = static_cast<CEnemy*>(pObjEnemy);
 
-	//		// コリジョンしたとき
-	//		if (pEnemy->Collision(&m_pos) == true)
-	//		{
-	//			// 当たったらダメージモーションに切り替え
-	//			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+			if (m_nIdxPlayer != NUMBER_MAIN) break;;
 
-	//			// ステート変更
-	//			ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+			// コリジョンしたとき
+			if (pEnemy->Collision(&m_pos) == true )
+			{
+				// 当たったらダメージモーションに切り替え
+				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-	//			// 一回当たったら抜ける
-	//			break;
-	//		}
-	//	}
+				// ステート変更
+				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 
-	//	// 次のオブジェクトを検出する
-	//	pObjEnemy = pObjEnemy->GetNext();
-	//}
+				// 一回当たったら抜ける
+				break;
+			}
+		}
+
+		// 次のオブジェクトを検出する
+		pObjEnemy = pObjEnemy->GetNext();
+	}
 }
 //===============================
 // プレイヤーとボス間のベクトル

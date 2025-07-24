@@ -171,13 +171,8 @@ void CEnemy::Update(void)
 	D3DXVECTOR3 Pos = VECTOR3_NULL;
 
 	// 回転量を加算
-	m_fValueRot += 0.009f;
+	m_fValueRot += 0.03f;
 
-	// 正規化
-	if (m_fValueRot >= D3DX_PI * 2.0f) m_fValueRot -= D3DX_PI;
-	if (m_fValueRot <= D3DX_PI * 2.0f) m_fValueRot += D3DX_PI;
-
-	// まず、円周の長さを求める (仮)
 	m_fRadius = CGame::GetCylinder()->GetRadius();
 	float fLength = D3DX_PI * 2.0f * 30.0f;
 
@@ -192,11 +187,6 @@ void CEnemy::Update(void)
 	// 回転軸を計算する
 	m_VecAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	
-	// クォータニオンを生成
-	D3DXQuaternionRotationAxis(&m_quat, &m_VecAxis, m_fValueRot);
-
-	// 回転マトリックスを生成
-	D3DXMatrixRotationQuaternion(&m_mtxRot, &m_quat);
 
 #if 0
 	// 状態の更新
@@ -208,6 +198,12 @@ void CEnemy::Update(void)
 //===========================================
 void CEnemy::Draw(void)
 {
+	// クォータニオンを生成
+	D3DXQuaternionRotationAxis(&m_quat, &m_VecAxis, m_fValueRot);
+
+	// 回転マトリックスを生成
+	D3DXMatrixRotationQuaternion(&m_mtxRot, &m_quat);
+
 	// ワールドマトリックスの取得
 	D3DXMATRIX mtx = GetMtxWorld();
 

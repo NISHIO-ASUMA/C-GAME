@@ -190,6 +190,7 @@
     <ClCompile Include="parameter.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="pause.cpp" />
+    <ClCompile Include="pausemanager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -207,6 +208,7 @@
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="titlemanager.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="uiedit.cpp" />
     <ClCompile Include="uimanager.cpp" />
@@ -250,6 +252,7 @@
     <ClInclude Include="parameter.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="pause.h" />
+    <ClInclude Include="pausemanager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="playerlifegage.h" />
@@ -265,6 +268,7 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="titlemanager.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="uiedit.h" />
     <ClInclude Include="uimanager.h" />
