@@ -48,10 +48,12 @@ public:
 	bool Collision(D3DXVECTOR3 pos); // 当たり判定用関数
 
 private:
+
 	D3DXVECTOR3 m_move;		// 移動量
-	int m_nLife;			// 体力
 	BTYPE m_Type;			// 種類
 	D3DCOLOR m_col;			// 弾のカラー
 	int m_nIdxTexture;		// テクスチャインデックス
+	int m_nLife;			// 体力
+
 };
 #endif

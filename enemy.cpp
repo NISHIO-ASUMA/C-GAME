@@ -37,11 +37,13 @@ CEnemy::CEnemy(int nPriority) : CObjectX(nPriority)
 	m_pParam = nullptr;
 	m_pStateMachine = nullptr;
 
-	mtxRot = {};
+	m_mtxRot = {};
 	m_VecAxis = VECTOR3_NULL;
 	m_quat = {};
-	fValueRot = NULL;
+	m_fValueRot = 0.009f;
 
+	m_fAngle = NULL;
+	m_fRadius = NULL;
 }
 //===============================
 // デストラクタ
@@ -160,28 +162,70 @@ void CEnemy::Uninit(void)
 	// デクリメント
 	m_NumEnemy--;
 }
-//===============================
-// 敵の更新処理
-//===============================
+//===========================================
+// 敵の更新処理 ( 円柱の外側を回るイメージ )
+//===========================================
 void CEnemy::Update(void)
 {
-	// 円柱メッシュの半径を取得
-	float fRadius = CGame::GetCylinder()->GetRadius();
+	// モデル中心座標の設定
+	D3DXVECTOR3 Pos = VECTOR3_NULL;
 
-	// 状態に応じて処理変更
-	CObjectX::Update();
+	// 回転量を加算
+	m_fValueRot += 0.009f;
+
+	// 正規化
+	if (m_fValueRot >= D3DX_PI * 2.0f) m_fValueRot -= D3DX_PI;
+	if (m_fValueRot <= D3DX_PI * 2.0f) m_fValueRot += D3DX_PI;
+
+	// まず、円周の長さを求める (仮)
+	m_fRadius = CGame::GetCylinder()->GetRadius();
+	float fLength = D3DX_PI * 2.0f * 30.0f;
+
+	// 位置を計算
+	float posx = Pos.x + cosf(m_fValueRot) * m_fRadius;
+	float posz = Pos.z + sinf(m_fValueRot) * m_fRadius;
+	float posy = GetPos().y; // 固定の高さ
+
+	// 位置の更新
+	SetPos(D3DXVECTOR3(posx, posy, posz));
+
+	// 回転軸を計算する
+	m_VecAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	
+	// クォータニオンを生成
+	D3DXQuaternionRotationAxis(&m_quat, &m_VecAxis, m_fValueRot);
+
+	// 回転マトリックスを生成
+	D3DXMatrixRotationQuaternion(&m_mtxRot, &m_quat);
+
+#if 0
+	// 状態の更新
+	m_pStateMachine->Update();
+#endif
 }
-//===============================
-// 敵の描画処理
-//===============================
+//===========================================
+// 敵の描画処理 ( クォータニオンを適用する )
+//===========================================
 void CEnemy::Draw(void)
 {
-	// Xファイルオブジェクトの描画
+	// ワールドマトリックスの取得
+	D3DXMATRIX mtx = GetMtxWorld();
+
+	// 向きを反映
+	D3DXMatrixMultiply(&mtx, &m_mtxRot, &mtx);
+
+	// セットする
+	SetMtxWorld(mtx);
+
+	// オブジェクト描画
 	CObjectX::Draw();
 
 	// デバッグ表示
-	CDebugproc::Print("[ 敵の角度 : %.2f,%.2f,%.2f ]", GetRot().x, GetRot().y, GetRot().z);
+	CDebugproc::Print("[ 敵の位置 : %.2f,%.2f,%.2f ]", GetPos().x, GetPos().y, GetPos().z);
 	CDebugproc::Draw(0,280);
+	CDebugproc::Print("[ 敵の角度 : %.2f,%.2f,%.2f ]", GetRot().x, GetRot().y, GetRot().z);
+	CDebugproc::Draw(0, 260);
+
 }
 //===============================
 // 敵のダメージ処理
@@ -260,4 +304,11 @@ void CEnemy::ChangeState(CEnemyStateBase* pNewState, int id)
 
 	// ステート変更
 	m_pStateMachine->ChangeState(pNewState);
+}
+//=================================
+// 移動状態更新処理
+//=================================
+void CEnemy::UpdateMoving(void)
+{
+
 }

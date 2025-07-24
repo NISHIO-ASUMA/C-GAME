@@ -52,6 +52,12 @@
     <Filter Include="ヘッダー ファイル\Enemy">
       <UniqueIdentifier>{393d392b-4a9f-4558-abe1-3285c357dc97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Pause">
+      <UniqueIdentifier>{cc9a2c5f-5a79-4d23-8183-9c7b256fe2f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Pause">
+      <UniqueIdentifier>{7a89a163-badf-400e-9efb-e1a527f39172}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bg.cpp">
@@ -212,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="enemystate.cpp">
       <Filter>ソース ファイル\State</Filter>
+    </ClCompile>
+    <ClCompile Include="pause.cpp">
+      <Filter>ソース ファイル\Pause</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -379,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="enemymanager.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="pause.h">
+      <Filter>ヘッダー ファイル\Pause</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

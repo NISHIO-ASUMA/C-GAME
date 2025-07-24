@@ -25,18 +25,20 @@ public:
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	void Draw(void);
+	void Draw(void); // 仮想関数
 
 	static CObjectX* Create(const char* pFileName,D3DXVECTOR3 pos);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; };
 	D3DXVECTOR3 GetRot(void) { return m_rot; };
-	
+	D3DXMATRIX GetMtxWorld(void) { return m_mtxWorld; }
+
 	void SetFilePass(const char* pFilePass) { m_pFileName = pFilePass; }
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 
 	void SetUseQuat(bool isFlags) { m_isUseQaut = isFlags; }
+	void SetMtxWorld(D3DXMATRIX mtxworld) { m_mtxWorld = mtxworld; }
 
 private:
 	D3DXMATRIX m_mtxWorld; // ワールドマトリックス
@@ -52,17 +54,6 @@ private:
 	const char* m_pFileName; // ファイル名
 
 	bool m_isUseQaut;		 // クォータニオンかどうか
-
-	D3DXMATRIX m_mtxRot;		// 回転マトリックス
-	D3DXQUATERNION m_quat;	// クォータニオン
-	D3DXVECTOR3 m_VecAxis;	// 回転軸
-	float fValueRot;		// 回転角度
-
-
-	D3DXVECTOR3 m_posOld;   // 前フレームの位置
-	float m_theta;          // 現在の角度
-	float m_radius;         // 円の半径
-
 };
 
 #endif

@@ -74,6 +74,9 @@ public:
 
 	// ステートが終了する時に一度だけ呼ばれる関数
 	void OnExit();
+
+private:
+	float m_fSpeedFall;	// 落下スピード
 };
 
 //**************************

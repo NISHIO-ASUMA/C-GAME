@@ -10,6 +10,11 @@
 //**********************
 #include "enemystate.h"
 
+//**********************
+// 定数宣言
+//**********************
+constexpr float FALL_VALUE = 15.0f; // 落下速度
+
 //==================================
 // 敵状態基底クラスコンストラクタ
 //==================================
@@ -34,6 +39,7 @@ CEnemyStateFall::CEnemyStateFall()
 {
 	// IDをセットする
 	SetID(ID_FALL);
+	m_fSpeedFall = NULL;
 }
 //==================================
 // 落下状態デストラクタ
@@ -47,14 +53,32 @@ CEnemyStateFall::~CEnemyStateFall()
 //==================================
 void CEnemyStateFall::OnStart()
 {
-
+	// 値をセット
+	m_fSpeedFall = FALL_VALUE;
 }
 //==================================
 // 落下状態更新関数
 //==================================
 void CEnemyStateFall::OnUpdate()
 {
+	// 現在座標の取得
+	D3DXVECTOR3 NowPos = m_pEnemy->GetPos();
 
+	// 落下スピードを掛ける
+	NowPos.y -= m_fSpeedFall;
+
+	// 現在座標にセット
+	m_pEnemy->SetPos(NowPos);
+
+
+	//	if ( 地面についたら )
+	//	{ 
+	//	  // 移動量を0にする
+	//	  m_fSpeedFall = NULL;
+	// 
+	//	  // 状態変更
+	//	  ChangeState(new CEnemyStateMove(),ID_MOVE);
+	//	}
 }
 //==================================
 // 落下状態終了関数
@@ -93,7 +117,7 @@ void CEnemyStateMove::OnStart()
 void CEnemyStateMove::OnUpdate()
 {
 	// 移動処理
-
+	m_pEnemy->UpdateMoving();
 }
 //==================================
 // 移動状態終了関数

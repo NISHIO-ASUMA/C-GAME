@@ -333,11 +333,11 @@ void CPlayer::Update(void)
 		m_pShadowS->SetRot(GetIdxPlayer(0)->GetRot()); 
 	}
 
+	// 現在体力の取得
 	int nHp = m_pParameter->GetHp();
 
-	if (nHp >= 0)
-	// モーションの全体更新
-	m_pMotion->Update(m_apModel, MAX_MODEL);
+	// 生きているなら
+	if (nHp >= 0) m_pMotion->Update(m_apModel, MAX_MODEL); // モーションの全体更新
 }
 //===============================
 // プレイヤー描画処理

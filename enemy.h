@@ -61,10 +61,10 @@ public:
 	CEnemy(int nPriority = static_cast<int>(CObject::PRIORITY::ENEMY));
 	~CEnemy();
 
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
+	HRESULT Init(void) override;
+	void Uninit(void) override;
+	void Update(void) override;
+	void Draw(void) override;
 
 	static CEnemy* Create(const char* pFileName, const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, TYPE nType, int nHp);
 	static int GetEnemy(void) { return m_NumEnemy; }
@@ -74,25 +74,29 @@ public:
 
 	void HitEnemy(int nDamage);
 	bool Collision(D3DXVECTOR3* pPos);
-
 	void ChangeState(CEnemyStateBase* pNewState, int id);
+
+	void UpdateMoving(void);
 
 private:
 	D3DXVECTOR3 m_move;		// 移動量
 	TYPE m_Type;			// 種類
 	ENEMYSTATE m_State;		// 敵の状態
-	int m_StateCount;		// 状態管理用
-
-	static int m_NumEnemy;	// 敵数管理
-	int m_nMoveCount;		// 移動継続時間のカウント
-
-	D3DXMATRIX mtxRot;	// 回転マトリックス
-	D3DXQUATERNION m_quat;	// クォータニオン
-	D3DXVECTOR3 m_VecAxis;	// 回転軸
-	float fValueRot;		// 回転角度
-
 	CParameter* m_pParam;	// パラメータークラスポインタ
 	CStateMachine* m_pStateMachine;	// ステート基底クラスのポインタ
+
+	static int m_NumEnemy;	// 敵数管理
+	int m_StateCount;		// 状態管理用
+	int m_nMoveCount;		// 移動継続時間のカウント
+
+	// クォータニオン用
+	D3DXMATRIX m_mtxRot;	// 回転マトリックス
+	D3DXQUATERNION m_quat;	// クォータニオン
+	D3DXVECTOR3 m_VecAxis;	// 回転軸
+	float m_fValueRot;		// 回転角度
+
+	float m_fAngle; // 現在の回転角
+	float m_fRadius; // 回転半径
 
 };
 #endif
