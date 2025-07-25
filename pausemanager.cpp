@@ -18,6 +18,11 @@
 #include "game.h"
 
 //***************************
+// 定数宣言
+//***************************
+constexpr float SPACEHEIGHT = 200.0f; // ポリゴン同士の間隔
+
+//***************************
 // 静的メンバ変数宣言
 //***************************
 bool CPauseManager::m_isPause = false; // ポーズフラグ
@@ -29,6 +34,7 @@ CPauseManager::CPauseManager()
 {
 	// 値のクリア
 	m_nSelectIdx = NULL;
+	m_isPause = false;
 
 	for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
 	{
@@ -53,9 +59,6 @@ HRESULT CPauseManager::Init(void)
 	// 基準座標を設定
 	D3DXVECTOR3 Bacepos = D3DXVECTOR3(200.0f, 80.0f, 0.0f);
 	
-	// 空ける間隔設定
-	float fSpace = 200.0f;
-
 	// ポーズ生成
 	for (int nPause = 0; nPause < SELECT_MAX; nPause++)
 	{
@@ -63,7 +66,7 @@ HRESULT CPauseManager::Init(void)
 		D3DXVECTOR3 pos = Bacepos;
 
 		// 高さを空ける
-		pos.y += nPause * fSpace;
+		pos.y += nPause * SPACEHEIGHT;
 
 		// ポーズを生成 
 		if (nPause == 0)
@@ -86,7 +89,7 @@ HRESULT CPauseManager::Init(void)
 //==================================
 void CPauseManager::Uninit(void)
 {
-
+	// 無し
 }
 //==================================
 // 更新処理
@@ -135,17 +138,33 @@ void CPauseManager::Update(void)
 	// nullだったら
 	if (pFade == nullptr) return;
 
+	// 選択されているメニューのポリゴンカラーを変更
+	for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
+	{
+		// 背景は変えない
+		if (nCnt == CPause::MENU_BACK) continue;
+
+		// nullじゃなかったら
+		if (m_pPause[nCnt] != nullptr)
+		{
+			// カラー変更
+			if (nCnt == m_nSelectIdx)
+				m_pPause[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));	// 黄色
+			else
+				m_pPause[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));	// 白
+		}
+	}
+
 	// 決定処理
 	if (pKey->GetTrigger(DIK_RETURN))
 	{
 		switch (m_nSelectIdx)
 		{
-		case CPause::MENU_BACK:
+		case CPause::MENU_BACK:	// 背景
 			break;
 
 		case CPause::MENU_RETRY:	// リトライ時
 			if (pFade != nullptr) pFade->SetFade(new CGame());	// ゲームシーンに遷移
-			SetEnablePause(false);		// ポーズ終了
 			break;
 
 		case CPause::MENU_CONTINUE:	// コンテニュー時
@@ -154,7 +173,6 @@ void CPauseManager::Update(void)
 
 		case CPause::MENU_QUIT:		// 退出時
 			if (pFade != nullptr) pFade->SetFade(new CTitle());	// タイトルシーンに遷移
-			SetEnablePause(false);		// ポーズ終了
 			break;
 		}
 	}

@@ -312,7 +312,7 @@ void CCamera::LockOn(void)
 	D3DXVECTOR3 VecToBoss = bossPos - playerPos;
 
 	// 高さは無視
-	VecToBoss.y = 0.0f;
+	VecToBoss.y = NULL;
 
 	// ベクトルを正規化
 	D3DXVec3Normalize(&VecToBoss, &VecToBoss);
@@ -327,7 +327,7 @@ void CCamera::LockOn(void)
 	D3DXVECTOR3 VecSubToBoss = bossPos - subPlayerPos;
 
 	// 高さは無視
-	VecSubToBoss.y = 0.0f;
+	VecSubToBoss.y = NULL;
 
 	// ベクトルを正規化する
 	D3DXVec3Normalize(&VecSubToBoss, &VecSubToBoss);
@@ -342,7 +342,7 @@ void CCamera::LockOn(void)
 	D3DXVECTOR3 camOffset = -VecToBoss * 350.0f;
 
 	// 高さを低めに設定
-	camOffset.y = 80.0f;
+	camOffset.y = 140.0f;
 
 	// カメラの目的位置
 	D3DXVECTOR3 desiredPosV = playerPos + camOffset;

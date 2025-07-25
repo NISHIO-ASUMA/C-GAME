@@ -2,6 +2,8 @@
 //
 // タイトル処理 [ title.h ]
 // Author: Asuma Nishio
+// 
+// TODO : シーンの流れを管理する
 //
 //=====================================
 
@@ -55,6 +57,7 @@ void CTitle::Uninit(void)
 //=====================================
 void CTitle::Update(void)
 {
+	// 決定キー入力
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
 	{
 		// フェード取得
