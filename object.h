@@ -53,6 +53,7 @@ public:
 		PLAYER, // プレイヤー
 		EFFECT, // エフェクト
 		UI,  // 2DUI関係
+		PAUSE,	// ポーズ
 		PRIORITY_MAX // 最大数
 	};
 

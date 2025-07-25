@@ -363,8 +363,6 @@ void CManager::SetScene(CScene * pNewscene) // SetMode
 	// もしシーンが無かったら
 	if (m_pScene == nullptr)
 	{
-		MessageBox(GetActiveWindow(), "シーン生成します (Cmanager::SetScene)", "確認", MB_OK);
-
 		// 新しいシーンをセットする
 		m_pScene = pNewscene;
 

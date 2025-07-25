@@ -36,7 +36,7 @@ public:
 		MENU_MAX
 	};
 
-	CPause(int nPriority = static_cast<int>(CObject::PRIORITY::UI));
+	CPause(int nPriority = static_cast<int>(CObject::PRIORITY::PAUSE));
 	~CPause();
 
 	HRESULT Init(void);

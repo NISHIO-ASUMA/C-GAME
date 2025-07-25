@@ -51,7 +51,7 @@ HRESULT CPauseManager::Init(void)
 	m_nSelectIdx = CPause::MENU_RETRY;
 
 	// äÓèÄç¿ïWÇê›íË
-	D3DXVECTOR3 Bacepos = D3DXVECTOR3(600.0f, 200.0f, 0.0f);
+	D3DXVECTOR3 Bacepos = D3DXVECTOR3(200.0f, 80.0f, 0.0f);
 	
 	// ãÛÇØÇÈä‘äuê›íË
 	float fSpace = 200.0f;
@@ -69,12 +69,12 @@ HRESULT CPauseManager::Init(void)
 		if (nPause == 0)
 		{
 			// îwåiê∂ê¨
-			m_pPause[nPause] = CPause::Create(VECTOR3_NULL, SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), nPause);
+			m_pPause[nPause] = CPause::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f,0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), nPause);
 		}
 		else
 		{
 			// ëIëópÉ|ÉäÉSÉìÇÃê∂ê¨
-			m_pPause[nPause] = CPause::Create(pos, 200.0f, 50.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), nPause);
+			m_pPause[nPause] = CPause::Create(pos, 180.0f, 40.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), nPause);
 		}
 	}
 

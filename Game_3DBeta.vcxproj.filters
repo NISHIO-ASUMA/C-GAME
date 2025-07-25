@@ -58,6 +58,12 @@
     <Filter Include="ヘッダー ファイル\Pause">
       <UniqueIdentifier>{7a89a163-badf-400e-9efb-e1a527f39172}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Managers">
+      <UniqueIdentifier>{cf2f8131-a455-46be-b606-d5fe9b96c4e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Managers">
+      <UniqueIdentifier>{7223f160-7fdc-4ad7-8a1a-328e4e9ada64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bg.cpp">
@@ -100,9 +106,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="manager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="model.cpp">
@@ -213,20 +216,23 @@
     <ClCompile Include="enemy.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="enemymanager.cpp">
-      <Filter>ソース ファイル\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="enemystate.cpp">
       <Filter>ソース ファイル\State</Filter>
     </ClCompile>
     <ClCompile Include="pause.cpp">
       <Filter>ソース ファイル\Pause</Filter>
     </ClCompile>
+    <ClCompile Include="enemymanager.cpp">
+      <Filter>ソース ファイル\Managers</Filter>
+    </ClCompile>
     <ClCompile Include="titlemanager.cpp">
-      <Filter>ソース ファイル\Scenes</Filter>
+      <Filter>ソース ファイル\Managers</Filter>
     </ClCompile>
     <ClCompile Include="pausemanager.cpp">
-      <Filter>ソース ファイル\Pause</Filter>
+      <Filter>ソース ファイル\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="manager.cpp">
+      <Filter>ソース ファイル\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -237,9 +243,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="block.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="blockManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="boss.h">
@@ -273,9 +276,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="manager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="model.h">
@@ -353,9 +353,6 @@
     <ClInclude Include="objectX.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="uimanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="uiedit.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -398,11 +395,20 @@
     <ClInclude Include="pause.h">
       <Filter>ヘッダー ファイル\Pause</Filter>
     </ClInclude>
-    <ClInclude Include="titlemanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="pausemanager.h">
-      <Filter>ヘッダー ファイル\Pause</Filter>
+      <Filter>ヘッダー ファイル\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="blockManager.h">
+      <Filter>ヘッダー ファイル\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="manager.h">
+      <Filter>ヘッダー ファイル\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="titlemanager.h">
+      <Filter>ヘッダー ファイル\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="uimanager.h">
+      <Filter>ヘッダー ファイル\Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

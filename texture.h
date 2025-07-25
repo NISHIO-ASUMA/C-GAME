@@ -46,7 +46,7 @@ private:
 		"data\\TEXTURE\\pause_retry.png",
 		"data\\TEXTURE\\pause_continue.png",
 		"data\\TEXTURE\\pause_quit.png",
-		"data\\TEXTURE\\FadeCanvas.png",
+		"data\\TEXTURE\\PauseBack.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[NUM_TEXTURE];	// テクスチャポインタ
