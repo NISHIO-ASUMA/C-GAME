@@ -10,6 +10,11 @@
 #ifndef _TITLEMANAGER_H_ // このマクロ定義がされてなかったら
 #define _TITLEMANAGER_H_ // 2重インクルード防止のマクロ定義
 
+//**************
+// 前方宣言
+//**************
+class CTitleUi;
+
 //**************************************
 // タイトルマネージャー管理クラスを定義
 //**************************************
@@ -25,8 +30,10 @@ public:
 	void Draw(void);
 
 private:
-	int m_nIdx;		// 選択番号
+	static constexpr int TITLE_MENU = 2; // タイトルui数
 
+	int m_nIdx;		// 選択番号
+	CTitleUi* m_pTitleui[TITLE_MENU]; // クラスポインタ
 };
 
 #endif

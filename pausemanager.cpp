@@ -165,6 +165,7 @@ void CPauseManager::Update(void)
 
 		case CPause::MENU_RETRY:	// リトライ時
 			if (pFade != nullptr) pFade->SetFade(new CGame());	// ゲームシーンに遷移
+			SetEnablePause(false);		// ポーズ終了
 			break;
 
 		case CPause::MENU_CONTINUE:	// コンテニュー時
@@ -173,6 +174,7 @@ void CPauseManager::Update(void)
 
 		case CPause::MENU_QUIT:		// 退出時
 			if (pFade != nullptr) pFade->SetFade(new CTitle());	// タイトルシーンに遷移
+			SetEnablePause(false);		// ポーズ終了
 			break;
 		}
 	}

@@ -12,6 +12,7 @@
 // インクルードファイル宣言
 //****************************
 #include "scene.h"
+#include "titlemanager.h"
 
 //****************************
 // タイトルクラスを定義
@@ -30,6 +31,7 @@ public:
 	static CTitle* Create(void);
 
 private:
+	CTitleManager* m_pTitleManager; // クラスポインタ
 
 };
 #endif

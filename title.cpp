@@ -36,10 +36,11 @@ CTitle::~CTitle()
 //=====================================
 HRESULT CTitle::Init(void)
 {
-	// UI生成
-	CUi::Create(VECTOR3_NULL, 0, 500.0f, 200.0f);
+	// インスタンス生成
+	m_pTitleManager = new CTitleManager;
+	m_pTitleManager->Init();
 
-	CObjectX::Create("data\\MODEL\\STAGEOBJ\\block000.x",VECTOR3_NULL);
+	//CObjectX::Create("data\\MODEL\\STAGEOBJ\\block000.x",VECTOR3_NULL);
 
 	CMeshField::Create(VECTOR3_NULL, 500.0f);
 
@@ -50,13 +51,30 @@ HRESULT CTitle::Init(void)
 //=====================================
 void CTitle::Uninit(void)
 {
-	// 無し
+	// nullチェック
+	if (m_pTitleManager != nullptr)
+	{
+		// 終了処理
+		m_pTitleManager->Uninit();
+
+		// 破棄
+		delete m_pTitleManager;
+
+		// nullptrする
+		m_pTitleManager = nullptr;
+	}
 }
 //=====================================
 // 更新処理
 //=====================================
 void CTitle::Update(void)
 {
+	// nullじゃなかったら
+	if (m_pTitleManager != nullptr)
+	{
+		m_pTitleManager->Update();
+	}
+
 	// 決定キー入力
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
 	{
