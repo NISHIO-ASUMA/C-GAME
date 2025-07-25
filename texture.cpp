@@ -54,7 +54,7 @@ HRESULT CTexture::Load(void)
 		if (FAILED(D3DXCreateTextureFromFile(pDevice, TexName[nCnt], &m_apTexture[nCnt])))
 		{
 			// 警告表示
-			MessageBox(NULL, "テクスチャパスが存在しません", "テクスチャ読み込みエラー", MB_OK);
+			MessageBox(NULL, "テクスチャパスが存在しません", TexName[nCnt], MB_OK);
 
 			return E_FAIL;
 		}

@@ -127,7 +127,7 @@ void CPause::SetTexture(void)
 	switch (m_nPauseType)
 	{
 	case MENU_BACK: // ただの背景
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\arufa.png"); 		// テクスチャ割り当て
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\FadeCanvas.png"); 		// テクスチャ割り当て
 		break;
 
 	case MENU_RETRY: // リトライ選択時
