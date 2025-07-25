@@ -314,8 +314,11 @@ void CManager::Update()
 	// フェードの更新
 	m_pFade->Update();
 
-	// シーンの更新
-	m_pScene->Update();
+	if (m_pScene != nullptr)
+	{
+		// シーンの更新
+		m_pScene->Update();
+	}
 
 	// レンダラーの更新処理
 	m_pRenderer->Update();
@@ -332,24 +335,38 @@ void CManager::Draw(void)
 //===========================
 // シーンのセット
 //===========================
-void CManager::SetScene(CScene * pNewscene)
+void CManager::SetScene(CScene * pNewscene) // SetMode
 {
+	// nullptrじゃない
+	if (m_pScene != nullptr)
+	{
+		// 終了処理
+		m_pScene->Uninit();
+
+		// ポインタの破棄
+		delete m_pScene;
+
+		// nullptrにする
+		m_pScene = nullptr;
+
+		// nullじゃない
+		if (m_pSound)
+		{
+			// サウンドの停止
+			m_pSound->StopSound();
+		}
+
+		// 全オブジェクト破棄
+		CObject::ReleaseAll();
+	}
+
 	// もしシーンが無かったら
 	if (m_pScene == nullptr)
 	{
+		MessageBox(GetActiveWindow(), "シーン生成します (Cmanager::SetScene)", "確認", MB_OK);
+
 		// 新しいシーンをセットする
 		m_pScene = pNewscene;
-
-		// 生成失敗時
-		if (m_pScene == nullptr)
-		{
-			MessageBox(GetActiveWindow(), "シーン生成失敗 (Cmanager::SetMode)", "例外スロー", MB_OK);
-
-			// ウィンドウ終了
-			PostQuitMessage(0);
-
-			return;
-		}
 
 		// シーンの初期化
 		if (FAILED(m_pScene->Init()))
@@ -363,69 +380,6 @@ void CManager::SetScene(CScene * pNewscene)
 			// nullptr代入
 			m_pScene = nullptr;
 		}
-
-		// ここで処理を返す
-		return;
-	}
-
-	// 同シーンだったら
-	if (m_pScene->GetScene() == pNewscene->GetScene())
-	{
-		// シーンの破棄
-		delete pNewscene;
-
-		// ここで処理を返す
-		return;
-	}
-
-	// nullじゃない
-	if (m_pSound)
-	{
-		// サウンドの停止
-		m_pSound->StopSound();
-	}
-
-	// nullptrじゃない
-	if (m_pScene)
-	{
-		// 終了処理
-		m_pScene->Uninit();
-
-		// ポインタの破棄
-		delete m_pScene;
-
-		// nullptrにする
-		m_pScene = nullptr;
-	}
-	
-	// 全オブジェクト破棄
-	CObject::ReleaseAll();
-
-	// 新しいシーンをセットする
-	m_pScene = pNewscene;
-
-	// 生成失敗時
-	if (m_pScene == nullptr)
-	{
-		MessageBox(GetActiveWindow(), "シーン生成失敗 (Cmanager::SetMode)", "例外スロー", MB_OK);
-
-		// ウィンドウ終了
-		PostQuitMessage(0);
-
-		return;
-	}
-
-	// シーンの初期化
-	if (FAILED(m_pScene->Init()))
-	{
-		// 失敗時
-		MessageBox(GetActiveWindow(), "シーン初期化失敗", "例外スロー", MB_OK);
-
-		// 破棄
-		delete m_pScene;
-
-		// nullptr代入
-		m_pScene = nullptr;
 	}
 }
 //===========================

@@ -55,7 +55,7 @@ void CTitle::Uninit(void)
 //=====================================
 void CTitle::Update(void)
 {
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
 	{
 		// フェード取得
 		CFade* pFade = CManager::GetFade();

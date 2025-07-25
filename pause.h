@@ -29,6 +29,7 @@ public:
 	//******************
 	enum MENU
 	{
+		MENU_BACK,		// 背景
 		MENU_RETRY,		// やり直し
 		MENU_CONTINUE,  // 継続
 		MENU_QUIT,		// タイトル遷移
@@ -43,10 +44,13 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CPause* Create(D3DXVECTOR3 pos, float fWidth, float fHeight,D3DXCOLOR col);
+	void SetTexture(void);
+	void SetType(int nType) { m_nPauseType = nType; }
+	static CPause* Create(D3DXVECTOR3 pos, float fWidth, float fHeight,D3DXCOLOR col,int nType);
 
 private:
-
+	int m_nIdxTexture;	// テクスチャインデックス番号
+	int m_nPauseType;	// ポーズの種類
 };
 
 #endif

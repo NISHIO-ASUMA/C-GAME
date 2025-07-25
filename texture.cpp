@@ -22,7 +22,7 @@ int CTexture::m_nNumAll = NULL;	// 総数管理
 CTexture::CTexture()
 {
 	// 値のクリア
-	for (int nCnt = 0; nCnt < MAX_TEXTURE; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_TEXTURE; nCnt++)
 	{
 		m_apTexture[nCnt] = nullptr;
 	}
@@ -44,7 +44,7 @@ HRESULT CTexture::Load(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// すべてのテクスチャ分回す
-	for (int nCnt = 0; nCnt < MAX_TEXTURE; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_TEXTURE; nCnt++)
 	{
 		// ファイル名が無いならスキップ
 		if (TexName[nCnt] == nullptr)
@@ -74,7 +74,7 @@ HRESULT CTexture::Load(void)
 void CTexture::UnLoad(void)
 {
 	// すべてのテクスチャの破棄
-	for (int nCnt = 0; nCnt < MAX_TEXTURE; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_TEXTURE; nCnt++)
 	{
 		if (m_apTexture[nCnt] != nullptr)
 		{
@@ -94,7 +94,7 @@ int CTexture::Register(const char* pFileName)
 	// インデックス番号を加算
 	nIdx++;
 
-	for (int nCnt = 0; nCnt < MAX_TEXTURE; nCnt++)
+	for (int nCnt = 0; nCnt < NUM_TEXTURE; nCnt++)
 	{
 		// nullptrチェック
 		if (TexName[nCnt] != nullptr)
@@ -120,7 +120,7 @@ int CTexture::Register(const char* pFileName)
 LPDIRECT3DTEXTURE9 CTexture::GetAddress(int nIdx)
 {
 	// 例外処理
-	if (nIdx < 0 || nIdx >= MAX_TEXTURE) return nullptr;
+	if (nIdx < 0 || nIdx >= NUM_TEXTURE) return nullptr;
 
 	// テクスチャ番号を取得
 	return m_apTexture[nIdx];

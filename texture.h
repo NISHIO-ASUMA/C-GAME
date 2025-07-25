@@ -8,16 +8,6 @@
 #ifndef _TEXTURE_H_ // このマクロ定義がされてなかったら
 #define _TEXTURE_H_ // 2重インクルード防止のマクロ定義
 
-//**********************
-// インクルードファイル
-//**********************
-
-
-//**********************
-// マクロ定義
-//**********************
-#define MAX_TEXTURE (128)	// 最大テクスチャ枚数
-
 //*****************************
 // テクスチャ管理クラスを定義
 //*****************************
@@ -32,11 +22,12 @@ public:
 	int Register(const char* pFileName);
 	LPDIRECT3DTEXTURE9 GetAddress(int nIdx);
 
+	static inline constexpr int NUM_TEXTURE = 128;	// 最大テクスチャ数
+
 private:
 	// テクスチャ読み込み配列を作成
-	const char* TexName[MAX_TEXTURE] =
+	const char* TexName[NUM_TEXTURE] =
 	{
-		"data\\TEXTURE\\gold.jpg",
 		"data\\TEXTURE\\explosion000.png",
 		"data\\TEXTURE\\effect000.jpg",
 		"data\\TEXTURE\\bullet002.png",
@@ -52,9 +43,13 @@ private:
 		"data\\TEXTURE\\lifegage.png",
 		"data\\TEXTURE\\lifeframe.png",
 		"data\\TEXTURE\\score001.png",
+		"data\\TEXTURE\\pause_retry.png",
+		"data\\TEXTURE\\pause_continue.png",
+		"data\\TEXTURE\\pause_quit.png",
+		"data\\TEXTURE\\arufa.png",
 	};
 
-	LPDIRECT3DTEXTURE9 m_apTexture[MAX_TEXTURE];	// テクスチャポインタ
+	LPDIRECT3DTEXTURE9 m_apTexture[NUM_TEXTURE];	// テクスチャポインタ
 	static int m_nNumAll;							// テクスチャカウント変数
 };
 

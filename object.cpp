@@ -12,6 +12,7 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "shadowS.h"
+#include "pausemanager.h"
 
 //**********************
 // 静的メンバ変数宣言
@@ -124,9 +125,21 @@ void CObject::UpdateAll(void)
 			// 次のオブジェクト保存
 			CObject* pObjeNext = pObject->m_pNext;
 
-			// オブジェクト更新
-			pObject->Update();
-
+			// ポーズオブジェクトのみを更新
+			if (CPauseManager::GetPause() == true)
+			{
+				if (pObject->GetObjType() == TYPE_PAUSE)
+				{
+					// 対象更新
+					pObject->Update();
+				}
+			}
+			else
+			{
+				// 全部のオブジェクト継承更新
+				pObject->Update();
+			}
+			
 			// 次のオブジェクトを代入
 			pObject = pObjeNext;
 		}

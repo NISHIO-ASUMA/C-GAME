@@ -172,7 +172,13 @@ void CFade::Draw(void)
 //==============================
 void CFade::SetFade(CScene * pNewScene)
 {
-	// nullptrだったら落ちてしまう
+	// 現在シーンをnullにする
+	if (m_pScene != nullptr)
+	{
+		m_pScene = nullptr;
+	}
+
+	// nullptrなので新しいシーンを生成する
 	if (m_pScene == nullptr)
 	{
 		// シーンをセットする
@@ -180,23 +186,5 @@ void CFade::SetFade(CScene * pNewScene)
 
 		// フェードアウト状態を作る
 		m_fade = FADE_OUT;
-
-		// ここで処理を返す
-		return;
 	}
-
-	// 次のシーン設定
-	if (m_pScene->GetScene() == pNewScene->GetScene())
-	{
-		// 破棄
-		delete pNewScene;
-
-		return;
-	}
-
-	// シーンセット
-	m_pScene = pNewScene;
-
-	// フェードアウト状態に設定
-	m_fade = FADE_OUT;
 }

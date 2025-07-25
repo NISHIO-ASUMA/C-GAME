@@ -31,6 +31,7 @@ public:
 		TYPE_BOSS,
 		TYPE_ENEMY,
 		TYPE_BLOCK,
+		TYPE_PAUSE,
 		TYPE_MAX
 	};
 

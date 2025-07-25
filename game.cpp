@@ -28,13 +28,15 @@
 CBlock* CGame::m_pBlock = nullptr;				// ブロック
 CMeshCylinder* CGame::m_pMeshCylinder = nullptr;	// 円柱
 CBoss* CGame::m_pBoss = nullptr;					// ボス
+CPauseManager* CGame::m_pPausemanager = nullptr;
 
 //==================================
 // コンストラクタ
 //==================================
 CGame::CGame() : CScene(CScene::MODE_GAME)
 {
-	// 無し
+	// 値のクリア
+	m_bPause = false;
 }
 //==================================
 // デストラクタ
@@ -48,6 +50,18 @@ CGame::~CGame()
 //==================================
 HRESULT CGame::Init(void)
 {
+	// ポーズマネージャー生成
+	m_pPausemanager = new CPauseManager;
+
+	// nullだったら
+	if (m_pPausemanager == nullptr)
+	{
+		return E_FAIL;
+	}
+
+	// 初期化処理
+	m_pPausemanager->Init();
+
 	// スコアの生成
 	CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
@@ -82,7 +96,7 @@ HRESULT CGame::Init(void)
 	// 敵生成
 	CEnemy::Create("data\\MODEL\\ATTACKMODEL\\SpikeEnemy000.x", D3DXVECTOR3(0.0f, 0.0f, -550.0f), VECTOR3_NULL, CEnemy::TYPE_NONE, 2);
 
-    return S_OK;
+	return S_OK;
 }
 //==================================
 // 終了処理
@@ -92,47 +106,68 @@ void CGame::Uninit(void)
 	m_pBlock = nullptr;
 	m_pBoss = nullptr;
 	m_pMeshCylinder = nullptr;
+
+	// nullチェック
+	if (m_pPausemanager != nullptr)
+	{
+		// 終了処理
+		m_pPausemanager->Uninit();
+
+		// ポインタの破棄
+		delete m_pPausemanager;
+
+		// nullptrにする
+		m_pPausemanager = nullptr;
+	}
 }
 //==================================
 // 更新処理
 //==================================
 void CGame::Update(void)
 {	
-	// 検証用インパクト
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
+	// キー入力
+	m_pPausemanager->SetEnablePause();
+	
+	// ポーズの更新処理
+	m_pPausemanager->Update();
+	
+	if (m_pPausemanager->GetPause() == false)
 	{
-		// 衝撃波を生成
-		CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
-	}
-
-	// 検証用画面遷移
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
-	{
-		// フェード取得
-		CFade* pFade = CManager::GetFade();
-
-		// 取得できたら
-		if (pFade != nullptr)
+		// 検証用インパクト
+		if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
 		{
-			// 画面遷移
-			pFade->SetFade(new CTitle());
+			// 衝撃波を生成
+			CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
+		}
+
+		// 検証用画面遷移
+		if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
+		{
+			// フェード取得
+			CFade* pFade = CManager::GetFade();
+
+			// 取得できたら
+			if (pFade != nullptr)
+			{
+				// 画面遷移
+				pFade->SetFade(new CTitle());
+			}
+		}
+
+		// 検証用弾
+		if (CManager::GetInputKeyboard()->GetTrigger(DIK_L))
+		{
+			// ホーミング弾を生成
+			CBulletHorming::Create("data\\MODEL\\ATTACKMODEL\\bulletobject000.x", D3DXVECTOR3(0.0f, 400.0f, 0.0f));
 		}
 	}
-
-	// 検証用弾
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_L))
-	{
-		// ホーミング弾を生成
-		CBulletHorming::Create("data\\MODEL\\ATTACKMODEL\\bulletobject000.x", D3DXVECTOR3(0.0f, 400.0f, 0.0f));
-	}
-
 }
 //==================================
 // 描画処理
 //==================================
 void CGame::Draw(void)
 {
-	// ない
+	// 無し
 }
 //==================================
 // コンストラクタ

@@ -29,4 +29,5 @@ private:
 	RECT m_Windowrect;	// ウィンドウの幅
 
 };
+
 #endif

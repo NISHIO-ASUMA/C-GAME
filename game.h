@@ -15,6 +15,7 @@
 #include "meshcylinder.h"
 #include "boss.h"
 #include "block.h"
+#include "pausemanager.h"
 
 //****************************
 // ゲームクラスを定義
@@ -36,12 +37,15 @@ public:
 	static CBlock* GetBlock(void) { return m_pBlock; }
 	static CMeshCylinder* GetCylinder(void) { return m_pMeshCylinder; }
 	static CBoss* GetBoss(void) { return m_pBoss; }
+	static CPauseManager* GetPause(void) { return m_pPausemanager; }
 
 private:
 	static CBlock* m_pBlock;					// ブロック
 	static CMeshCylinder* m_pMeshCylinder;		// シリンダー
 	static CBoss* m_pBoss;						// ボス
+	static CPauseManager* m_pPausemanager;		// マネージャーポインタ
 
+	bool m_bPause;
 };
 
 #endif
