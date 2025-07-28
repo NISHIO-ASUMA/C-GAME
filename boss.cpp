@@ -12,6 +12,7 @@
 #include "motion.h"
 #include "debugproc.h"
 #include "manager.h"
+#include "parameter.h"
 #include <ctime>
 
 //****************************
@@ -28,7 +29,10 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 	// 値のクリア
 	m_pos = VECTOR3_NULL;
 	m_rot = VECTOR3_NULL;
+
 	m_pMotion = nullptr;
+	m_pParam = nullptr;
+
 	m_type = NULL;
 	m_nCoolTime = NULL;
 	m_mtxworld = {};
@@ -39,7 +43,6 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 	}
 
 	m_fSize = NULL;
-
 	m_isAttacked = false;
 }
 //====================================
@@ -52,7 +55,7 @@ CBoss::~CBoss()
 //====================================
 // 生成処理
 //====================================
-CBoss* CBoss::Create(D3DXVECTOR3 pos,float fSize)
+CBoss* CBoss::Create(D3DXVECTOR3 pos,float fSize,int nLife)
 {
 	// インスタンス生成
 	CBoss* pBoss = new CBoss;
@@ -70,6 +73,12 @@ CBoss* CBoss::Create(D3DXVECTOR3 pos,float fSize)
 		// nullポインタを返す
 		return nullptr;
 	}
+
+	// パラメーター設定
+	pBoss->m_pParam = new CParameter;
+
+	// nullじゃなかったら
+	if (pBoss->m_pParam != nullptr) pBoss->m_pParam->SetHp(nLife);
 
 	// ポインタを返す
 	return pBoss;
@@ -104,7 +113,7 @@ HRESULT CBoss::Init(void)
 	// タイプ代入
 	m_type = CBoss::TYPE_MAX;
 
-	// クールタイムを設定
+	// 初期クールタイムを設定
 	m_nCoolTime = COOLTIME;
 
 	// モーションの読み込み
@@ -113,6 +122,7 @@ HRESULT CBoss::Init(void)
 	// モーション数を設定
 	m_pMotion->SetMotionNum(m_type);
 
+	// 初期化結果を返す
 	return S_OK;
 }
 //====================================
@@ -145,6 +155,16 @@ void CBoss::Uninit(void)
 
 		// nullptrにする
 		m_pMotion = nullptr;
+	}
+
+	// nullptrチェック
+	if (m_pParam != nullptr)
+	{
+		// ポインタの破棄
+		delete m_pParam;
+
+		// nullptrにする
+		m_pParam = nullptr;
 	}
 
 	// 自身の破棄
@@ -180,6 +200,7 @@ void CBoss::Update(void)
 		// モーションの更新だけ行う
 		m_pMotion->Update(m_pModel, NUMMODELS);
 
+		// ここで処理を返す
 		return;
 	}
 
@@ -194,8 +215,9 @@ void CBoss::Update(void)
 	}
 
 	// ランダムに行動パターンを決定する
-	int nAttackPattern = rand() % 3;
+	int nAttackPattern = rand() % PATTERN_MAX - 1;
 
+	// 数値によって行動変化
 	switch (nAttackPattern)
 	{
 	case PATTERN_NONE:

@@ -18,11 +18,6 @@
 #include "game.h"
 
 //***************************
-// 定数宣言
-//***************************
-constexpr float SPACEHEIGHT = 200.0f; // ポリゴン同士の間隔
-
-//***************************
 // 静的メンバ変数宣言
 //***************************
 bool CPauseManager::m_isPause = false; // ポーズフラグ
@@ -53,7 +48,7 @@ CPauseManager::~CPauseManager()
 //==================================
 HRESULT CPauseManager::Init(void)
 {
-	// セレクト番号設定
+	// 初期セレクト番号設定
 	m_nSelectIdx = CPause::MENU_RETRY;
 
 	// 基準座標を設定
@@ -68,8 +63,8 @@ HRESULT CPauseManager::Init(void)
 		// 高さを空ける
 		pos.y += nPause * SPACEHEIGHT;
 
-		// ポーズを生成 
-		if (nPause == 0)
+		// ポーズUIを生成 
+		if (nPause == CPause::MENU_BACK)
 		{
 			// 背景生成
 			m_pPause[nPause] = CPause::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f,0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), nPause);
@@ -165,16 +160,16 @@ void CPauseManager::Update(void)
 
 		case CPause::MENU_RETRY:	// リトライ時
 			if (pFade != nullptr) pFade->SetFade(new CGame());	// ゲームシーンに遷移
-			SetEnablePause(false);		// ポーズ終了
+			SetEnablePause(false);	// ポーズ終了
 			break;
 
 		case CPause::MENU_CONTINUE:	// コンテニュー時
-			SetEnablePause(false);		// ポーズ終了
+			SetEnablePause(false);	// ポーズ終了
 			break;
 
 		case CPause::MENU_QUIT:		// 退出時
 			if (pFade != nullptr) pFade->SetFade(new CTitle());	// タイトルシーンに遷移
-			SetEnablePause(false);		// ポーズ終了
+			SetEnablePause(false);	// ポーズ終了
 			break;
 		}
 	}

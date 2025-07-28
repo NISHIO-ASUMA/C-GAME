@@ -50,6 +50,8 @@ public:
 	void SetWidth(float fWidth) { m_fWidth = fWidth; }
 	void SetHeight(float fHeight) { m_fWidth = fHeight; }
 
+	void SetFlash(const int nFirstcount, const int nEndcount);
+
 	D3DXVECTOR3 GetPos(void) { return m_Pos; } // 現在の座標を取得
 	D3DXVECTOR3 GetRot(void) { return m_Rot; } // 現在の角度を取得
 	D3DXCOLOR GetCol(void) { return m_col; } // 現在の色を取得
@@ -72,6 +74,7 @@ private:
 	float m_fWidth;	// 横幅
 	float m_fHeight;// 高さ
 	int m_nAnchorType;	// 基準座標設定
+	int m_nColorCount;	// 点滅カウント
 };
 
 #endif

@@ -70,6 +70,15 @@
     <Filter Include="ソース ファイル\MainScenes\SceneUi">
       <UniqueIdentifier>{bfd2d6ee-26da-4ac6-a75e-dda824ef8269}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Charactor">
+      <UniqueIdentifier>{413f4236-0c25-4f52-8d75-2b23f9e4724e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Charactor\Player">
+      <UniqueIdentifier>{645147c3-0794-4aed-b647-ca2542587517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Charactor\Boss">
+      <UniqueIdentifier>{c8d870e8-491c-4cd2-b8d2-204d450afe42}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bg.cpp">
@@ -82,9 +91,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="blockManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="boss.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
@@ -127,9 +133,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="renderer.cpp">
@@ -216,9 +219,6 @@
     <ClCompile Include="shadowS.cpp">
       <Filter>ソース ファイル\UI</Filter>
     </ClCompile>
-    <ClCompile Include="playerlifegage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="enemy.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
@@ -257,6 +257,18 @@
     </ClCompile>
     <ClCompile Include="resultmanager.cpp">
       <Filter>ソース ファイル\MainScenes\SceneManagers</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\Charactor\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="playerlifegage.cpp">
+      <Filter>ソース ファイル\Charactor\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="boss.cpp">
+      <Filter>ソース ファイル\Charactor\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="bosslifegage.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -450,6 +462,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="resultmanager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="bosslifegage.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

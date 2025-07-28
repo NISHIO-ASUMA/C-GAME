@@ -49,6 +49,7 @@ private:
 		"data\\TEXTURE\\PauseBack.png",
 		"data\\TEXTURE\\title000.png",
 		"data\\TEXTURE\\title001.png",
+		"data\\TEXTURE\\tutorial_menu.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[NUM_TEXTURE];	// テクスチャポインタ

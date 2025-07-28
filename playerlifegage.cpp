@@ -14,12 +14,6 @@
 #include "manager.h"
 #include "texture.h"
 
-//**********************
-// 定数宣言
-//**********************
-constexpr float GAGE_WIDTH = 46.0f; // 基準値に掛ける倍率
-constexpr float GAGE_HEIGHT = 38.0f; // ゲージの高さの固定値
-
 //========================
 // コンストラクタ
 //========================

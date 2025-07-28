@@ -17,11 +17,14 @@
 #include "particle.h"
 #include "game.h"
 
-//***********************************
+//*******************************
 // 定数宣言
-//***********************************
-constexpr float  BULLET_SIZE = 30.0f; // 弾のサイズ
-constexpr int  BULLET_DAMAGE = 1;	// 弾のダメージ
+//*******************************
+namespace BulletConst
+{
+	constexpr float  BULLET_SIZE = 30.0f;	// 弾のサイズ
+	constexpr int  BULLET_DAMAGE = 1;		// 弾のダメージ
+}
 
 //===============================
 // オーバーロードコンストラクタ
@@ -57,10 +60,10 @@ CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, BTYPE nTy
 	}
 
 	// 弾のインスタンス生成
-	CBullet* pBullet;
+	CBullet* pBullet = new CBullet;
 
-	// メモリ確保
-	pBullet = new CBullet;
+	// インスタンスの生成に失敗したら
+	if (pBullet == nullptr) return nullptr;
 
 	// オブジェクト設定
 	pBullet->SetTexture(nType);
@@ -72,14 +75,11 @@ CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, BTYPE nTy
 	// 初期化に失敗したら
 	if (FAILED(pBullet->Init(rot)))
 	{
-		// 破棄
-		delete pBullet;
-
-		// NULLを返す
+		// nullptrを返す
 		return nullptr;
 	}
 
-	// ポインタを返す
+	// 生成されたポインタを返す
 	return pBullet;
 }
 //===============================
@@ -216,7 +216,7 @@ bool CBullet::Collision(D3DXVECTOR3 pos)
 			float fDistanceSq = D3DXVec3LengthSq(&diff);
 
 			// ボスと弾の半径の合計
-			float fBulletRadius = BULLET_SIZE;
+			float fBulletRadius = BulletConst::BULLET_SIZE;
 
 			// ヒットの半径を計算
 			float fHitRadius = fBossSize + fBulletRadius;

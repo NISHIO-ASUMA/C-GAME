@@ -37,12 +37,6 @@ CEffect* CEffect::Create(D3DXVECTOR3 pos, D3DXCOLOR col, D3DXVECTOR3 move, int n
 	// 最大数
 	int nNum = CObject::GetNumAll();
 
-	// 最大数超えたら
-	if (nNum >= MAX_OBJECT - 1)
-	{
-		return nullptr;
-	}
-
 	// エフェクトポインタ
 	CEffect* pEffect = new CEffect;
 

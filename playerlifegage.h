@@ -48,11 +48,16 @@ public:
 	void SetTexture(int Type);
 	int GetGage(void) const { return m_gage; }
 	void SetGage(int type) { m_gage = type; }
+
 private:
+	static constexpr float GAGE_WIDTH = 46.0f;	// 基準値に掛ける倍率
+	static constexpr float GAGE_HEIGHT = 38.0f; // ゲージの高さの固定値
+
 	int m_nIdxTexture;		// テクスチャインデックス
 	int m_nLifeLength;		// バーの長さ基準値
-	CPlayer* m_pPlayer;		// クラスポインタ
+	CPlayer* m_pPlayer;		// プレイヤークラスポインタ
 	int m_gage;			// 列挙変数
+
 
 };
 

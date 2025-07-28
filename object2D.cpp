@@ -28,6 +28,7 @@ CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 	m_Rot = VECTOR3_NULL;
 	m_col = COLOR_WHITE;
 	m_nAnchorType = ANCHORTYPE_NONE;
+	m_nColorCount = NULL;
 }
 //===============================
 // デストラクタ
@@ -192,6 +193,52 @@ void CObject2D::SetUV(float TexU,float TexV)
 	// アンロック
 	m_pVtxBuff->Unlock();
 }
+//==============================
+// オブジェクト点滅関数
+//==============================
+void CObject2D::SetFlash(const int nFirstcount,const int nEndcount)
+{
+	// 頂点情報のポインタ
+	VERTEX_2D* pVtx = NULL;		
+
+	// 頂点バッファをロックし,頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	// インクリメントしていく
+	m_nColorCount++;
+
+	// カラー変数
+	D3DXCOLOR col = COLOR_WHITE;
+
+	if (m_nColorCount == nFirstcount)		// FirstCountと一致したとき
+	{
+		//頂点カラーの設定
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
+
+		// カラーセット
+		SetCol(col);
+	}
+	else if (m_nColorCount == nEndcount)	// EndCountと一致したとき
+	{
+		//頂点カラーの設定
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+
+		// カラーセット
+		SetCol(col);
+
+		// 初期値に戻す
+		m_nColorCount = NULL;
+	}
+		
+	//アンロック
+	m_pVtxBuff->Unlock();
+}
 //======================================
 // 中心が基準点のポリゴン
 //======================================
@@ -209,7 +256,7 @@ void CObject2D::SetCenter(void)
 	pVtx[2].pos = D3DXVECTOR3(m_Pos.x - m_fWidth, m_Pos.y + m_fHeight, 0.0f);
 	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_fWidth, m_Pos.y + m_fHeight, 0.0f);
 
-	// rhwの設定(1.0fで固定)
+	// rhwの設定( 1.0fで固定 )
 	pVtx[0].rhw =
 	pVtx[1].rhw =
 	pVtx[2].rhw =
@@ -247,7 +294,7 @@ void CObject2D::SetLeft(void)
 	pVtx[2].pos = D3DXVECTOR3(m_Pos.x,				m_Pos.y + m_fHeight, 0.0f);
 	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_fWidth,	m_Pos.y + m_fHeight, 0.0f);
 
-	// rhwの設定(1.0fで固定)
+	// rhwの設定( 1.0fで固定 )
 	pVtx[0].rhw =
 	pVtx[1].rhw =
 	pVtx[2].rhw =

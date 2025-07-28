@@ -18,6 +18,7 @@
 // 前方宣言
 //**********************
 class CMotion;
+class CParameter;
 
 //**********************
 // ボスクラスを定義
@@ -55,7 +56,7 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CBoss* Create(D3DXVECTOR3 pos, float fSize);
+	static CBoss* Create(D3DXVECTOR3 pos, float fSize,int nLife);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos;}
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
@@ -73,9 +74,9 @@ private:
 	D3DXVECTOR3 m_rot;
 	D3DXMATRIX m_mtxworld;	// マトリックス
 
-	CModel* m_pModel[NUMMODELS];
-	CMotion* m_pMotion;
-
+	CModel* m_pModel[NUMMODELS]; // モデルのポインタ
+	CMotion* m_pMotion;		// モーションポインタ
+	CParameter* m_pParam;	// パラメーターポインタ
 	int m_type;			   // モーションの種類変数
 	float m_fSize;		   // サイズ
 

@@ -119,9 +119,15 @@ void CTitleManager::Update(void)
 		{
 			// カラー変更
 			if (nCnt == m_nIdx)
-				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.6f));	// 赤
+			{
+				// 点滅
+				m_pTitleui[nCnt]->SetFlash(20, 40);
+			}
 			else
-				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));	// 白
+			{
+				// カラーセット
+				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			}
 		}
 	}
 
