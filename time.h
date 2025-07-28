@@ -34,10 +34,12 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	D3DXCOLOR GetCol(void) { return m_col; }
 
+	int GetAllTime(void) { return m_nAllTime; }
 	void SetTexture(void);
 
-	static inline constexpr int DIGIT_TIME = 3;
 private:
+	static inline constexpr int DIGIT_TIME = 3;	// åÖêî
+
 	D3DXVECTOR3 m_pos;		// ç¿ïW
 	D3DXCOLOR m_col;
 	D3DXVECTOR3 m_rot;

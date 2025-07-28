@@ -21,6 +21,7 @@
 #include "bullethorming.h"
 #include "playerlifegage.h"
 #include "enemy.h"
+#include "result.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -29,6 +30,7 @@ CBlock* CGame::m_pBlock = nullptr;				// ブロック
 CMeshCylinder* CGame::m_pMeshCylinder = nullptr;	// 円柱
 CBoss* CGame::m_pBoss = nullptr;					// ボス
 CPauseManager* CGame::m_pPausemanager = nullptr;
+CTime* CGame::m_pTime = nullptr;
 
 //==================================
 // コンストラクタ
@@ -66,7 +68,7 @@ HRESULT CGame::Init(void)
 	CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
 	// タイマー生成
-	CTime::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), 120.0f, 60.0f);
+	m_pTime = CTime::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
 	// シリンダー生成
 	m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
@@ -106,6 +108,7 @@ void CGame::Uninit(void)
 	m_pBlock = nullptr;
 	m_pBoss = nullptr;
 	m_pMeshCylinder = nullptr;
+	m_pTime = nullptr;
 
 	// nullチェック
 	if (m_pPausemanager != nullptr)
@@ -150,7 +153,7 @@ void CGame::Update(void)
 			if (pFade != nullptr)
 			{
 				// 画面遷移
-				pFade->SetFade(new CTitle());
+				pFade->SetFade(new CResult());
 			}
 		}
 
@@ -160,6 +163,25 @@ void CGame::Update(void)
 			// ホーミング弾を生成
 			CBulletHorming::Create("data\\MODEL\\ATTACKMODEL\\bulletobject000.x", D3DXVECTOR3(0.0f, 400.0f, 0.0f));
 		}
+
+
+		//// 経過時間を取得
+		//int Numtime = m_pTime->GetAllTime();
+
+		//if (Numtime <= 0)
+		//{
+		//	// フェード取得
+		//	CFade* pFade = CManager::GetFade();
+
+		//	if (pFade != nullptr)
+		//	{
+		//		// リザルトシーンに遷移
+		//		pFade->SetFade(new CResult());
+		// 
+		//		return;
+		//	}
+		//}
+
 	}
 }
 //==================================

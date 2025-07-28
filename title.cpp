@@ -14,6 +14,7 @@
 #include "manager.h"
 #include "game.h"
 #include "ui.h"
+#include "titlemanager.h"
 
 //=====================================
 // コンストラクタ

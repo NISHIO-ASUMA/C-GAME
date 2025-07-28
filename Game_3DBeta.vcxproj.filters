@@ -64,8 +64,11 @@
     <Filter Include="ソース ファイル\MainScenes">
       <UniqueIdentifier>{04945f99-89d3-4072-9625-51ce275c556d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\SceneManagers">
+    <Filter Include="ソース ファイル\MainScenes\SceneManagers">
       <UniqueIdentifier>{c171d126-c5c8-4a50-81fd-88c1af414fb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainScenes\SceneUi">
+      <UniqueIdentifier>{bfd2d6ee-26da-4ac6-a75e-dda824ef8269}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -231,23 +234,29 @@
     <ClCompile Include="manager.cpp">
       <Filter>ソース ファイル\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="titleui.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="titlemanager.cpp">
-      <Filter>ソース ファイル\SceneManagers</Filter>
+      <Filter>ソース ファイル\MainScenes\SceneManagers</Filter>
     </ClCompile>
     <ClCompile Include="pausemanager.cpp">
-      <Filter>ソース ファイル\SceneManagers</Filter>
+      <Filter>ソース ファイル\MainScenes\SceneManagers</Filter>
     </ClCompile>
     <ClCompile Include="tutorial.cpp">
       <Filter>ソース ファイル\MainScenes</Filter>
     </ClCompile>
     <ClCompile Include="tutorialmanager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\MainScenes\SceneManagers</Filter>
+    </ClCompile>
+    <ClCompile Include="titleui.cpp">
+      <Filter>ソース ファイル\MainScenes\SceneUi</Filter>
     </ClCompile>
     <ClCompile Include="tutorialui.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\MainScenes\SceneUi</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>ソース ファイル\MainScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="resultmanager.cpp">
+      <Filter>ソース ファイル\MainScenes\SceneManagers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -435,6 +444,12 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="tutorialui.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="resultmanager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
