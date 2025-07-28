@@ -46,7 +46,7 @@ HRESULT CFade::Init(void)
 		NULL);
 
 	// 頂点情報のポインタ
-	VERTEX_2D* pVtx;
+	VERTEX_2D* pVtx = NULL;
 
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
 	m_pVtx->Lock(0, 0, (void**)&pVtx, 0);
@@ -99,7 +99,7 @@ void CFade::Uninit(void)
 void CFade::Update(void)
 {
 	// 頂点情報のポインタ
-	VERTEX_2D* pVtx;		
+	VERTEX_2D* pVtx = NULL;
 
 	// 何もなかったら
 	if (m_fade == FADE_NONE)
@@ -172,6 +172,19 @@ void CFade::Draw(void)
 //==============================
 void CFade::SetFade(CScene * pNewScene)
 {
+	// タイプがNONEじゃ無かったら
+	if (m_fade != FADE_NONE)
+	{
+		// 新しいシーンの破棄
+		delete pNewScene;
+
+		// nullptrにする
+		pNewScene = nullptr;
+
+		// ここで処理を返す
+		return;
+	}
+
 	// 現在シーンをnullにする
 	if (m_pScene != nullptr)
 	{

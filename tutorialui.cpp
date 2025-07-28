@@ -116,6 +116,7 @@ void CTutorialUi::SetTexture(int nType)
 	switch (nType)
 	{
 	case 0:
+		// テクスチャ割り当て
 		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\tutorial_menu.png");
 		break;
 

@@ -212,6 +212,7 @@
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="titlemanager.cpp" />
+    <ClCompile Include="titleplayer.cpp" />
     <ClCompile Include="titleui.cpp" />
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="tutorialmanager.cpp" />
@@ -279,6 +280,7 @@
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="titlemanager.h" />
+    <ClInclude Include="titleplayer.h" />
     <ClInclude Include="titleui.h" />
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="tutorialmanager.h" />
