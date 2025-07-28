@@ -1,6 +1,6 @@
 //=========================================
 //
-// タイトル管理処理 [ titlemanager.h ]
+// タイトル管理処理 [ titlemanager.cpp ]
 // Author: Asuma Nishio
 // 
 //==========================================
@@ -11,11 +11,22 @@
 #include "titlemanager.h"
 #include "titleui.h"
 #include "manager.h"
+#include "game.h"
+#include "tutorial.h"
 #include "input.h"
 #include "block.h"
 #include "meshfield.h"
-#include "game.h"
-#include "tutorial.h"
+#include "titleplayer.h"
+
+//******************************
+// 定数宣言
+//******************************
+namespace ConstSize
+{
+	constexpr float UIWIDTH = 300.0f;
+	constexpr float UIHEIGHT = 60.0f;
+	constexpr float FIELDWIDTH = 1000.0f;
+}
 
 //============================
 // コンストラクタ
@@ -49,17 +60,21 @@ HRESULT CTitleManager::Init(void)
 	for (int nCnt = 0; nCnt < TITLE_MENU; nCnt++)
 	{
 		// 高さの間隔空ける
-		CenterPos.y += nCnt * 180.0f;
+		CenterPos.y += nCnt * DIGITPOS;
 
 		// uiを生成 ( 選択メニュー分 )
-		m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, 300.0f, 60.0f, nCnt);
+		m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, ConstSize::UIWIDTH, ConstSize::UIHEIGHT, nCnt);
 	}
 
 	// ブロック生成
 	CBlock::Create("data\\MODEL\\STAGEOBJ\\block000.x",VECTOR3_NULL,VECTOR3_NULL,NULL);
 
 	// 地面生成
-	CMeshField::Create(VECTOR3_NULL, 1000.0f);
+	CMeshField::Create(VECTOR3_NULL, ConstSize::FIELDWIDTH);
+
+	// タイトルプレイヤーを生成
+	CTitlePlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
+	// CTitlePlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
 
 	// 初期化結果を返す
 	return S_OK;
@@ -121,12 +136,12 @@ void CTitleManager::Update(void)
 			if (nCnt == m_nIdx)
 			{
 				// カラーセット
-				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.6f, 1.0f));
+				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
 			}
 			else
 			{
 				// カラーセット
-				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				m_pTitleui[nCnt]->SetCol(COLOR_WHITE);
 			}
 		}
 	}

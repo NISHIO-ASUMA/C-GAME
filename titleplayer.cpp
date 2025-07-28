@@ -1,4 +1,16 @@
+//=============================================
+//
+// タイトルプレイヤー処理 [ titleplayer.cpp ]
+// Author: Asuma Nishio
+//
+//=============================================
+
+//********************************
+// インクルードファイル宣言
+//********************************
 #include "titleplayer.h"
+#include "manager.h"
+#include "input.h"
 
 //============================
 // コンストラクタ
@@ -30,7 +42,7 @@ CTitlePlayer::~CTitlePlayer()
 //============================
 // 生成処理
 //============================
-CTitlePlayer* CTitlePlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nLife, const int nIdxParson, const char* pFilename)
+CTitlePlayer* CTitlePlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const int nIdxParson, const char* pFilename)
 {
 	// インスタンス生成
 	CTitlePlayer* pTitlePlayer = new CTitlePlayer;
@@ -67,17 +79,6 @@ HRESULT CTitlePlayer::Init(void)
 	// モーション数を設定
 	m_pMotion->SetMotionNum(TITLEMOTION_MAX);
 
-	// プレイヤー識別モデルフラグを設定
-	for (int nCnt = 0; nCnt < TITLE_MODEL; nCnt++)
-	{
-		// nullptrじゃなかったら
-		if (m_apModel[nCnt] != nullptr)
-		{
-			// フラグを設定する
-			m_apModel[nCnt]->SetIsPlayer(true);
-		}
-	}
-
 	// 初期化結果を返す
 	return S_OK;
 }
@@ -86,6 +87,33 @@ HRESULT CTitlePlayer::Init(void)
 //============================
 void CTitlePlayer::Uninit(void)
 {
+	// モデル数分の破棄
+	for (int nCnt = 0; nCnt < TITLE_MODEL; nCnt++)
+	{
+		// nullptrチェック
+		if (m_apModel[nCnt] != nullptr)
+		{
+			// 終了処理
+			m_apModel[nCnt]->Uninit();
+
+			// ポインタの破棄
+			delete m_apModel[nCnt];
+
+			// nullptrにする
+			m_apModel[nCnt] = nullptr;
+		}
+	}
+
+	// nullptrチェック
+	if (m_pMotion != nullptr)
+	{
+		// ポインタの破棄
+		delete m_pMotion;
+
+		// nullptrにする
+		m_pMotion = nullptr;
+	}
+
 	// 自身の破棄
 	CObject::Release();
 }
@@ -94,12 +122,53 @@ void CTitlePlayer::Uninit(void)
 //============================
 void CTitlePlayer::Update(void)
 {
+	// 入力デバイスを取得
+	CInputKeyboard* pKey = CManager::GetInputKeyboard();
 
+	// 取得失敗時
+	if (pKey == nullptr) return;
+
+	// キー入力でモーション変更
+	if (pKey->GetTrigger(DIK_RETURN))
+	{
+		// アクション状態に変更
+		m_pMotion->SetMotion(TITLEMOTION_ACTION);
+	}
+
+	// モーションの更新
+	if (m_pMotion != nullptr)
+	{
+		m_pMotion->Update(m_apModel,TITLE_MODEL);
+	}
 }
 //============================
 // 描画処理
 //============================
 void CTitlePlayer::Draw(void)
 {
+		// デバイスポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
+	// 計算用のマトリックスを宣言
+	D3DXMATRIX mtxRot, mtxTrans;
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxworld);
+
+	// 向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxworld, &m_mtxworld, &mtxRot);
+
+	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxworld, &m_mtxworld, &mtxTrans);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxworld);
+
+	// 全モデルパーツの描画
+	for (int nCnt = 0; nCnt < TITLE_MODEL; nCnt++)
+	{
+		m_apModel[nCnt]->Draw();
+	}
 }

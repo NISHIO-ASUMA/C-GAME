@@ -20,8 +20,12 @@
 //**********************
 // 定数宣言
 //**********************
-constexpr float MAX_VIEWUP = 3.0f; // カメラの角度制限値
-constexpr float MAX_VIEWDOWN = 0.1f; // カメラの角度制限値
+namespace CameraInfo
+{
+	constexpr float MAX_VIEWUP = 3.0f; // カメラの角度制限値
+	constexpr float MAX_VIEWDOWN = 0.1f; // カメラの角度制限値
+	constexpr float NorRot = D3DX_PI * 2.0f;	// 正規化値
+}
 
 //=================================
 // コンストラクタ
@@ -53,7 +57,7 @@ HRESULT CCamera::Init(void)
 {
 	// 初期値を設定する
 	m_pCamera.posV = D3DXVECTOR3(0.0f, 500.0f, -250.0f);		// カメラの位置
-	m_pCamera.posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// カメラの見ている位置
+	m_pCamera.posR = VECTOR3_NULL;								// カメラの見ている位置
 	m_pCamera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);				// 上方向ベクトル
 	m_pCamera.rot = D3DXVECTOR3(D3DX_PI * 0.55f, 0.0f, 0.0f);	// 角度
 
@@ -79,6 +83,7 @@ HRESULT CCamera::Init(void)
 		m_pCamera.nMode = MODE_LOCKON;
 	}
 
+	// 初期化結果を返す
 	return S_OK;
 }
 //=================================
@@ -103,9 +108,13 @@ void CCamera::Update(void)
 	// タイトルなら
 	if (pMode == CScene::MODE_TITLE)
 	{
-		// カメラの旋回処理
-		Rotation();
+		// タイトルカメラ用に設定
+		m_pCamera.posV = D3DXVECTOR3(0.0f, 100.0f, -400.0f);	// カメラの位置
+		m_pCamera.posR = VECTOR3_NULL;	// カメラの見ている位置
+		m_pCamera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 上方向ベクトル
+		m_pCamera.rot = VECTOR3_NULL;	// 角度
 
+		// ここで処理を返す
 		return;
 	}
 
@@ -131,16 +140,15 @@ void CCamera::Update(void)
 
 		// マウス視点移動
 		MouseView(pMouse);
-
 		break;
 
 	case MODE_PLAYER:
-		// 追従
+		// プレイヤー追従
 		PlayerFollow();
 		break;
 
 	case MODE_LOCKON:
-		// ロックオン
+		// ボスにロックオン
 		LockOn();
 		break;
 
@@ -151,13 +159,13 @@ void CCamera::Update(void)
 	// 角度の正規化
 	if (m_pCamera.rot.y > D3DX_PI)
 	{// D3DX_PIより大きくなったら
-		m_pCamera.rot.y -= D3DX_PI * 2.0f;
+		m_pCamera.rot.y -= CameraInfo::NorRot;
 	}
 
 	// 角度の正規化
 	if (m_pCamera.rot.y < -D3DX_PI)
 	{// D3DX_PIより小さくなったら
-		m_pCamera.rot.y += D3DX_PI * 2.0f;
+		m_pCamera.rot.y += CameraInfo::NorRot;
 	}
 }
 //=================================
@@ -216,11 +224,11 @@ void CCamera::MouseView(CInputMouse * pMouse)
 		m_pCamera.rot.x += fAngle.y * 0.01f;
 
 		// 回転量を制限
-		if (m_pCamera.rot.x > MAX_VIEWUP)
+		if (m_pCamera.rot.x > CameraInfo::MAX_VIEWUP)
 		{
 			m_pCamera.rot.x -= fAngle.y * 0.01f;
 		}
-		else if (m_pCamera.rot.x < MAX_VIEWDOWN)
+		else if (m_pCamera.rot.x < CameraInfo::MAX_VIEWDOWN)
 		{
 			m_pCamera.rot.x -= fAngle.y * 0.01f;
 		}
@@ -243,11 +251,11 @@ void CCamera::MouseView(CInputMouse * pMouse)
 		m_pCamera.rot.x += fAngle.y * 0.01f;
 
 		// 回転量を制限
-		if (m_pCamera.rot.x > MAX_VIEWUP)
+		if (m_pCamera.rot.x > CameraInfo::MAX_VIEWUP)
 		{
 			m_pCamera.rot.x -= fAngle.y * 0.01f;
 		}
-		else if (m_pCamera.rot.x < MAX_VIEWDOWN)
+		else if (m_pCamera.rot.x < CameraInfo::MAX_VIEWDOWN)
 		{
 			m_pCamera.rot.x -= fAngle.y * 0.01f;
 		}
@@ -261,19 +269,19 @@ void CCamera::MouseView(CInputMouse * pMouse)
 	// 正規化
 	if (m_pCamera.rot.y < -D3DX_PI)
 	{
-		m_pCamera.rot.y += D3DX_PI * 2.0f;
+		m_pCamera.rot.y += CameraInfo::NorRot;
 	}
 	else if (m_pCamera.rot.y > D3DX_PI)
 	{
-		m_pCamera.rot.y += -D3DX_PI * 2.0f;
+		m_pCamera.rot.y += -CameraInfo::NorRot;
 	}
 	if (m_pCamera.rot.x < -D3DX_PI)
 	{
-		m_pCamera.rot.x += D3DX_PI * 2.0f;
+		m_pCamera.rot.x += CameraInfo::NorRot;
 	}
 	else if (m_pCamera.rot.x > D3DX_PI)
 	{
-		m_pCamera.rot.x += -D3DX_PI * 2.0f;
+		m_pCamera.rot.x += -CameraInfo::NorRot;
 	}
 
 }
@@ -347,11 +355,11 @@ void CCamera::LockOn(void)
 	// カメラの目的位置
 	D3DXVECTOR3 desiredPosV = playerPos + camOffset;
 
-	// ターゲット座標（ボスに加え高さもやや高めに）
+	// ターゲット座標を設定
 	D3DXVECTOR3 targetBoss = bossPos;
 	targetBoss.y = playerPos.y + 150.0f;  // 視点の上方向を強調
 
-	// カメラに適用する（滑らかに補間）
+	// カメラに適用する
 	m_pCamera.posV += (desiredPosV - m_pCamera.posV) * 0.3f;
 	m_pCamera.posR += (targetBoss - m_pCamera.posR) * 0.3f;
 

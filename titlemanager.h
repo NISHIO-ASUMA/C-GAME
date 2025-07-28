@@ -30,6 +30,7 @@ public:
 
 private:
 	static constexpr int TITLE_MENU = 2; // タイトルui数
+	static constexpr float DIGITPOS = 180.0f; // uiの幅
 
 	int m_nIdx;		// 選択番号
 	CTitleUi* m_pTitleui[TITLE_MENU]; // クラスポインタ

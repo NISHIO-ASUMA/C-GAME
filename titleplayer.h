@@ -45,7 +45,7 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CTitlePlayer* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nLife, const int nIdxParson, const char* pFilename); // ê∂ê¨èàóù
+	static CTitlePlayer* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const int nIdxParson, const char* pFilename); // ê∂ê¨èàóù
 
 private:
 
