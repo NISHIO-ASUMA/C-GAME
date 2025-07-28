@@ -10,6 +10,12 @@
 //***************************
 #include "titlemanager.h"
 #include "titleui.h"
+#include "manager.h"
+#include "input.h"
+#include "block.h"
+#include "meshfield.h"
+#include "game.h"
+#include "tutorial.h"
 
 //============================
 // コンストラクタ
@@ -49,6 +55,12 @@ HRESULT CTitleManager::Init(void)
 		m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, 300.0f, 60.0f, nCnt);
 	}
 
+	// ブロック生成
+	CBlock::Create("data\\MODEL\\STAGEOBJ\\block000.x",VECTOR3_NULL,VECTOR3_NULL,NULL);
+
+	// 地面生成
+	CMeshField::Create(VECTOR3_NULL, 1000.0f);
+
 	// 初期化結果を返す
 	return S_OK;
 }
@@ -64,11 +76,70 @@ void CTitleManager::Uninit(void)
 //============================
 void CTitleManager::Update(void)
 {
-	// 選択に応じて
+	// 入力デバイス取得
+	CInputKeyboard* pKey = CManager::GetInputKeyboard();
 
-}
+	// 選択インデックス範囲
+	const int SELECT_BEGIN = NULL;
+	const int SELECT_END = TITLE_MENU - 1;
 
-void CTitleManager::Draw(void)
-{
+	// 上キー入力
+	if (pKey->GetTrigger(DIK_UP))
+	{
+		// インデックス番号を減算
+		m_nIdx--;
 
+		// 最小値以下なら最小値に設定
+		if (m_nIdx < SELECT_BEGIN)
+			m_nIdx = SELECT_END;
+	}
+
+	// 下キー入力
+	if (pKey->GetTrigger(DIK_DOWN))
+	{
+		// インデックス番号を加算
+		m_nIdx++;
+
+		// 最大値以上なら最大値に設定
+		if (m_nIdx > SELECT_END)
+			m_nIdx = SELECT_BEGIN;
+	}
+
+	// フェード取得
+	CFade* pFade = CManager::GetFade();
+
+	// nullだったら
+	if (pFade == nullptr) return;
+
+	// 選択されているメニューのポリゴンカラーを変更
+	for (int nCnt = 0; nCnt < TITLE_MENU; nCnt++)
+	{
+		// nullじゃなかったら
+		if (m_pTitleui[nCnt] != nullptr)
+		{
+			// カラー変更
+			if (nCnt == m_nIdx)
+				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.6f));	// 赤
+			else
+				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));	// 白
+		}
+	}
+
+	// 決定処理
+	if (pKey->GetTrigger(DIK_RETURN))
+	{
+		switch (m_nIdx)
+		{
+		case CTitleUi::MENU_GAME:		// ゲームモード
+			if (pFade != nullptr) pFade->SetFade(new CGame());	// ゲームシーンに遷移
+			break;
+
+		case CTitleUi::MENU_TUTORIAL:	// チュートリアルモード
+			if (pFade != nullptr) pFade->SetFade(new CTutorial());	// チュートリアルシーンに遷移
+			break;
+
+		default:
+			break;
+		}
+	}
 }

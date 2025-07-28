@@ -54,7 +54,7 @@ public:
 	static CCamera* GetCamera(void);
 	static CLight* GetLight(void);
 
-	static void SetScene(CScene * pNewScene); // インスタンスを入れる
+	static void SetScene(CScene * pNewScene); // 生成するシーンのインスタンスを入れる
 	static CScene::MODE GetScene(void);
 
 	static CFade* GetFade(void);
@@ -70,6 +70,6 @@ private:
 	static CLight* m_pLight;				 // ライトクラス
 
 	static CScene* m_pScene;		// シーン管理
-	static CFade* m_pFade;
+	static CFade* m_pFade;			// フェード
 };
 #endif

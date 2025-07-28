@@ -44,8 +44,11 @@ public:
 	void SetUV(float TexU, float TexV);
 	void SetCol(D3DXCOLOR col) { m_col = col; }
 	void SetPos(D3DXVECTOR3 pos) { m_Pos = pos; }
-	void SetSize(float fWidth, float fHeight) { m_fWidth = fWidth, m_fHeight = fHeight; }
 	void SetRot(D3DXVECTOR3 rot) { m_Rot = rot; }
+	void SetSize(float fWidth, float fHeight) { m_fWidth = fWidth, m_fHeight = fHeight; }
+
+	void SetWidth(float fWidth) { m_fWidth = fWidth; }
+	void SetHeight(float fHeight) { m_fWidth = fHeight; }
 
 	D3DXVECTOR3 GetPos(void) { return m_Pos; } // Œ»İ‚ÌÀ•W‚ğæ“¾
 	D3DXVECTOR3 GetRot(void) { return m_Rot; } // Œ»İ‚ÌŠp“x‚ğæ“¾

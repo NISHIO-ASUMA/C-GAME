@@ -27,7 +27,6 @@ public:
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	void Draw(void);
 
 private:
 	static constexpr int TITLE_MENU = 2; // É^ÉCÉgÉãuiêî

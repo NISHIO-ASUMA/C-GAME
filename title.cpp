@@ -14,8 +14,6 @@
 #include "manager.h"
 #include "game.h"
 #include "ui.h"
-#include "objectX.h"
-#include "meshfield.h"
 
 //=====================================
 // コンストラクタ
@@ -39,10 +37,6 @@ HRESULT CTitle::Init(void)
 	// インスタンス生成
 	m_pTitleManager = new CTitleManager;
 	m_pTitleManager->Init();
-
-	//CObjectX::Create("data\\MODEL\\STAGEOBJ\\block000.x",VECTOR3_NULL);
-
-	CMeshField::Create(VECTOR3_NULL, 500.0f);
 
 	return S_OK;
 }
@@ -72,17 +66,8 @@ void CTitle::Update(void)
 	// nullじゃなかったら
 	if (m_pTitleManager != nullptr)
 	{
+		// マネージャーの更新処理
 		m_pTitleManager->Update();
-	}
-
-	// 決定キー入力
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
-	{
-		// フェード取得
-		CFade* pFade = CManager::GetFade();
-
-		// 取得できたら
-		if (pFade != nullptr) pFade->SetFade(new CGame());	// ゲームシーンに遷移
 	}
 }
 //=====================================

@@ -43,9 +43,6 @@
     <Filter Include="ソース ファイル\State">
       <UniqueIdentifier>{61c02ed3-24dd-406f-9e9a-b94ba70a7abf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Scenes">
-      <UniqueIdentifier>{04945f99-89d3-4072-9625-51ce275c556d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\Scenes">
       <UniqueIdentifier>{0b5eaab2-9915-47d1-8d86-00628b20c149}</UniqueIdentifier>
     </Filter>
@@ -63,6 +60,12 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\Managers">
       <UniqueIdentifier>{7223f160-7fdc-4ad7-8a1a-328e4e9ada64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MainScenes">
+      <UniqueIdentifier>{04945f99-89d3-4072-9625-51ce275c556d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SceneManagers">
+      <UniqueIdentifier>{c171d126-c5c8-4a50-81fd-88c1af414fb2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -193,16 +196,16 @@
       <Filter>ソース ファイル\Bullet</Filter>
     </ClCompile>
     <ClCompile Include="title.cpp">
-      <Filter>ソース ファイル\Scenes</Filter>
+      <Filter>ソース ファイル\MainScenes</Filter>
     </ClCompile>
     <ClCompile Include="game.cpp">
-      <Filter>ソース ファイル\Scenes</Filter>
+      <Filter>ソース ファイル\MainScenes</Filter>
     </ClCompile>
     <ClCompile Include="scene.cpp">
-      <Filter>ソース ファイル\Scenes</Filter>
+      <Filter>ソース ファイル\MainScenes</Filter>
     </ClCompile>
     <ClCompile Include="fade.cpp">
-      <Filter>ソース ファイル\Scenes</Filter>
+      <Filter>ソース ファイル\MainScenes</Filter>
     </ClCompile>
     <ClCompile Include="shadow.cpp">
       <Filter>ソース ファイル\UI</Filter>
@@ -225,16 +228,25 @@
     <ClCompile Include="enemymanager.cpp">
       <Filter>ソース ファイル\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="titlemanager.cpp">
-      <Filter>ソース ファイル\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="pausemanager.cpp">
-      <Filter>ソース ファイル\Managers</Filter>
-    </ClCompile>
     <ClCompile Include="manager.cpp">
       <Filter>ソース ファイル\Managers</Filter>
     </ClCompile>
     <ClCompile Include="titleui.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="titlemanager.cpp">
+      <Filter>ソース ファイル\SceneManagers</Filter>
+    </ClCompile>
+    <ClCompile Include="pausemanager.cpp">
+      <Filter>ソース ファイル\SceneManagers</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>ソース ファイル\MainScenes</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorialmanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorialui.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -414,6 +426,15 @@
       <Filter>ヘッダー ファイル\Managers</Filter>
     </ClInclude>
     <ClInclude Include="titleui.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorialmanager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorialui.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

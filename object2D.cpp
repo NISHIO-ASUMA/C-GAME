@@ -148,6 +148,7 @@ void CObject2D::Update(void)
 		break;
 
 	default:
+		SetCenter(); // ’†S“_
 		break;
 	}
 }
