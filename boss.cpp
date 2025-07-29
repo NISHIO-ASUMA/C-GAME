@@ -288,6 +288,9 @@ void CBoss::Draw(void)
 	CDebugproc::Print("ボス右手座標 { %.2f,%.2f,%.2f }", GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._41, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._42, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._43);
 	CDebugproc::Draw(0, 300);
 
+	CDebugproc::Print("ボス体力 { %d }",m_pParam->GetHp());
+	CDebugproc::Draw(0, 400);
+
 	// デバッグフォント
 	m_pMotion->Debug();
 }

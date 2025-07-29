@@ -55,7 +55,7 @@ void CUi::Update(void)
 	D3DXVECTOR3 Pos = GetPos();
 
 	// 0.0fÇÊÇËè¨Ç≥Ç¢à íuÇ…Ç¢ÇÈ
-	if (Pos.y <= 150.0f)
+	if (Pos.y <= 180.0f)
 	{
 		Pos.y += 5.0f;
 	}
@@ -145,11 +145,11 @@ void CUi::SetTexture(int nType)
 	switch (nType)
 	{
 	case UITYPE_NONE:
-		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\tutorial_menu.png");
+		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\Enterkey.png");
 		break;
 
 	case UITYPE_MOVE:
-		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\karititle.png");
+		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\logo.png");
 		break;
 
 	default:

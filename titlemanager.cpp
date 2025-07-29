@@ -32,6 +32,8 @@ CTitleManager::CTitleManager()
 	{
 		m_pTitleui[nCnt] = nullptr;
 	}
+
+	m_isuiCreate = false;
 }
 //============================
 // デストラクタ
@@ -46,8 +48,8 @@ CTitleManager::~CTitleManager()
 HRESULT CTitleManager::Init(void)
 {	
 	// タイトルキャプション生成
-	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, -60.0f, 0.0f), CUi::UITYPE_MOVE, 300.0f, 100.0f);
-	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 400.0f, 0.0f), CUi::UITYPE_NONE, 300.0f, 100.0f);
+	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, -60.0f, 0.0f), CUi::UITYPE_MOVE, 400.0f, 100.0f);
+	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f), CUi::UITYPE_NONE, 150.0f, 80.0f);
 
 	// 地面生成
 	CMeshField::Create(VECTOR3_NULL, FIELDWIDTH);
@@ -56,8 +58,8 @@ HRESULT CTitleManager::Init(void)
 	CMeshDome::Create(D3DXVECTOR3(0.0f, -70.0f, 0.0f), 500.0f);
 
 	// タイトルプレイヤーを生成
-	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f), VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
-	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f), VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f),VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f),VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
 
 	// 初期化結果を返す
 	return S_OK;
@@ -85,11 +87,11 @@ void CTitleManager::Update(void)
 	// カメラ取得
 	CCamera* pCamera = CManager::GetCamera();
 
-	// キー入力フラグ
-	bool bKeyTrigger = false;
+	// 取得失敗時
+	if (pCamera == nullptr) return;
 
-	// キー入力時
-	if ((pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A)) && !bKeyTrigger)
+	// キー入力時 かつ uiが生成されていなかったら
+	if ((pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A)) && !m_isuiCreate)
 	{
 		// 基準座標を設定
 		D3DXVECTOR3 CenterPos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f);
@@ -104,13 +106,13 @@ void CTitleManager::Update(void)
 			m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, UIWIDTH, UIHEIGHT, nCnt);
 		}
 
-		bKeyTrigger = true;
+		// フラグを有効化
+		m_isuiCreate = true;
 	}
-
 
 	// 選択インデックス範囲
 	const int SELECT_BEGIN = NULL;
-	const int SELECT_END = TITLE_MENU;
+	const int SELECT_END = TITLE_MENU -1;
 
 	// 上キー入力
 	if (pKey->GetTrigger(DIK_UP) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_UP))
@@ -150,7 +152,7 @@ void CTitleManager::Update(void)
 			if (nCnt == m_nIdx)
 			{
 				// カラーセット
-				m_pTitleui[nCnt]->SetCol(D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f));
+				m_pTitleui[nCnt]->SetCol(COLOR_YERROW);
 			}
 			else
 			{

@@ -50,7 +50,10 @@ private:
 		"data\\TEXTURE\\title000.png",
 		"data\\TEXTURE\\title001.png",
 		"data\\TEXTURE\\tutorial_menu.png",
-		"data\\TEXTURE\\karititle.png",
+		"data\\TEXTURE\\logo.png",
+		"data\\TEXTURE\\Enterkey.png",
+		"data\\TEXTURE\\boss_life.png",
+		"data\\TEXTURE\\boss_frame.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[NUM_TEXTURE];	// テクスチャポインタ

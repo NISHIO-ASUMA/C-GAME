@@ -50,9 +50,6 @@ HRESULT CGameManager::Init(void)
 	// スコアの生成
 	// CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
-	// タイマー生成
-	m_pTime = CTime::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), 120.0f, 60.0f);
-
 	// シリンダー生成
 	m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
 
@@ -63,7 +60,7 @@ HRESULT CGameManager::Init(void)
 	CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
 
 	// ボス生成
-	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f, 1500);
+	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f, 1000);
 
 	// プレイヤー生成
 	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, -550.0f), VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
@@ -77,8 +74,11 @@ HRESULT CGameManager::Init(void)
 	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 2.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_BAR);
 
 	// ボス体力ゲージ生成
-	CBossLifeGage::Create(D3DXVECTOR3(600.0f, 40.0f, 0.0f), 0.0f, 0.0f, CBossLifeGage::TYPE_GAGE);
-	CBossLifeGage::Create(D3DXVECTOR3(600.0f, 40.0f, 0.0f), 640.0f, 60.0f, CBossLifeGage::TYPE_FRAME);
+	CBossLifeGage::Create(D3DXVECTOR3(770.0f, 0.0f, 0.0f), 0.0f, 0.0f, CBossLifeGage::TYPE_GAGE);
+	CBossLifeGage::Create(D3DXVECTOR3(770.0f, 0.0f, 0.0f), SCREEN_WIDTH * 0.4f, 60.0f, CBossLifeGage::TYPE_FRAME);
+
+	// タイマー生成
+	m_pTime = CTime::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), 120.0f, 60.0f);
 
 	// 初期化結果を返す
 	return S_OK;

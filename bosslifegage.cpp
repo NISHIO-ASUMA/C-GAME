@@ -121,7 +121,7 @@ void CBossLifeGage::Update(void)
 		}
 
 		// 表示する体力バーの最大幅
-		const float fMaxWidth = SCREEN_WIDTH * 0.5f; // 必要に応じて調整
+		const float fMaxWidth = SCREEN_WIDTH * 0.4f; // 必要に応じて調整
 
 		// サイズを比率で反映
 		SetSize(fMaxWidth * fRatio, 60.0f);
@@ -160,13 +160,13 @@ void CBossLifeGage::SetTexture(int nType)
 	case CBossLifeGage::TYPE_FRAME:	// 外枠
 
 		// テクスチャ割り当て
-		m_nIdxTex = pTexture->Register("data\\TEXTURE\\lifeframe.png");
+		m_nIdxTex = pTexture->Register("data\\TEXTURE\\boss_frame.png");
 		break;
 
 	case CBossLifeGage::TYPE_GAGE:	// 体力バー
 
 		// テクスチャ割り当て
-		m_nIdxTex = pTexture->Register("data\\TEXTURE\\lifegage.png");
+		m_nIdxTex = pTexture->Register("data\\TEXTURE\\boss_life.png");
 		break;
 
 	default:

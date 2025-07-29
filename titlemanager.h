@@ -35,6 +35,8 @@ private:
 
 	int m_nIdx;		// 選択番号
 	CTitleUi* m_pTitleui[TITLE_MENU]; // クラスポインタ
+
+	bool m_isuiCreate;
 };
 
 #endif

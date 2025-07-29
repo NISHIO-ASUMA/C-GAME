@@ -14,7 +14,7 @@
 //**********************
 // インクルードファイル
 //**********************
-constexpr int NUMTIME = 10;	// 最大タイマー
+constexpr int NUMTIME = 120;	// 最大タイマー
 
 //===============================
 // オーバーロードコンストラクタ
@@ -63,7 +63,7 @@ CTime* CTime::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 	if (FAILED(pTime->Init()))
 	{
 		// nullptr代入
-		pTime = nullptr;
+		return nullptr;
 	}
 
 	// 結果を返す
@@ -91,7 +91,6 @@ HRESULT CTime::Init(void)
 		m_pNumber[nCnt]->SetSize(fTexPos, m_fHeight);
 		m_pNumber[nCnt]->SetPos(m_pos);
 		m_pNumber[nCnt]->Init(D3DXVECTOR3(m_pos.x - (fTexPos * 2.0f * nCnt), m_pos.y, 0.0f), fTexPos, m_fHeight);
-
 	}
 
 	// テクスチャセット
@@ -111,13 +110,13 @@ void CTime::Uninit(void)
 		// nullptrチェック
 		if (m_pNumber[nCnt] != nullptr)
 		{
-			// 終了
+			// 終了処理
 			m_pNumber[nCnt]->Uninit();
 
-			// 破棄
+			// ポインタの破棄
 			delete m_pNumber[nCnt];
 
-			// ポインタ初期化
+			// null初期化
 			m_pNumber[nCnt] = nullptr;
 		}
 	}

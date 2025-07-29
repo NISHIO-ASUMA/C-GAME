@@ -231,7 +231,7 @@ bool CBullet::Collision(D3DXVECTOR3 pos)
 				CParticle::Create(D3DXVECTOR3 (BossPos.x,30.0f,BossPos.z), D3DXCOLOR(1.0f,0.0f,0.0f,1.0f), 35, 150, 100, 300);
 
 				// ボスにダメージ
-				pBoss->Hit(2);
+				pBoss->Hit(5);
 
 				// 弾を消す
 				CBullet::Uninit();
