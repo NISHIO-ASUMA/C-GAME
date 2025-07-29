@@ -16,7 +16,9 @@
 #include "input.h"
 #include "block.h"
 #include "meshfield.h"
+#include "meshdome.h"
 #include "titleplayer.h"
+#include "ui.h"
 
 //============================
 // コンストラクタ
@@ -42,26 +44,20 @@ CTitleManager::~CTitleManager()
 // 初期化処理
 //============================
 HRESULT CTitleManager::Init(void)
-{
-	// 基準座標を設定
-	D3DXVECTOR3 CenterPos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f);
-
-	// タイトルのuiを生成
-	for (int nCnt = 0; nCnt < TITLE_MENU; nCnt++)
-	{
-		// 高さの間隔空ける
-		CenterPos.y += nCnt * DIGITPOS;
-
-		// uiを生成 ( 選択メニュー分 )
-		m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE,UIWIDTH,UIHEIGHT, nCnt);
-	}
+{	
+	// タイトルキャプション生成
+	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, -60.0f, 0.0f), CUi::UITYPE_MOVE, 300.0f, 100.0f);
+	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 400.0f, 0.0f), CUi::UITYPE_NONE, 300.0f, 100.0f);
 
 	// 地面生成
 	CMeshField::Create(VECTOR3_NULL, FIELDWIDTH);
 
+	// 球状メッシュを生成
+	CMeshDome::Create(D3DXVECTOR3(0.0f, -70.0f, 0.0f), 500.0f);
+
 	// タイトルプレイヤーを生成
-	CTitlePlayer::Create(D3DXVECTOR3(-60.0f, 0.0f, 0.0f), VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
-	CTitlePlayer::Create(D3DXVECTOR3(60.0f,0.0f,0.0f), VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f), VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f), VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
 
 	// 初期化結果を返す
 	return S_OK;
@@ -82,12 +78,39 @@ void CTitleManager::Update(void)
 	CInputKeyboard* pKey = CManager::GetInputKeyboard();
 	CJoyPad* pJoyPad = CManager::GetJoyPad();
 
+	// 取得失敗時
 	if (pKey == nullptr) return;
 	if (pJoyPad == nullptr) return;
 
+	// カメラ取得
+	CCamera* pCamera = CManager::GetCamera();
+
+	// キー入力フラグ
+	bool bKeyTrigger = false;
+
+	// キー入力時
+	if ((pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A)) && !bKeyTrigger)
+	{
+		// 基準座標を設定
+		D3DXVECTOR3 CenterPos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f);
+
+		// タイトルのuiを生成
+		for (int nCnt = 0; nCnt < TITLE_MENU; nCnt++)
+		{
+			// 高さの間隔空ける
+			CenterPos.y += nCnt * DIGITPOS;
+
+			// uiを生成 ( 選択メニュー分 )
+			m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, UIWIDTH, UIHEIGHT, nCnt);
+		}
+
+		bKeyTrigger = true;
+	}
+
+
 	// 選択インデックス範囲
 	const int SELECT_BEGIN = NULL;
-	const int SELECT_END = TITLE_MENU - 1;
+	const int SELECT_END = TITLE_MENU;
 
 	// 上キー入力
 	if (pKey->GetTrigger(DIK_UP) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_UP))
@@ -138,7 +161,7 @@ void CTitleManager::Update(void)
 	}
 
 	// 決定処理
-	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A))
+	if ((pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A)) && pCamera->GetFinishRotation())
 	{
 		switch (m_nIdx)
 		{
@@ -155,3 +178,20 @@ void CTitleManager::Update(void)
 		}
 	}
 }
+
+#if 0
+
+// 基準座標を設定
+D3DXVECTOR3 CenterPos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f);
+
+// タイトルのuiを生成
+for (int nCnt = 0; nCnt < TITLE_MENU; nCnt++)
+{
+	// 高さの間隔空ける
+	CenterPos.y += nCnt * DIGITPOS;
+
+	// uiを生成 ( 選択メニュー分 )
+	m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, UIWIDTH, UIHEIGHT, nCnt);
+}
+
+#endif

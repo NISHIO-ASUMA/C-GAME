@@ -47,6 +47,11 @@ public:
 
 	static CTitlePlayer* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const int nIdxParson, const char* pFilename); // 生成処理
 
+	static CTitlePlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
+	int GetPlayerIndex() const { return m_nIdxPlayer; }
+
+	D3DXVECTOR3 GetPos(void) { return m_pos; }
+
 private:
 
 	static inline constexpr int TITLE_MODEL = 19; // 階層構造モデル数

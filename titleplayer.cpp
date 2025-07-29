@@ -66,6 +66,38 @@ CTitlePlayer* CTitlePlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const int n
 	return pTitlePlayer;
 }
 //============================
+// 指定番号のプレイヤー取得
+//============================
+CTitlePlayer* CTitlePlayer::GetIdxPlayer(int Idx)
+{
+	// オブジェクトの先頭取得
+	CObject* pObj = CObject::GetTop(static_cast<int>(CObject::PRIORITY::PLAYER));
+
+	// pObjがnullptrじゃなかったら
+	while (pObj != nullptr)
+	{
+		// オブジェクトのタイプがPLAYERの時
+		if (pObj->GetObjType() == CObject::TYPE_PLAYER)
+		{
+			// プレイヤー型にキャスト
+			CTitlePlayer* pPlayer = static_cast<CTitlePlayer*>(pObj);
+
+			// 番号が一致していたら
+			if (pPlayer->GetPlayerIndex() == Idx)
+			{
+				// ポインタを返す
+				return pPlayer;
+			}
+		}
+
+		// 次のプレイヤーを代入
+		pObj = pObj->GetNext();
+	}
+
+	// 取得できなかった場合
+	return nullptr;
+}
+//============================
 // 初期化処理
 //============================
 HRESULT CTitlePlayer::Init(void)
@@ -131,7 +163,7 @@ void CTitlePlayer::Update(void)
 	if (pJoyPad == nullptr) return;
 
 	// キー入力でモーション変更
-	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A))
+	if ((pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A)) && CManager::GetCamera()->GetFinishRotation())
 	{
 		// アクション状態に変更
 		m_pMotion->SetMotion(TITLEMOTION_ACTION);

@@ -35,6 +35,7 @@ HRESULT CUi::Init(void)
 	// オブジェクトの初期化
 	CObject2D::Init();
 
+	// 初期化結果を返す
 	return S_OK;
 }
 //===============================
@@ -50,6 +51,23 @@ void CUi::Uninit(void)
 //===============================
 void CUi::Update(void)
 {
+	// 座標取得
+	D3DXVECTOR3 Pos = GetPos();
+
+	// 0.0fより小さい位置にいる
+	if (Pos.y <= 150.0f)
+	{
+		Pos.y += 5.0f;
+	}
+
+	// 座標セット
+	SetPos(Pos);
+
+	if (m_type == UITYPE_NONE)
+	{
+		SetFlash(10, 20);
+	}
+
 	// オブジェクトの更新
 	CObject2D::Update();
 }
@@ -58,17 +76,29 @@ void CUi::Update(void)
 //===============================
 void CUi::Draw(void)
 {
-	// デバイス取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+	// フラグの取得
+	CCamera* pCamera = CManager::GetCamera();
 
-	// テクスチャセット
-	CTexture* pTexture = CManager::GetTexture();
+	// 取得失敗時
+	if (pCamera == nullptr) return;
 
-	// 割り当て
-	pDevice->SetTexture(0, pTexture->GetAddress(m_nTexIdxType));
+	// フラグをゲットする
+	bool isKey = pCamera->GetIsRotation();
 
-	// オブジェクトの描画
-	CObject2D::Draw();
+	if (!isKey)
+	{
+		// デバイス取得
+		LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+		// テクスチャセット
+		CTexture* pTexture = CManager::GetTexture();
+
+		// 割り当て
+		pDevice->SetTexture(0, pTexture->GetAddress(m_nTexIdxType));
+
+		// オブジェクトの描画
+		CObject2D::Draw();
+	}
 }
 //===============================
 // 生成処理
@@ -97,6 +127,8 @@ CUi* CUi::Create(D3DXVECTOR3 pos,int nType,float fWidth,float fHeight)
 	// オブジェクト設定
 	pUi->SetPos(pos);
 	pUi->SetSize(fWidth, fHeight);
+	pUi->SetAnchor(CObject2D::ANCHORTYPE_CENTER);
+	pUi->m_type = nType;
 
 	// 生成されたポインタを返す
 	return pUi;
@@ -112,8 +144,12 @@ void CUi::SetTexture(int nType)
 	// テクスチャ設定
 	switch (nType)
 	{
-	case SCENETYPE_NONE:
-		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\billboard_wepon.png");
+	case UITYPE_NONE:
+		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\tutorial_menu.png");
+		break;
+
+	case UITYPE_MOVE:
+		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\karititle.png");
 		break;
 
 	default:

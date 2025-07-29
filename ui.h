@@ -19,14 +19,14 @@ class CUi : public CObject2D
 {
 public:
 
-	//**********************************************
-	// UIの種類定義  ( TODO : 後ほど列挙名の変更 )
-	//***********************************************
-	enum SCENETYPE
+	//***************************
+	// UIの種類定義
+	//***************************
+	enum UITYPE
 	{
-		SCENETYPE_NONE,
-		SCENETYPE_GAME,
-		SCENETYPE_MAX
+		UITYPE_NONE,
+		UITYPE_MOVE,
+		UITYPE_MAX
 	};
 
 	CUi(int nPriority = static_cast<int>(CObject::PRIORITY::UI));
@@ -43,16 +43,7 @@ public:
 
 private:
 	int m_nTexIdxType;		// テクスチャインデックス
-
-	//****************
-	// UI構造体定義  
-	//****************
-	struct UI
-	{
-
-	};
-
-	UI* m_pUi; // 構造体変数
+	int m_type;
 };
 
 #endif

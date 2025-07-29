@@ -1,9 +1,7 @@
 //=========================================
 //
-// タイトル管理処理 [ titlemanager.cpp ]
+// タイトル管理処理 [ titlemanager.h ]
 // Author: Asuma Nishio
-//
-// TODO : タイトルで行う操作や配置物の管理全般をする
 // 
 //==========================================
 
@@ -30,9 +28,9 @@ public:
 
 private:
 	static constexpr int TITLE_MENU = 2; // タイトルui数
-	static constexpr float DIGITPOS = 180.0f; // uiの幅
-	static constexpr float UIWIDTH = 300.0f;		// uiの横幅
-	static constexpr float UIHEIGHT = 60.0f;		// uiの高さ
+	static constexpr float DIGITPOS = 160.0f; // uiの幅
+	static constexpr float UIWIDTH = 270.0f;		// uiの横幅
+	static constexpr float UIHEIGHT = 50.0f;		// uiの高さ
 	static constexpr float FIELDWIDTH = 1000.0f;	// 地面の広さ
 
 	int m_nIdx;		// 選択番号

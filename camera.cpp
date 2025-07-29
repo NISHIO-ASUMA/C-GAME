@@ -16,6 +16,7 @@
 #include "object.h"
 #include "boss.h"
 #include "gamemanager.h"
+#include "titleplayer.h"
 
 //**********************
 // 定数宣言
@@ -43,6 +44,9 @@ CCamera::CCamera()
 	m_pCamera.posRDest = VECTOR3_NULL;
 	m_pCamera.fDistance = NULL;
 	m_pCamera.nMode = MODE_NONE;
+	m_isRotation = false;
+	m_isStopRotation = false;
+
 }
 //=================================
 // デストラクタ
@@ -109,52 +113,47 @@ void CCamera::Update(void)
 	// タイトルなら
 	if (pMode == CScene::MODE_TITLE)
 	{
-		// タイトルカメラ用に設定
-		m_pCamera.posV = D3DXVECTOR3(0.0f, 100.0f, -400.0f); // カメラの位置
-		m_pCamera.posR = VECTOR3_NULL;	// カメラの見ている位置
-		m_pCamera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 上方向ベクトル
-		m_pCamera.rot = VECTOR3_NULL;	// 角度
-
-		// ここで処理を返す
-		return;
+		// タイトルカメラ作成
+		TitleCamera();
 	}
-
+	else
+	{
 #ifdef _DEBUG
-	// カメラモード変更
-	if (pInput->GetTrigger(DIK_N))
-	{
-		m_pCamera.nMode = MODE_LOCKON;
-	}
-	if (pInput->GetTrigger(DIK_M))
-	{
-		m_pCamera.nMode = MODE_PLAYER;
-	}
-	if (pInput->GetTrigger(DIK_B))
-	{
-		m_pCamera.nMode = MODE_NONE;
-	}
+		// カメラモード変更
+		if (pInput->GetTrigger(DIK_N))
+		{
+			m_pCamera.nMode = MODE_LOCKON;
+		}
+		if (pInput->GetTrigger(DIK_M))
+		{
+			m_pCamera.nMode = MODE_PLAYER;
+		}
+		if (pInput->GetTrigger(DIK_B))
+		{
+			m_pCamera.nMode = MODE_NONE;
+		}
 #endif
 
-	switch (m_pCamera.nMode)
-	{
-	case MODE_NONE:
+		switch (m_pCamera.nMode)
+		{
+		case MODE_NONE:
+			// マウス視点移動
+			MouseView(pMouse);
+			break;
 
-		// マウス視点移動
-		MouseView(pMouse);
-		break;
+		case MODE_PLAYER:
+			// プレイヤー追従
+			PlayerFollow();
+			break;
 
-	case MODE_PLAYER:
-		// プレイヤー追従
-		PlayerFollow();
-		break;
+		case MODE_LOCKON:
+			// ボスにロックオン
+			LockOn();
+			break;
 
-	case MODE_LOCKON:
-		// ボスにロックオン
-		LockOn();
-		break;
-
-	default:
-		break;
+		default:
+			break;
+		}
 	}
 
 	// 角度の正規化
@@ -411,4 +410,82 @@ void CCamera::Rotation(void)
 	m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * m_pCamera.fDistance;
 	m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * m_pCamera.fDistance;
 	m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * m_pCamera.fDistance;
+}
+//=================================
+// タイトルカメラ処理
+//=================================
+void CCamera::TitleCamera(void)
+{
+	// タイトルカメラ用に設定
+	m_pCamera.posV = D3DXVECTOR3(-240.0f, 130.0f, 270.0f); // カメラの位置
+	m_pCamera.posR = VECTOR3_NULL;	// カメラの見ている位置
+	m_pCamera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 上方向ベクトル
+	m_pCamera.rot = VECTOR3_NULL;	// 角度
+
+	// 2体のタイトルプレイヤーの取得
+	CTitlePlayer* pTplayer1 = CTitlePlayer::GetIdxPlayer(0);
+	CTitlePlayer* pTplayer2 = CTitlePlayer::GetIdxPlayer(1);
+
+	// nullチェック
+	if (pTplayer1 == nullptr || pTplayer2 == nullptr) return;
+
+	// 2体の中間点を回転の中心にする
+	D3DXVECTOR3 pos1 = pTplayer1->GetPos();
+	D3DXVECTOR3 pos2 = pTplayer2->GetPos();
+	D3DXVECTOR3 centerPos = (pos1 + pos2) * 0.5f; 
+
+	static float rotationAngle = 0.0f; // 回転用角度
+	float radius = 300.0f;			// 回転半径
+	float height = 170.0f;			// 高さ
+	float stopAngle = D3DX_PI;		// プレイヤー正面
+	float rotationSpeed = 0.04f;	// 回転スピード
+
+	if (!m_isRotation)
+	{
+		// エンターキー押下で回転開始
+		if (CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
+		{
+			// フラグを有効化
+			m_isRotation = true;
+
+			// 回転リセット
+			rotationAngle = 0.0f; 
+		}
+	}
+	else
+	{
+		// カメラがまだ正面に来ていないなら回転
+		if (rotationAngle < stopAngle)
+		{
+			// 回転角を加算
+			rotationAngle += rotationSpeed;
+
+			// カメラの視点情報
+			m_pCamera.posV.x = centerPos.x + sinf(rotationAngle) * radius;
+			m_pCamera.posV.z = centerPos.z + cosf(rotationAngle) * radius;
+			m_pCamera.posV.y = centerPos.y + height;
+
+			// 注視点を設定
+			m_pCamera.posR = centerPos;
+		}
+		else
+		{
+			// 停止位置を固定
+			rotationAngle = stopAngle;
+
+			// カメラの視点情報
+			m_pCamera.posV.x = centerPos.x + sinf(rotationAngle) * radius;
+			m_pCamera.posV.z = centerPos.z + cosf(rotationAngle) * radius;
+			m_pCamera.posV.y = centerPos.y + height;
+
+			// 注視点を設定
+			m_pCamera.posR = centerPos;
+
+			// 終了フラグを有効化
+			m_isStopRotation = true;
+		}
+
+		// カメラの上方向ベクトル
+		m_pCamera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	}
 }

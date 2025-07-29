@@ -46,6 +46,11 @@ public:
 	void PlayerFollow(void);
 	void Rotation(void);
 
+	void TitleCamera(void);
+
+	bool GetIsRotation(void) { return m_isRotation; }
+	bool GetFinishRotation(void) { return m_isStopRotation; }
+
 private:
 	// カメラ構造体を定義
 	struct Camera
@@ -61,6 +66,8 @@ private:
 	};
 
 	Camera m_pCamera;	// 構造体変数
+	bool m_isRotation;	// 回転したかどうか
+	bool m_isStopRotation;	// 回転終了
 };
 
 #endif
