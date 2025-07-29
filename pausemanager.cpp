@@ -144,9 +144,9 @@ void CPauseManager::Update(void)
 		{
 			// カラー変更
 			if (nCnt == m_nSelectIdx)
-				m_pPause[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));	// 黄色
+				m_pPause[nCnt]->SetCol(COLOR_YERROW);	// 黄色
 			else
-				m_pPause[nCnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));	// 白
+				m_pPause[nCnt]->SetCol(COLOR_WHITE);	// 白
 		}
 	}
 

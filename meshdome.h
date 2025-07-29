@@ -33,8 +33,14 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 
 	void SetTexture(void);
-
 private:
+
+	static constexpr int MeshDome_X_BLOCK = 10;		// Xブロック数
+	static constexpr int MeshDome_Z_BLOCK = 10;		// Zブロック数
+	static constexpr int MeshDome_VERTEX_NUM = (MeshDome_X_BLOCK + 1) * (MeshDome_Z_BLOCK + 1); // 頂点数
+	static constexpr int MeshDome_INDEX_NUM = MeshDome_X_BLOCK * MeshDome_Z_BLOCK * 6;			// インデックス数
+	static constexpr int MeshDome_PRIMITIVE_NUM = (MeshDome_X_BLOCK * MeshDome_Z_BLOCK * 2) + ((MeshDome_Z_BLOCK - 1) * 2); // ポリゴン数
+
 	LPDIRECT3DINDEXBUFFER9 m_pIdx; // インデックスバッファ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtx;	// 頂点バッファ
 

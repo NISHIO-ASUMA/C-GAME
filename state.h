@@ -44,6 +44,8 @@ public:
 
 	void OnExit();	// I—¹ˆ—
 
+	int GetNowStateID();
+
 	CStateBase* GetNowState() const { return m_pNowState; }
 
 private:

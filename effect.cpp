@@ -34,9 +34,6 @@ CEffect::~CEffect()
 //===============================
 CEffect* CEffect::Create(D3DXVECTOR3 pos, D3DXCOLOR col, D3DXVECTOR3 move, int nLife, float fRadius)
 {
-	// 最大数
-	int nNum = CObject::GetNumAll();
-
 	// エフェクトポインタ
 	CEffect* pEffect = new CEffect;
 

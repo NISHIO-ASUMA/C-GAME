@@ -15,7 +15,7 @@
 #include "effect.h"
 #include "boss.h"
 #include "particle.h"
-#include "game.h"
+#include "gamemanager.h"
 
 //*******************************
 // 定数宣言
@@ -193,7 +193,7 @@ void CBullet::Draw(void)
 bool CBullet::Collision(D3DXVECTOR3 pos)
 {
 	// ボス取得
-	CBoss* pBoss = CGame::GetBoss();
+	CBoss* pBoss = CGameManager::GetBoss();
 
 	// オブジェクトが取得できたら
 	if (pBoss != nullptr)
@@ -227,12 +227,16 @@ bool CBullet::Collision(D3DXVECTOR3 pos)
 			// 範囲内なら
 			if (fDistanceSq <= fLength)
 			{
-				// TODO  : テスト
+				// テストでパーティクル生成
 				CParticle::Create(D3DXVECTOR3 (BossPos.x,30.0f,BossPos.z), D3DXCOLOR(1.0f,0.0f,0.0f,1.0f), 35, 150, 100, 300);
 
-				// ヒット処理
+				// ボスにダメージ
+				pBoss->Hit(2);
+
+				// 弾を消す
 				CBullet::Uninit();
 
+				// 当たった判定を返す
 				return true;
 			}
 		}

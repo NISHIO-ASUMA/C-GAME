@@ -1,9 +1,9 @@
-//=============================================
+//=================================================
 //
-// チュートリアル管理処理 [ tutorialmanager.h ]
+// チュートリアル管理処理 [ tutorialmanager.cpp ]
 // Author: Asuma Nishio
 //
-//=============================================
+//=================================================
 
 //**********************
 // インクルードファイル
@@ -37,6 +37,8 @@ HRESULT CTutorialManager::Init(void)
 	// ui生成
 	m_pTutoui = CTutorialUi::Create(D3DXVECTOR3(500.0f, 200.0f, 0.0f), 300.0f, 60.0f, 0);
 
+	// プレイヤー生成
+	
 	// 初期化結果を返す
 	return S_OK;
 }
@@ -52,13 +54,21 @@ void CTutorialManager::Uninit(void)
 //==========================
 void CTutorialManager::Update(void)
 {
-	// 決定キー入力
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
+	// 入力デバイス取得
+	CInputKeyboard* pKey = CManager::GetInputKeyboard();
+	CJoyPad* pJoyPad = CManager::GetJoyPad();
+
+	// 取得失敗時
+	if (pKey == nullptr) return;
+	if (pJoyPad == nullptr) return;
+
+	// 決定キー入力 or パッドのstartボタン
+	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_START))
 	{
 		// フェード取得
 		CFade* pFade = CManager::GetFade();
 
-		if (pFade != nullptr) pFade->SetFade(new CGame());	// ゲームシーンに遷移
+		// ゲームシーンに遷移
+		if (pFade != nullptr) pFade->SetFade(new CGame());
 	}
-
 }

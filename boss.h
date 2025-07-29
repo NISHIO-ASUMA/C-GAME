@@ -60,11 +60,14 @@ public:
 
 	D3DXVECTOR3 GetPos(void) { return m_pos;}
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
+	CParameter* GetParam(void) { return m_pParam; }
 
 	float GetSize(void) { return m_fSize; }
 
 	bool CollisionRightHand(D3DXVECTOR3* pPos);
 	CModel*GetModelPartType(CModel::PARTTYPE modelpart);
+
+	void Hit(int nDamage);
 
 private:
 

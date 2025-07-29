@@ -124,12 +124,14 @@ void CTitlePlayer::Update(void)
 {
 	// 入力デバイスを取得
 	CInputKeyboard* pKey = CManager::GetInputKeyboard();
+	CJoyPad* pJoyPad = CManager::GetJoyPad();
 
 	// 取得失敗時
 	if (pKey == nullptr) return;
+	if (pJoyPad == nullptr) return;
 
 	// キー入力でモーション変更
-	if (pKey->GetTrigger(DIK_RETURN))
+	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A))
 	{
 		// アクション状態に変更
 		m_pMotion->SetMotion(TITLEMOTION_ACTION);

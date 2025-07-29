@@ -18,16 +18,6 @@
 #include "meshfield.h"
 #include "titleplayer.h"
 
-//******************************
-// 定数宣言
-//******************************
-namespace ConstSize
-{
-	constexpr float UIWIDTH = 300.0f;
-	constexpr float UIHEIGHT = 60.0f;
-	constexpr float FIELDWIDTH = 1000.0f;
-}
-
 //============================
 // コンストラクタ
 //============================
@@ -63,18 +53,15 @@ HRESULT CTitleManager::Init(void)
 		CenterPos.y += nCnt * DIGITPOS;
 
 		// uiを生成 ( 選択メニュー分 )
-		m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, ConstSize::UIWIDTH, ConstSize::UIHEIGHT, nCnt);
+		m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE,UIWIDTH,UIHEIGHT, nCnt);
 	}
 
-	// ブロック生成
-	CBlock::Create("data\\MODEL\\STAGEOBJ\\block000.x",VECTOR3_NULL,VECTOR3_NULL,NULL);
-
 	// 地面生成
-	CMeshField::Create(VECTOR3_NULL, ConstSize::FIELDWIDTH);
+	CMeshField::Create(VECTOR3_NULL, FIELDWIDTH);
 
 	// タイトルプレイヤーを生成
-	CTitlePlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
-	// CTitlePlayer::Create(VECTOR3_NULL, VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(-60.0f, 0.0f, 0.0f), VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(60.0f,0.0f,0.0f), VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
 
 	// 初期化結果を返す
 	return S_OK;
@@ -93,13 +80,17 @@ void CTitleManager::Update(void)
 {
 	// 入力デバイス取得
 	CInputKeyboard* pKey = CManager::GetInputKeyboard();
+	CJoyPad* pJoyPad = CManager::GetJoyPad();
+
+	if (pKey == nullptr) return;
+	if (pJoyPad == nullptr) return;
 
 	// 選択インデックス範囲
 	const int SELECT_BEGIN = NULL;
 	const int SELECT_END = TITLE_MENU - 1;
 
 	// 上キー入力
-	if (pKey->GetTrigger(DIK_UP))
+	if (pKey->GetTrigger(DIK_UP) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_UP))
 	{
 		// インデックス番号を減算
 		m_nIdx--;
@@ -110,7 +101,7 @@ void CTitleManager::Update(void)
 	}
 
 	// 下キー入力
-	if (pKey->GetTrigger(DIK_DOWN))
+	if (pKey->GetTrigger(DIK_DOWN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_DOWN))
 	{
 		// インデックス番号を加算
 		m_nIdx++;
@@ -147,7 +138,7 @@ void CTitleManager::Update(void)
 	}
 
 	// 決定処理
-	if (pKey->GetTrigger(DIK_RETURN))
+	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A))
 	{
 		switch (m_nIdx)
 		{

@@ -251,7 +251,6 @@ void CBoss::Update(void)
 //====================================
 void CBoss::Draw(void)
 {
-#if 1
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -278,7 +277,7 @@ void CBoss::Draw(void)
 		// 全モデル描画
 		m_pModel[nCnt]->Draw();
 	}
-#endif
+
 	// デバッグフォント
 	CDebugproc::Print("ボス座標 [ %.2f ,%.2f , %.2f]", m_pos.x,m_pos.y,m_pos.z);
 	CDebugproc::Draw(0, 40);
@@ -323,4 +322,17 @@ bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 		// 当たらないとき
 		return false;
 	}
+}
+//====================================
+// ヒット処理
+//====================================
+void CBoss::Hit(int nDamage)
+{
+	// 体力を取得
+	int nHp = m_pParam->GetHp();
+
+	nHp -= nDamage;
+
+	// セットする
+	m_pParam->SetHp(nHp);
 }

@@ -11,7 +11,7 @@
 #include "playerstate.h"
 #include "state.h"
 #include "manager.h"
-#include "game.h"
+#include "gamemanager.h"
 #include "parameter.h"
 
 //******************************
@@ -69,7 +69,7 @@ void CPlayerStateNeutral::OnUpdate()
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
 	// 移動入力があれば移動状態へ
-	if (m_pPlayer->isMoveInputKey(pInput))
+	if (m_pPlayer->isMoveInputKey(pInput)&& m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE)
 	{
 		// 状態変更
 		m_pPlayer->ChangeState(new CPlayerStateMove,ID_MOVE);
@@ -79,7 +79,7 @@ void CPlayerStateNeutral::OnUpdate()
 	}
 
 	// 攻撃キー入力時
-	if (pInput->GetPress(DIK_RETURN))
+	if (pInput->GetPress(DIK_RETURN)&& m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE)
 	{
 		// ステート変更
 		m_pPlayer->ChangeState(new CPlayerStateAction,ID_ACTION);
@@ -93,6 +93,7 @@ void CPlayerStateNeutral::OnUpdate()
 //==================================
 void CPlayerStateNeutral::OnExit()
 {
+	// 無し
 }
 
 
@@ -140,7 +141,6 @@ void CPlayerStateAction::OnUpdate()
 
 	// 攻撃更新
 	m_pPlayer->UpdateAction(pInput, mtxWorld, VecBoss);
-
 }
 //==================================
 // 攻撃状態終了関数
@@ -181,7 +181,7 @@ void CPlayerStateMove::OnUpdate()
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
 	// シリンダー座標の取得
-	D3DXVECTOR3 MeshPos = CGame::GetCylinder()->GetPos();
+	D3DXVECTOR3 MeshPos = CGameManager::GetCylinder()->GetPos();
 
 	// 移動処理実行
 	m_pPlayer->UpdateMove(MeshPos, pInput);
@@ -203,7 +203,6 @@ void CPlayerStateMove::OnExit()
 {
 	// 無し
 }
-
 
 //==================================
 // ダメージ状態コンストラクタ
@@ -229,9 +228,6 @@ void CPlayerStateDamage::OnStart()
 	// 一体目のプレイヤーの時
 	if (m_pPlayer->GetPlayerIndex() == 0)
 	{
-		//// パラメーター取得
-		//CParameter* pParamet = m_pPlayer->GetParameter();
-
 		// 体力を減らす
 		m_pPlayer->HitDamage(m_nDamage);
 	}

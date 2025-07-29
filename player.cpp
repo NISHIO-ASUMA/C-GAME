@@ -21,7 +21,7 @@
 #include "parameter.h"
 #include "debugproc.h"
 #include "shadowS.h"
-#include "game.h"
+#include "gamemanager.h"
 #include "playerstate.h"
 #include "state.h"
 
@@ -248,14 +248,14 @@ void CPlayer::Uninit(void)
 	CObject::Release();
 }
 //============================================================
-// プレイヤー更新処理  ( 角度をプレイヤーの移動量として渡す )
+// プレイヤー更新処理 ( 角度をプレイヤーの移動量として渡す )
 //============================================================
 void CPlayer::Update(void)
 {
 	// 攻撃中はボスの方向に体を向ける
 	if (m_isAttack)
 	{
-		D3DXVECTOR3 BossDir = CGame::GetBoss()->GetPos() - m_pos;
+		D3DXVECTOR3 BossDir = CGameManager::GetBoss()->GetPos() - m_pos;
 		BossDir.y = 0.0f;
 
 		if (D3DXVec3LengthSq(&BossDir) > 0.0001f)
@@ -294,17 +294,36 @@ void CPlayer::Update(void)
 		// MAINプレイヤー取得
 		CPlayer* pMain = CPlayer::GetIdxPlayer(NUMBER_MAIN);
 
-		if (pMain)
-		{
-			// MAINがダメージステート中ならSUBもダメージステートに
-			if (pMain->GetNowMotion() == PLAYERMOTION_DAMAGE &&
-				m_pMotion->GetMotionType() != PLAYERMOTION_DAMAGE)
-			{
-				// モーション変更
-				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+		// モーションを統一する
+		m_pMotion->SetMotion(pMain->GetNowMotion());
 
-				// ステート変更
-				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+		// ステートを統一
+		int mainStateID = pMain->m_pStateMachine->GetNowStateID();
+		int subStateID = m_pStateMachine->GetNowStateID();
+
+		// もし一致していなかったら
+		if (mainStateID != subStateID)
+		{
+			switch (mainStateID)
+			{
+			case CPlayerStateBase::ID_DAMAGE: //ダメージ
+				ChangeState(new CPlayerStateDamage(0), CPlayerStateBase::ID_DAMAGE);
+				break;
+
+			case CPlayerStateBase::ID_MOVE: // 移動
+				ChangeState(new CPlayerStateMove(), CPlayerStateBase::ID_MOVE);
+				break;
+
+			case CPlayerStateBase::ID_ACTION: //アクション
+				ChangeState(new CPlayerStateAction(), CPlayerStateBase::ID_ACTION);
+				break;
+
+			case CPlayerStateBase::ID_NEUTRAL: // ニュートラル
+				ChangeState(new CPlayerStateNeutral(), CPlayerStateBase::ID_NEUTRAL);
+				break;
+
+			default:
+				break;
 			}
 		}
 	}
@@ -370,7 +389,7 @@ void CPlayer::Draw(void)
 		m_apModel[nCnt]->Draw();
 	}
 
-	// フォント
+	// 状態
 	CDebugproc::Print("現在のSTATE { %d } ", m_State);
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 160);
@@ -385,7 +404,7 @@ void CPlayer::Draw(void)
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 220);
 
-	// 識別描画
+	// 体力描画
 	CDebugproc::Print("プレイヤーの体力 { %d } ", m_pParameter->GetHp());
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 340);
@@ -540,7 +559,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 	static float fAngle = NULL;
 
 	// 円柱の半径を取得
-	float fRadius = CGame::GetCylinder()->GetRadius();
+	float fRadius = CGameManager::GetCylinder()->GetRadius();
 
 	// 識別番号で処理を分別する
 	switch (m_nIdxPlayer)
@@ -677,7 +696,6 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 
 			// 上昇値を設定
 			m_move.y = PLAYER_JUMPVALUE;
-
 		}
 	}
 
@@ -704,7 +722,7 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 			m_pMotion->SetMotion(PLAYERMOTION_JUMPATTACK);
 
 			// 方向をボスに向かせる
-			D3DXVECTOR3 BossDir = CGame::GetBoss()->GetPos() - m_pos;
+			D3DXVECTOR3 BossDir = CGameManager::GetBoss()->GetPos() - m_pos;
 			BossDir.y = 0.0f;
 
 			if (D3DXVec3LengthSq(&BossDir) > 0.0001f)
@@ -777,7 +795,7 @@ void CPlayer::Collision(void)
 	//=============================
 	// ボス右手の当たり判定
 	//=============================
-	CBoss* pBoss = CGame::GetBoss();  // マネージャー経由でボスを取得する
+	CBoss* pBoss = CGameManager::GetBoss();  // マネージャー経由でボスを取得する
 
 	// 当たり判定の距離
 	if (pBoss->CollisionRightHand(&m_pos))
@@ -804,7 +822,7 @@ void CPlayer::Collision(void)
 			// 敵にキャスト
 			CEnemy* pEnemy = static_cast<CEnemy*>(pObjEnemy);
 
-			if (m_nIdxPlayer != NUMBER_MAIN) break;;
+			if (m_nIdxPlayer != NUMBER_MAIN) break;
 
 			// コリジョンしたとき
 			if (pEnemy->Collision(&m_pos) == true )
@@ -830,7 +848,7 @@ void CPlayer::Collision(void)
 D3DXVECTOR3 CPlayer::VecToBoss(const D3DXVECTOR3& pPos)
 {
 	// ボスの座標取得
-	D3DXVECTOR3 BossPos = CGame::GetBoss()->GetPos();
+	D3DXVECTOR3 BossPos = CGameManager::GetBoss()->GetPos();
 
 	// プレイヤーとボス間でベクトル生成
 	D3DXVECTOR3 VecBoss = BossPos - pPos;
@@ -839,6 +857,7 @@ D3DXVECTOR3 CPlayer::VecToBoss(const D3DXVECTOR3& pPos)
 	// できたベクトルを正規化する
 	D3DXVec3Normalize(&VecBoss, &VecBoss);
 
+	// ベクトルを返す
 	return VecBoss;
 }
 //===============================
@@ -857,7 +876,7 @@ bool CPlayer::isMoveInputKey(CInputKeyboard* pKeyInput)
 void CPlayer::InitPos(float fAngle)
 {
 	// 円柱半径を取得
-	float fRadius = CGame::GetCylinder()->GetRadius();
+	float fRadius = CGameManager::GetCylinder()->GetRadius();
 
 	// 角度の初期設定
 	m_fAngle = fAngle;
@@ -866,8 +885,8 @@ void CPlayer::InitPos(float fAngle)
 	float IdxAngle = (m_nIdxPlayer == NUMBER_MAIN) ? m_fAngle : m_fAngle + D3DX_PI;
 
 	// 円周上の初期位置を計算
-	m_pos.x = CGame::GetCylinder()->GetPos().x - sinf(IdxAngle) * fRadius;
-	m_pos.z = CGame::GetCylinder()->GetPos().z - cosf(IdxAngle) * fRadius;
+	m_pos.x = CGameManager::GetCylinder()->GetPos().x - sinf(IdxAngle) * fRadius;
+	m_pos.z = CGameManager::GetCylinder()->GetPos().z - cosf(IdxAngle) * fRadius;
 	m_pos.y = 0.0f;
 
 	// 現在の角度を設定する
@@ -880,7 +899,7 @@ void CPlayer::InitPos(float fAngle)
 		m_rot.y += (m_rotDest.y - m_rot.y);
 	}
 
-	// 目標回転も一致
+	// 回転をセット
 	m_rotDest.y = m_rot.y;
 
 	// 前フレーム座標をセット

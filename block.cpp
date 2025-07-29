@@ -13,10 +13,10 @@
 //===============================
 // オーバーロードコンストラクタ
 //===============================
-CBlock::CBlock(int nPriority)
+CBlock::CBlock(int nPriority) : CObjectX(nPriority)
 {
 	// 値のクリア
-	m_size = 0.0f;
+	m_size = NULL;
 }
 //===============================
 // デストラクタ

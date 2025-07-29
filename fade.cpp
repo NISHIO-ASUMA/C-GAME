@@ -64,9 +64,9 @@ HRESULT CFade::Init(void)
 	pVtx[3].rhw = 1.0f;
 
 	// 頂点カラーの設定
-	pVtx[0].col = m_col;
-	pVtx[1].col = m_col;
-	pVtx[2].col = m_col;
+	pVtx[0].col = 
+	pVtx[1].col = 
+	pVtx[2].col = 
 	pVtx[3].col = m_col;
 
 	//テクスチャ座標の設定
@@ -111,7 +111,7 @@ void CFade::Update(void)
 	if (m_fade == FADE_IN)
 	{
 		// フェードイン状態
-		m_col.a -= 0.03f;
+		m_col.a -= AlphaFade;
 
 		if (m_col.a <= 0.0f)
 		{
@@ -123,7 +123,7 @@ void CFade::Update(void)
 	else if (m_fade == FADE_OUT)
 	{
 		// フェードアウト状態
-		m_col.a += 0.03f;
+		m_col.a += AlphaFade;
 
 		if (m_col.a >= 1.0f)
 		{

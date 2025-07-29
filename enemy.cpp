@@ -9,7 +9,7 @@
 // インクルードファイル
 //**********************
 #include "enemy.h"
-#include "game.h"
+#include "gamemanager.h"
 #include "debugproc.h"
 #include "parameter.h"
 #include "particle.h"
@@ -171,7 +171,7 @@ void CEnemy::Update(void)
 	// 回転量を加算
 	m_fValueRot += 0.03f;
 
-	m_fRadius = CGame::GetCylinder()->GetRadius();
+	m_fRadius = CGameManager::GetCylinder()->GetRadius();
 	float fLength = D3DX_PI * 2.0f * 30.0f;
 
 	// 位置を計算

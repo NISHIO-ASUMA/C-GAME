@@ -15,7 +15,7 @@
 #include "debugproc.h"
 #include "object.h"
 #include "boss.h"
-#include "game.h"
+#include "gamemanager.h"
 
 //**********************
 // 定数宣言
@@ -25,6 +25,7 @@ namespace CameraInfo
 	constexpr float MAX_VIEWUP = 3.0f; // カメラの角度制限値
 	constexpr float MAX_VIEWDOWN = 0.1f; // カメラの角度制限値
 	constexpr float NorRot = D3DX_PI * 2.0f;	// 正規化値
+	constexpr float CAMERABACKPOS = 350.0f;		// 後方カメラ
 }
 
 //=================================
@@ -109,7 +110,7 @@ void CCamera::Update(void)
 	if (pMode == CScene::MODE_TITLE)
 	{
 		// タイトルカメラ用に設定
-		m_pCamera.posV = D3DXVECTOR3(0.0f, 100.0f, -400.0f);	// カメラの位置
+		m_pCamera.posV = D3DXVECTOR3(0.0f, 100.0f, -400.0f); // カメラの位置
 		m_pCamera.posR = VECTOR3_NULL;	// カメラの見ている位置
 		m_pCamera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);	// 上方向ベクトル
 		m_pCamera.rot = VECTOR3_NULL;	// 角度
@@ -283,7 +284,6 @@ void CCamera::MouseView(CInputMouse * pMouse)
 	{
 		m_pCamera.rot.x += -CameraInfo::NorRot;
 	}
-
 }
 //=================================
 // ロックオン処理
@@ -291,7 +291,7 @@ void CCamera::MouseView(CInputMouse * pMouse)
 void CCamera::LockOn(void)
 {
 	// ボス取得
-	CBoss* pBoss = CGame::GetBoss();
+	CBoss* pBoss = CGameManager::GetBoss();
 
 	// nullptrチェック
 	if (pBoss == nullptr)
@@ -313,7 +313,7 @@ void CCamera::LockOn(void)
 
 	// MAINプレイヤー座標,SUBプレイヤー座標,ボス座標を取得
 	D3DXVECTOR3 playerPos = pPlayer->GetPos();				// MAIN座標
-	D3DXVECTOR3 subPlayerPos = pPlayerSub->GetPos();		// SUB座標
+	D3DXVECTOR3 SubPlayerPos = pPlayerSub->GetPos();		// SUB座標
 	D3DXVECTOR3 bossPos = pBoss->GetPos();					// ボス座標
 
 	// MAINプレイヤー向き計算
@@ -332,7 +332,7 @@ void CCamera::LockOn(void)
 	pPlayer->SetRotDest(D3DXVECTOR3(0.0f, fAngleToBoss, 0.0f));
 
 	// SUBプレイヤーの向き計算
-	D3DXVECTOR3 VecSubToBoss = bossPos - subPlayerPos;
+	D3DXVECTOR3 VecSubToBoss = bossPos - SubPlayerPos;
 
 	// 高さは無視
 	VecSubToBoss.y = NULL;
@@ -347,7 +347,7 @@ void CCamera::LockOn(void)
 	pPlayerSub->SetRotDest(D3DXVECTOR3(0.0f, fAngleSubToBoss, 0.0f));
 
 	// カメラ位置をMAINプレイヤーの後方へ
-	D3DXVECTOR3 camOffset = -VecToBoss * 350.0f;
+	D3DXVECTOR3 camOffset = -VecToBoss * CameraInfo::CAMERABACKPOS;
 
 	// 高さを低めに設定
 	camOffset.y = 140.0f;

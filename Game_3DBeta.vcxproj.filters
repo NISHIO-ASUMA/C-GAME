@@ -270,8 +270,11 @@
     <ClCompile Include="bosslifegage.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="gamemanager.cpp">
+      <Filter>ソース ファイル\MainScenes\SceneManagers</Filter>
+    </ClCompile>
     <ClCompile Include="titleplayer.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Charactor\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -471,6 +474,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="titleplayer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="gamemanager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

@@ -25,6 +25,16 @@ class CBoss;
 class CBossLifeGage : public CObject2D
 {
 public:
+	//***********************
+	// ゲージの種類
+	//***********************
+	enum TYPE
+	{
+		TYPE_FRAME,
+		TYPE_GAGE,
+		TYPE_MAX
+	};
+
 	CBossLifeGage(int nPriority = static_cast<int>(CObject::PRIORITY::UI));
 	~CBossLifeGage();
 
@@ -32,10 +42,16 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void SetType(int nType) { m_Type = nType; }
+	void SetTexture(int nType);
 
 	static CBossLifeGage* Create(D3DXVECTOR3 pos, float fWidth, float fHeight, int nType);
 
 private:
+	int m_nCurrentLifeLength;		// バーの長さ基準値
+	int m_nMaxLifeLength;	// 最大体力時の長さ
+	int m_Type;				// 列挙変数
+
 	int m_nIdxTex;	// テクスチャインデックス
 	CBoss* m_pBoss; // ボスのポインタ
 

@@ -12,15 +12,6 @@
 #include "manager.h"
 #include "texture.h"
 
-//*******************************
-// マクロ定義
-//*******************************
-#define MeshDome_X_BLOCK (10) // X方向のブロック数
-#define MeshDome_Z_BLOCK (10) // Z方向のブロック数
-#define MeshDome_VERTEX_NUM ((MeshDome_X_BLOCK + 1) * (MeshDome_Z_BLOCK + 1)) // メッシュドームの頂点数
-#define MeshDome_INDEX_NUM (MeshDome_X_BLOCK * MeshDome_Z_BLOCK * 6)		  // メッシュドームのインデックス数	
-#define MeshDome_PRIMITIVE_NUM ((MeshDome_X_BLOCK * MeshDome_Z_BLOCK * 2) + ((MeshDome_Z_BLOCK - 1) * 2)) // メッシュドームのプリミティブ数
-
 //==================================
 // コンストラクタ
 //==================================
@@ -125,14 +116,14 @@ HRESULT CMeshDome::Init(void)
 	m_pIdx->Lock(0, 0, (void**)&pIdx, 0);
 
 	// インデックスの設定
-	int idx = 0;
+	WORD idx = 0;
 
 	for (int nCntV = 0; nCntV < MeshDome_Z_BLOCK; nCntV++)
 	{
 		for (int nCntX = 0; nCntX < MeshDome_X_BLOCK; nCntX++)
 		{
 			// 基準のインデックス
-		    int baseIndex = nCntV * (MeshDome_X_BLOCK + 1) + nCntX;
+			WORD baseIndex = nCntV * (MeshDome_X_BLOCK + 1) + nCntX;
 
 			// 三角形1
 			pIdx[idx++] = baseIndex;

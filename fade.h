@@ -43,6 +43,9 @@ public:
 	FADE GetFade(void) { return m_fade; }
 
 private:
+
+	static inline constexpr float AlphaFade = 0.025f; // フェードで加算する値
+
 	LPDIRECT3DVERTEXBUFFER9 m_pVtx; // 頂点バッファ
 	D3DXCOLOR m_col;				// ポリゴンカラー
 	FADE m_fade;					// フェードの列挙型変数

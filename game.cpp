@@ -10,27 +10,15 @@
 //****************************
 #include "game.h"
 #include "manager.h"
-#include "score.h"
-#include "time.h"
-#include "meshdome.h"
-#include "meshfield.h"
-#include "player.h"
-#include "meshimpact.h"
 #include "debugproc.h"
 #include "title.h"
-#include "bullethorming.h"
-#include "playerlifegage.h"
-#include "enemy.h"
 #include "result.h"
+#include "gamemanager.h"
 
 //**************************
 // 静的メンバ変数宣言
 //**************************
-CBlock* CGame::m_pBlock = nullptr;				// ブロック
-CMeshCylinder* CGame::m_pMeshCylinder = nullptr;	// 円柱
-CBoss* CGame::m_pBoss = nullptr;					// ボス
 CPauseManager* CGame::m_pPausemanager = nullptr;
-CTime* CGame::m_pTime = nullptr;
 
 //==================================
 // コンストラクタ
@@ -38,7 +26,7 @@ CTime* CGame::m_pTime = nullptr;
 CGame::CGame() : CScene(CScene::MODE_GAME)
 {
 	// 値のクリア
-	m_bPause = false;
+	m_pGameManager = nullptr;
 }
 //==================================
 // デストラクタ
@@ -61,43 +49,22 @@ HRESULT CGame::Init(void)
 		return E_FAIL;
 	}
 
-	// 初期化処理
+	// ポーズマネージャー初期化処理
 	m_pPausemanager->Init();
 
-	// スコアの生成
-	CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
+	// ゲームマネージャー生成
+	m_pGameManager = new CGameManager;
 
-	// タイマー生成
-	m_pTime = CTime::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), 120.0f, 60.0f);
+	// nullだったら
+	if (m_pGameManager == nullptr)
+	{
+		return E_FAIL;
+	}
 
-	// シリンダー生成
-	m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
+	// ゲームマネージャー初期化処理
+	m_pGameManager->Init();
 
-	// ドーム生成
-	CMeshDome::Create(D3DXVECTOR3(0.0f, -70.0f, 0.0f), 800.0f);
-
-	// フィールド生成
-	CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
-
-	// ボス生成
-	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f,1000);
-
-	// プレイヤー生成
-	CPlayer::Create(D3DXVECTOR3(0.0f,0.0f,-550.0f), VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
-
-	// プレイヤー生成
-	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 550.0f), VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
-
-	// ブロック配置
-	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
-
-	// 体力ゲージ生成
-	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_FRAME);
-	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 2.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_BAR);
-
-	// 敵生成
-	CEnemy::Create("data\\MODEL\\ATTACKMODEL\\SpikeEnemy000.x", D3DXVECTOR3(0.0f, 0.0f, -550.0f), VECTOR3_NULL, CEnemy::TYPE_NONE, 2);
-
+	// 初期化結果を返す
 	return S_OK;
 }
 //==================================
@@ -105,11 +72,6 @@ HRESULT CGame::Init(void)
 //==================================
 void CGame::Uninit(void)
 {
-	m_pBlock = nullptr;
-	m_pBoss = nullptr;
-	m_pMeshCylinder = nullptr;
-	m_pTime = nullptr;
-
 	// nullチェック
 	if (m_pPausemanager != nullptr)
 	{
@@ -122,26 +84,36 @@ void CGame::Uninit(void)
 		// nullptrにする
 		m_pPausemanager = nullptr;
 	}
+
+	// nullチェック
+	if (m_pGameManager != nullptr)
+	{
+		// 終了処理
+		m_pGameManager->Uninit();
+
+		// ポインタの破棄
+		delete m_pGameManager;
+
+		// nullptrにする
+		m_pGameManager = nullptr;
+	}
 }
 //==================================
 // 更新処理
 //==================================
 void CGame::Update(void)
 {	
-	// キー入力
+	// ポーズのキー入力判定
 	m_pPausemanager->SetEnablePause();
 	
 	// ポーズの更新処理
 	m_pPausemanager->Update();
 	
+	// falseの時に更新
 	if (m_pPausemanager->GetPause() == false)
 	{
-		// 検証用インパクト
-		if (CManager::GetInputKeyboard()->GetTrigger(DIK_H))
-		{
-			// 衝撃波を生成
-			CMeshImpact::Create(VECTOR3_NULL, 80, 100.0f, 40.0f, 7.0f);
-		}
+		// ゲームマネージャー更新
+		m_pGameManager->Update();
 
 		// 検証用画面遷移
 		if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
@@ -156,14 +128,6 @@ void CGame::Update(void)
 				pFade->SetFade(new CResult());
 			}
 		}
-
-		// 検証用弾
-		if (CManager::GetInputKeyboard()->GetTrigger(DIK_L))
-		{
-			// ホーミング弾を生成
-			CBulletHorming::Create("data\\MODEL\\ATTACKMODEL\\bulletobject000.x", D3DXVECTOR3(0.0f, 400.0f, 0.0f));
-		}
-
 
 		//// 経過時間を取得
 		//int Numtime = m_pTime->GetAllTime();
@@ -181,7 +145,6 @@ void CGame::Update(void)
 		//		return;
 		//	}
 		//}
-
 	}
 }
 //==================================
