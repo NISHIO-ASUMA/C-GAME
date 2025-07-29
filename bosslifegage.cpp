@@ -121,7 +121,7 @@ void CBossLifeGage::Update(void)
 		}
 
 		// 表示する体力バーの最大幅
-		const float fMaxWidth = SCREEN_WIDTH; // 必要に応じて調整
+		const float fMaxWidth = SCREEN_WIDTH * 0.5f; // 必要に応じて調整
 
 		// サイズを比率で反映
 		SetSize(fMaxWidth * fRatio, 60.0f);

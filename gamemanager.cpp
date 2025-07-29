@@ -77,8 +77,8 @@ HRESULT CGameManager::Init(void)
 	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 2.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_BAR);
 
 	// ボス体力ゲージ生成
-	CBossLifeGage::Create(D3DXVECTOR3(3.0f, 660.0f, 0.0f), 0.0f, 0.0f, CBossLifeGage::TYPE_GAGE);
-	CBossLifeGage::Create(D3DXVECTOR3(0.0f, 660.0f, 0.0f), 1280.0f, 60.0f, CBossLifeGage::TYPE_FRAME);
+	CBossLifeGage::Create(D3DXVECTOR3(600.0f, 40.0f, 0.0f), 0.0f, 0.0f, CBossLifeGage::TYPE_GAGE);
+	CBossLifeGage::Create(D3DXVECTOR3(600.0f, 40.0f, 0.0f), 640.0f, 60.0f, CBossLifeGage::TYPE_FRAME);
 
 	// 初期化結果を返す
 	return S_OK;
