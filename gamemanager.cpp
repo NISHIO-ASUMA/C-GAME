@@ -10,6 +10,7 @@
 //***************************
 #include "gamemanager.h"
 #include "manager.h"
+#include "debugproc.h"
 #include "score.h"
 #include "time.h"
 #include "meshdome.h"
@@ -17,8 +18,9 @@
 #include "player.h"
 #include "meshimpact.h"
 #include "playerlifegage.h"
-#include "debugproc.h"
 #include "bosslifegage.h"
+#include "parameter.h"
+#include "result.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -60,16 +62,16 @@ HRESULT CGameManager::Init(void)
 	CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
 
 	// ボス生成
-	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f, 1000);
+	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f, 5);
 
 	// プレイヤー生成
-	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, -550.0f), VECTOR3_NULL, 10, 0, "data\\Player100motion.txt");
-	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 550.0f), VECTOR3_NULL, 10, 1, "data\\Player200motion.txt");
+	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, -550.0f), VECTOR3_NULL, 10, 0, "data\\MOTION\\Player\\Player100motion.txt");
+	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 550.0f), VECTOR3_NULL, 10, 1, "data\\MOTION\\Player\\Player200motion.txt");
 
 	// ブロック配置
 	m_pBlock = CBlock::Create("data\\MODEL\\STAGEOBJ\\Field000.x", D3DXVECTOR3(0.0f, -90.0f, 0.0f), VECTOR3_NULL, 80.0f);
 
-	// 体力ゲージ生成
+	// プレイヤー体力ゲージ生成
 	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_FRAME);
 	CPlayerLifeGage::Create(D3DXVECTOR3(0.0f, 2.0f, 0.0f), 450.0f, 40.0f, CPlayerLifeGage::GAGE_BAR);
 
@@ -78,7 +80,7 @@ HRESULT CGameManager::Init(void)
 	CBossLifeGage::Create(D3DXVECTOR3(770.0f, 0.0f, 0.0f), SCREEN_WIDTH * 0.4f, 60.0f, CBossLifeGage::TYPE_FRAME);
 
 	// タイマー生成
-	m_pTime = CTime::Create(D3DXVECTOR3(640.0f, 50.0f, 0.0f), 120.0f, 60.0f);
+	m_pTime = CTime::Create(D3DXVECTOR3(680.0f, 50.0f, 0.0f), 100.0f, 50.0f);
 
 	// 初期化結果を返す
 	return S_OK;
@@ -99,5 +101,19 @@ void CGameManager::Uninit(void)
 //========================
 void CGameManager::Update(void)
 {
-	// オブジェクトの更新は自動的に呼ばれる
+	//// 未使用なら
+	//if (m_pBoss->IsDaeth())
+	//{
+	//	// フェード取得
+	//	CFade* pFade = CManager::GetFade();
+
+	//	if (pFade != nullptr)
+	//	{
+	//		// リザルトシーンに遷移
+	//		pFade->SetFade(new CResult());
+
+	//		// ここで処理を返す
+	//		return;
+	//	}
+	//}
 }

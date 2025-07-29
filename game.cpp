@@ -18,7 +18,7 @@
 //**************************
 // 静的メンバ変数宣言
 //**************************
-CPauseManager* CGame::m_pPausemanager = nullptr;
+CPauseManager* CGame::m_pPausemanager = nullptr; // ポーズマネージャーのポインタ
 
 //==================================
 // コンストラクタ
@@ -27,6 +27,8 @@ CGame::CGame() : CScene(CScene::MODE_GAME)
 {
 	// 値のクリア
 	m_pGameManager = nullptr;
+	m_nGametype = GAMESTATE_NONE;
+	m_nStateCount = NULL;
 }
 //==================================
 // デストラクタ
@@ -63,6 +65,9 @@ HRESULT CGame::Init(void)
 
 	// ゲームマネージャー初期化処理
 	m_pGameManager->Init();
+
+	// 通常進行状態
+	m_nGametype = GAMESTATE_NORMAL;
 
 	// 初期化結果を返す
 	return S_OK;
@@ -109,42 +114,63 @@ void CGame::Update(void)
 	// ポーズの更新処理
 	m_pPausemanager->Update();
 	
+	// フェード取得
+	CFade* pFade = CManager::GetFade();
+
+	switch (m_nGametype)
+	{
+	case GAMESTATE_NORMAL://通常状態
+		break;
+
+	case GAMESTATE_END:
+		m_nStateCount++;
+
+		if (m_nStateCount >= 10)
+		{
+			// カウンターを初期化
+			m_nStateCount = 0;
+
+			// 1秒経過
+			m_nGametype = GAMESTATE_NONE;//何もしていない状態
+
+			// フェードが取得できたら
+			if (pFade != nullptr)
+			{
+				// リザルトシーンに遷移
+				pFade->SetFade(new CResult());
+
+				// ここで処理を返す
+				return;
+			}
+		}
+		break;
+	}
+
 	// falseの時に更新
 	if (m_pPausemanager->GetPause() == false)
 	{
 		// ゲームマネージャー更新
 		m_pGameManager->Update();
 
-		// 検証用画面遷移
-		if (CManager::GetInputKeyboard()->GetTrigger(DIK_F9))
-		{
-			// フェード取得
-			CFade* pFade = CManager::GetFade();
+		// 経過時間を取得
+		int Numtime = m_pGameManager->GetTime()->GetAllTime();
 
-			// 取得できたら
-			if (pFade != nullptr)
-			{
-				// 画面遷移
-				pFade->SetFade(new CResult());
-			}
+		// タイマーが0秒以下なら
+		if (Numtime <= 0)
+		{
+			// 状態変更
+			m_nGametype = GAMESTATE_END;
 		}
 
-		//// 経過時間を取得
-		//int Numtime = m_pTime->GetAllTime();
+		// ボス取得
+		CBoss* pBoss = CGameManager::GetBoss();
 
-		//if (Numtime <= 0)
-		//{
-		//	// フェード取得
-		//	CFade* pFade = CManager::GetFade();
-
-		//	if (pFade != nullptr)
-		//	{
-		//		// リザルトシーンに遷移
-		//		pFade->SetFade(new CResult());
-		// 
-		//		return;
-		//	}
-		//}
+		// ボス死亡フラグが有効なら
+		if (pBoss->IsDaeth())
+		{
+			// 状態変更
+			m_nGametype = GAMESTATE_END;
+		}
 	}
 }
 //==================================
@@ -173,5 +199,5 @@ CGame* CGame::Create(void)
 	}
 
 	// 生成されたポインタを返す
-    return pGame;
+	return pGame;
 }

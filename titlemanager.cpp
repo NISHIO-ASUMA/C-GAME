@@ -23,7 +23,7 @@
 //============================
 // コンストラクタ
 //============================
-CTitleManager::CTitleManager()
+CTitleManager::CTitleManager(bool isCreate) : m_isFirstuiCreate(isCreate)
 {
 	// 値のクリア
 	m_nIdx = NULL;
@@ -47,6 +47,25 @@ CTitleManager::~CTitleManager()
 //============================
 HRESULT CTitleManager::Init(void)
 {	
+	if (!m_isFirstuiCreate) //他のシーン等から戻ってきたとき
+	{
+		// 基準座標を設定
+		D3DXVECTOR3 CenterPos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f);
+
+		// タイトルのuiを生成
+		for (int nCnt = 0; nCnt < TITLE_MENU; nCnt++)
+		{
+			// 高さの間隔空ける
+			CenterPos.y += nCnt * DIGITPOS;
+
+			// uiを生成 ( 選択メニュー分 )
+			m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, UIWIDTH, UIHEIGHT, nCnt);
+		}
+
+		// フラグを有効化
+		m_isuiCreate = true;
+	}
+
 	// タイトルキャプション生成
 	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, -60.0f, 0.0f), CUi::UITYPE_MOVE, 400.0f, 100.0f);
 	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f), CUi::UITYPE_NONE, 150.0f, 80.0f);
@@ -58,8 +77,8 @@ HRESULT CTitleManager::Init(void)
 	CMeshDome::Create(D3DXVECTOR3(0.0f, -70.0f, 0.0f), 500.0f);
 
 	// タイトルプレイヤーを生成
-	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f),VECTOR3_NULL, 0, "data\\TitlePlayer100.txt");
-	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f),VECTOR3_NULL, 1, "data\\TitlePlayer200.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f),VECTOR3_NULL, 0, "data\\MOTION\\Player\\TitlePlayer100.txt");
+	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f),VECTOR3_NULL, 1, "data\\MOTION\\Player\\TitlePlayer200.txt");
 
 	// 初期化結果を返す
 	return S_OK;
@@ -180,20 +199,3 @@ void CTitleManager::Update(void)
 		}
 	}
 }
-
-#if 0
-
-// 基準座標を設定
-D3DXVECTOR3 CenterPos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f);
-
-// タイトルのuiを生成
-for (int nCnt = 0; nCnt < TITLE_MENU; nCnt++)
-{
-	// 高さの間隔空ける
-	CenterPos.y += nCnt * DIGITPOS;
-
-	// uiを生成 ( 選択メニュー分 )
-	m_pTitleui[nCnt] = CTitleUi::Create(CenterPos, COLOR_WHITE, UIWIDTH, UIHEIGHT, nCnt);
-}
-
-#endif

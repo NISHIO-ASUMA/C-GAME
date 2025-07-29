@@ -101,6 +101,9 @@ void CBossLifeGage::Uninit(void)
 //===============================
 void CBossLifeGage::Update(void)
 {
+	// €–S‚µ‚Ä‚¢‚½‚ç
+	if (m_pBoss->IsDaeth()) return;
+
 	// null‚¶‚á‚È‚¢ ‚©‚Â í—Ş‚ªƒo[‚Ì
 	if (m_pBoss != nullptr && m_Type == TYPE_GAGE)
 	{

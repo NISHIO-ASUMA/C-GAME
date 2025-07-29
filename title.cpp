@@ -19,7 +19,7 @@
 //=====================================
 // コンストラクタ
 //=====================================
-CTitle::CTitle() : CScene(CScene::MODE_TITLE)
+CTitle::CTitle(bool isFirst) : CScene(CScene::MODE_TITLE), m_isCreate(isFirst)
 {
 	//無し
 }
@@ -36,9 +36,15 @@ CTitle::~CTitle()
 HRESULT CTitle::Init(void)
 {
 	// インスタンス生成
-	m_pTitleManager = new CTitleManager;
+	m_pTitleManager = new CTitleManager(m_isCreate);
+
+	// 生成失敗時
+	if (m_pTitleManager == nullptr) return E_FAIL;
+
+	// マネージャーの初期化処理
 	m_pTitleManager->Init();
 
+	// 初期化結果を返す
 	return S_OK;
 }
 //=====================================
@@ -81,12 +87,12 @@ void CTitle::Draw(void)
 //=====================================
 // 生成処理
 //=====================================
-CTitle* CTitle::Create(void)
+CTitle* CTitle::Create(bool isFirst)
 {
 	// インスタンス生成
-	CTitle* pTitle = new CTitle;
+	CTitle* pTitle = new CTitle(isFirst);
 
-	// nullptrだったら
+	// nullだったら
 	if (pTitle == nullptr) return nullptr;
 
 	// 初期化失敗時
@@ -94,7 +100,7 @@ CTitle* CTitle::Create(void)
 	{
 		return nullptr;
 	}
-	
+
 	// 生成されたポインタを返す
 	return pTitle;
 }

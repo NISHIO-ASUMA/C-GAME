@@ -25,6 +25,7 @@ public:
 		MODE_NONE = 0,
 		MODE_PLAYER,
 		MODE_LOCKON,
+		MODE_MOUSE,
 		MOMDE_MAX
 	};
 
@@ -51,6 +52,9 @@ public:
 	bool GetIsRotation(void) { return m_isRotation; }
 	bool GetFinishRotation(void) { return m_isStopRotation; }
 
+	void SetIsRotation(bool isFlags) { m_isRotation = isFlags; }
+	void SetFinishRotation(bool isFlags) { m_isStopRotation = isFlags; }
+
 private:
 	// カメラ構造体を定義
 	struct Camera
@@ -68,6 +72,9 @@ private:
 	Camera m_pCamera;	// 構造体変数
 	bool m_isRotation;	// 回転したかどうか
 	bool m_isStopRotation;	// 回転終了
+
+	D3DXVECTOR3 m_lastBossPos;		// ボスの最後の座標
+	bool m_isSetPos;		// ボスが死んだかどうかのフラグ
 };
 
 #endif

@@ -60,7 +60,7 @@ void CResultManager::Update(void)
 		if (pFade != nullptr)
 		{
 			// ƒV[ƒ“‘JˆÚ
-			pFade->SetFade(new CTitle());
+			pFade->SetFade(new CTitle(false));
 		}
 	}
 }

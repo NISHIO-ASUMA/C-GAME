@@ -2,8 +2,6 @@
 //
 // ポーズ管理処理 [ pausemanager.cpp ]
 // Author: Asuma Nishio
-// 
-// TODO : こっちでポーズの選択時の処理とかをする
 //
 //=====================================
 
@@ -67,12 +65,12 @@ HRESULT CPauseManager::Init(void)
 		if (nPause == CPause::MENU_BACK)
 		{
 			// 背景生成
-			m_pPause[nPause] = CPause::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f,0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), nPause);
+			m_pPause[nPause] = CPause::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f,0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, COLOR_WHITE, nPause);
 		}
 		else
 		{
 			// 選択用ポリゴンの生成
-			m_pPause[nPause] = CPause::Create(pos, 180.0f, 40.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), nPause);
+			m_pPause[nPause] = CPause::Create(pos, 180.0f, 40.0f, COLOR_WHITE, nPause);
 		}
 	}
 
@@ -100,13 +98,18 @@ void CPauseManager::Update(void)
 
 	// 入力デバイス取得
 	CInputKeyboard* pKey = CManager::GetInputKeyboard();
+	CJoyPad* pJoyPad = CManager::GetJoyPad();
+
+	// nullチェック
+	if (pKey == nullptr) return;
+	if (pJoyPad == nullptr) return;
 
 	// 選択インデックス範囲
 	const int SELECT_BEGIN = 1;
 	const int SELECT_END = SELECT_MAX - 1;
 
 	// 上キー入力
-	if (pKey->GetTrigger(DIK_UP))
+	if (pKey->GetTrigger(DIK_UP) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_UP))
 	{
 		// インデックス番号を減算
 		m_nSelectIdx--;
@@ -117,7 +120,7 @@ void CPauseManager::Update(void)
 	}
 
 	// 下キー入力
-	if (pKey->GetTrigger(DIK_DOWN))
+	if (pKey->GetTrigger(DIK_DOWN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_DOWN))
 	{
 		// インデックス番号を加算
 		m_nSelectIdx++;
@@ -168,7 +171,7 @@ void CPauseManager::Update(void)
 			break;
 
 		case CPause::MENU_QUIT:		// 退出時
-			if (pFade != nullptr) pFade->SetFade(new CTitle());	// タイトルシーンに遷移
+			if (pFade != nullptr) pFade->SetFade(new CTitle(false));	// タイトルシーンに遷移
 			SetEnablePause(false);	// ポーズ終了
 			break;
 		}

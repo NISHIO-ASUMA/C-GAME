@@ -95,21 +95,21 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return -1;
 	}
 
-	// レンダラーの生成処理
-	m_pRenderer = new CRenderer;
-
-	// 初期化に失敗したら
-	if (FAILED(m_pRenderer->Init(hWnd, bWindow)))
-	{
-		// -1を返す
-		return -1;
-	}
-
 	// カメラ生成
 	m_pCamera = new CCamera;
 
 	// 初期化に失敗したら
 	if (FAILED(m_pCamera->Init()))
+	{
+		// -1を返す
+		return -1;
+	}
+
+	// レンダラーの生成処理
+	m_pRenderer = new CRenderer;
+
+	// 初期化に失敗したら
+	if (FAILED(m_pRenderer->Init(hWnd, bWindow)))
 	{
 		// -1を返す
 		return -1;
@@ -142,7 +142,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pTexture->Load();
 
 	// シーンセット
-	m_pFade->SetFade(new CTitle());
+	m_pFade->SetFade(new CTitle(true));
 
 	return S_OK;
 }

@@ -233,7 +233,7 @@ void CEnemy::HitEnemy(int nDamage)
 	nHp -= nDamage;
 
 	// Œ»İ‘Ì—Í‚ª0ˆÈ‰º
-	if (nHp <= 0)
+	if (nHp <= NULL)
 	{
 		// “G‚ğ”jŠü
 		Uninit();

@@ -121,6 +121,7 @@ void CTutorialUi::SetTexture(int nType)
 		break;
 
 	default:
+
 		break;
 	}
 }

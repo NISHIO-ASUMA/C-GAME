@@ -24,7 +24,7 @@ class CTitleManager;
 class CTitle :public CScene
 {
 public:
-	CTitle();
+	CTitle(bool isFirst = true);
 	~CTitle();
 
 	HRESULT Init(void);
@@ -32,10 +32,11 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CTitle* Create(void);
+	static CTitle* Create(bool isFirst = true);
 
 private:
 	CTitleManager* m_pTitleManager; // クラスポインタ
+	bool m_isCreate;			// 生成フラグ
 
 };
 #endif

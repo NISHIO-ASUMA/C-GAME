@@ -65,6 +65,8 @@ public:
 	float GetSize(void) { return m_fSize; }
 
 	bool CollisionRightHand(D3DXVECTOR3* pPos);
+	bool IsDaeth(void) { return m_isdaeth;}
+
 	CModel*GetModelPartType(CModel::PARTTYPE modelpart);
 
 	void Hit(int nDamage);
@@ -85,6 +87,7 @@ private:
 
 	int m_nCoolTime;	// クールタイム
 	bool m_isAttacked;  // 攻撃しているか
+	bool m_isdaeth;
 };
 
 #endif

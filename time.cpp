@@ -11,11 +11,6 @@
 #include "time.h"
 #include "manager.h"
 
-//**********************
-// インクルードファイル
-//**********************
-constexpr int NUMTIME = 120;	// 最大タイマー
-
 //===============================
 // オーバーロードコンストラクタ
 //===============================
@@ -23,12 +18,10 @@ CTime::CTime(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	m_pos = VECTOR3_NULL;
-	m_fHeight = 0;
-	m_fWidth = 0;
-	m_nAllTime = 0;
-	m_nCurrentTime = 0;
-	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_rot = VECTOR3_NULL;
+	m_fHeight = NULL;
+	m_fWidth = NULL;
+	m_nAllTime = NULL;
+	m_nCurrentTime = NULL;
 	m_nIdxTexture = NULL;
 
 	for (int nCnt = 0; nCnt < DIGIT_TIME; nCnt++)
@@ -132,17 +125,17 @@ void CTime::Update(void)
 	// カウントを加算
 	m_nCurrentTime++;
 
-	// 一秒経過後
-	if (m_nCurrentTime >= 60)
+	// 1フレーム経過後
+	if (m_nCurrentTime >= CARVETIME)
 	{
 		// 総時間を減らす
 		m_nAllTime--;
 
+		// 0以下なら
 		if (m_nAllTime <= 0) m_nAllTime = 0;
 
 		// カウンターを初期化する
 		m_nCurrentTime = 0;
-
 	}
 
 	// 最大時間を格納
@@ -152,8 +145,8 @@ void CTime::Update(void)
 	for (int nCnt = 0; nCnt < DIGIT_TIME; nCnt++)
 	{
 		// 桁数計算
-		int digit = time % 10;
-		time /= 10;
+		int digit = time % DIVIDE;
+		time /= DIVIDE;
 
 		// ナンバー更新と桁設定
 		if (m_pNumber[nCnt] != nullptr)

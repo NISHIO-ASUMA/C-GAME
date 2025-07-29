@@ -46,7 +46,8 @@ CCamera::CCamera()
 	m_pCamera.nMode = MODE_NONE;
 	m_isRotation = false;
 	m_isStopRotation = false;
-
+	m_isSetPos = false;
+	m_lastBossPos = VECTOR3_NULL;
 }
 //=================================
 // デストラクタ
@@ -74,19 +75,8 @@ HRESULT CCamera::Init(void)
 	// 視点から注視点までの距離
 	m_pCamera.fDistance = sqrtf((fRotx * fRotx) + (fRoty * fRoty) + (fRotz * fRotz));
 
-	// 現在シーンの取得
-	CScene::MODE pMode = CManager::GetScene();
-
-	// タイトルなら
-	if (pMode == CScene::MODE_TITLE)
-	{
-		m_pCamera.nMode = MODE_NONE;
-	}
-	else
-	{
-		// タイトル以外
-		m_pCamera.nMode = MODE_LOCKON;
-	}
+	// モードの初期化
+	m_pCamera.nMode = MODE_NONE;
 
 	// 初期化結果を返す
 	return S_OK;
@@ -116,45 +106,52 @@ void CCamera::Update(void)
 		// タイトルカメラ作成
 		TitleCamera();
 	}
-	else
+	else if (pMode == CScene::MODE_GAME)
 	{
-#ifdef _DEBUG
-		// カメラモード変更
-		if (pInput->GetTrigger(DIK_N))
-		{
-			m_pCamera.nMode = MODE_LOCKON;
-		}
-		if (pInput->GetTrigger(DIK_M))
-		{
-			m_pCamera.nMode = MODE_PLAYER;
-		}
-		if (pInput->GetTrigger(DIK_B))
-		{
-			m_pCamera.nMode = MODE_NONE;
-		}
-#endif
-
-		switch (m_pCamera.nMode)
-		{
-		case MODE_NONE:
-			// マウス視点移動
-			MouseView(pMouse);
-			break;
-
-		case MODE_PLAYER:
-			// プレイヤー追従
-			PlayerFollow();
-			break;
-
-		case MODE_LOCKON:
-			// ボスにロックオン
-			LockOn();
-			break;
-
-		default:
-			break;
-		}
+		// ロックオンにする
+		m_pCamera.nMode = MODE_LOCKON;
 	}
+
+#ifdef _DEBUG
+	// カメラモード変更
+	if (pInput->GetTrigger(DIK_N))
+	{
+		m_pCamera.nMode = MODE_LOCKON;
+	}
+	if (pInput->GetTrigger(DIK_M))
+	{
+		m_pCamera.nMode = MODE_MOUSE;
+	}
+	if (pInput->GetTrigger(DIK_B))
+	{
+		m_pCamera.nMode = MODE_NONE;
+	}
+#endif
+	
+	switch (m_pCamera.nMode)
+	{
+	case MODE_NONE:
+		break;
+
+	case MODE_PLAYER:
+		// プレイヤー追従
+		PlayerFollow();
+		break;
+
+	case MODE_LOCKON:
+		// ボスにロックオン
+		LockOn();
+		break;
+
+	case MODE_MOUSE:
+		// マウス視点移動
+		MouseView(pMouse);
+		break;
+
+	default:
+		break;
+	}
+
 
 	// 角度の正規化
 	if (m_pCamera.rot.y > D3DX_PI)
@@ -203,6 +200,9 @@ void CCamera::SetCamera(void)
 
 	CDebugproc::Print("Camera : PosV [ %.2f, %.2f, %.2f ]", m_pCamera.posV.x, m_pCamera.posV.y, m_pCamera.posV.z);
 	CDebugproc::Draw(0, 100);
+
+	CDebugproc::Print("Camera Mode { %d }",m_pCamera.nMode);
+	CDebugproc::Draw(0, 420);
 }
 //======================================
 // マウス操作の視点移動
@@ -292,13 +292,14 @@ void CCamera::LockOn(void)
 	// ボス取得
 	CBoss* pBoss = CGameManager::GetBoss();
 
-	// nullptrチェック
-	if (pBoss == nullptr)
+	// ボスが存在する
+	if (pBoss && !m_isSetPos)
 	{
-		// ここで処理を返す
-		return;
+		// 最終座標を保存
+		m_lastBossPos = pBoss->GetPos();
+		m_isSetPos = true;
 	}
-
+	
 	// プレイヤー取得
 	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
 	CPlayer* pPlayerSub = CPlayer::GetIdxPlayer(1);
@@ -313,7 +314,7 @@ void CCamera::LockOn(void)
 	// MAINプレイヤー座標,SUBプレイヤー座標,ボス座標を取得
 	D3DXVECTOR3 playerPos = pPlayer->GetPos();				// MAIN座標
 	D3DXVECTOR3 SubPlayerPos = pPlayerSub->GetPos();		// SUB座標
-	D3DXVECTOR3 bossPos = pBoss->GetPos();					// ボス座標
+	D3DXVECTOR3 bossPos = m_lastBossPos; //	ボス座標
 
 	// MAINプレイヤー向き計算
 	D3DXVECTOR3 VecToBoss = bossPos - playerPos;

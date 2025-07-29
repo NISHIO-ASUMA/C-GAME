@@ -1,6 +1,6 @@
 //=============================================
 //
-// メッシュシリンダー処理 [ meshcylinder.h ]
+// メッシュシリンダー処理 [ meshcylinder.cpp ]
 // Author: Asuma Nishio
 //
 //=============================================
@@ -144,7 +144,7 @@ HRESULT CMeshCylinder::Init(void)
 			IdxCnt += 2;
 		}
 
-		// NOTE:最後の行じゃなかったら
+		// 最後の行じゃなかったら
 		if (IndxCount1 < m_nNumDigitZ - 1)
 		{
 			pIdx[IdxCnt] = Num - 1;

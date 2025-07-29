@@ -13,6 +13,7 @@
 #include "debugproc.h"
 #include "manager.h"
 #include "parameter.h"
+#include "result.h"
 #include <ctime>
 
 //****************************
@@ -44,6 +45,8 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 
 	m_fSize = NULL;
 	m_isAttacked = false;
+	m_isdaeth = false;
+
 }
 //====================================
 // デストラクタ
@@ -167,6 +170,8 @@ void CBoss::Uninit(void)
 		m_pParam = nullptr;
 	}
 
+	m_isdaeth = true;
+
 	// 自身の破棄
 	CObject::Release();
 }
@@ -175,6 +180,9 @@ void CBoss::Uninit(void)
 //====================================
 void CBoss::Update(void)
 {
+	// 死んでいたら
+	if (m_isdaeth) return;
+
 	// フラグメント
 	static bool isCreating = false;
 
@@ -226,7 +234,7 @@ void CBoss::Update(void)
 
 	case PATTERN_HAND:
 		m_pMotion->SetMotion(TYPE_ACTION);
-		m_nCoolTime = 60; 
+		m_nCoolTime = 120;
 		break;
 
 	case PATTERN_BULLET:
@@ -299,6 +307,8 @@ void CBoss::Draw(void)
 //====================================
 bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 {
+	if (m_isdaeth) return false;
+
 	// 一定フレーム内
 	if (m_pMotion->CheckFrame(100, 150, PATTERN_HAND))
 	{
@@ -334,8 +344,20 @@ void CBoss::Hit(int nDamage)
 	// 体力を取得
 	int nHp = m_pParam->GetHp();
 
+	// 現在体力を減らす
 	nHp -= nDamage;
 
-	// セットする
-	m_pParam->SetHp(nHp);
+	if (nHp <= 0)
+	{
+		// 死亡判定
+		m_isdaeth = true;
+
+		// ボスを破棄
+		Uninit();
+	}
+	else
+	{
+		// セットする
+		m_pParam->SetHp(nHp);
+	}
 }

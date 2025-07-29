@@ -797,6 +797,9 @@ void CPlayer::Collision(void)
 	//=============================
 	CBoss* pBoss = CGameManager::GetBoss();  // マネージャー経由でボスを取得する
 
+	// nullだったら
+	if (pBoss->IsDaeth()) return;
+
 	// 当たり判定の距離
 	if (pBoss->CollisionRightHand(&m_pos))
 	{
