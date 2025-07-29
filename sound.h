@@ -23,12 +23,12 @@ class CSound
 {
 public:
 	// サウンドの種類列挙型
-	typedef enum
+	enum SOUND_LABEL
 	{
-		SOUND_LABEL_TITLE_BGM = 0,	// タイトルBGM
-		SOUND_LABEL_BREAKSUPON_SE,  // スポーン破壊
+		SOUND_LABEL_TITLE_BGM,	// タイトルBGM
+		SOUND_LABEL_GAMEBGM,  // ゲームBGM
 		SOUND_LABEL_MAX
-	} SOUND_LABEL;
+	};
 
 	CSound();
 	~CSound();
@@ -53,8 +53,8 @@ private:
 	// サウンドの情報列挙型宣言
 	SOUNDINFO m_aSoundInfo[SOUND_LABEL_MAX] =
 	{
-		{"data/BGM/titlebgm.wav", -1},	 // タイトル
-		{"data/SE/Break.wav",0},		 // スポーン破壊
+		{"data/BGM/titlebgm.wav", -1},	 // タイトルBGM
+		{"data/BGM/gamebgm.wav",-1},		 // ゲームBGM
 	};
 
 	IXAudio2* m_pXAudio2;									// XAudio2オブジェクトへのインターフェイス

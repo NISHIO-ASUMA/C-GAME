@@ -19,6 +19,7 @@
 #include "meshdome.h"
 #include "titleplayer.h"
 #include "ui.h"
+#include "sound.h"
 
 //============================
 // コンストラクタ
@@ -47,7 +48,8 @@ CTitleManager::~CTitleManager()
 //============================
 HRESULT CTitleManager::Init(void)
 {	
-	if (!m_isFirstuiCreate) //他のシーン等から戻ってきたとき
+	// 他のシーン等から戻ってきたとき
+	if (!m_isFirstuiCreate) 
 	{
 		// 基準座標を設定
 		D3DXVECTOR3 CenterPos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f);
@@ -79,6 +81,15 @@ HRESULT CTitleManager::Init(void)
 	// タイトルプレイヤーを生成
 	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f),VECTOR3_NULL, 0, "data\\MOTION\\Player\\TitlePlayer100.txt");
 	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f),VECTOR3_NULL, 1, "data\\MOTION\\Player\\TitlePlayer200.txt");
+
+	// サウンド取得
+	CSound* pSound = CManager::GetSound();
+
+	// nullだったら
+	if (pSound == nullptr) return E_FAIL;
+
+	// サウンド再生
+	pSound->PlaySound(CSound::SOUND_LABEL_TITLE_BGM);
 
 	// 初期化結果を返す
 	return S_OK;

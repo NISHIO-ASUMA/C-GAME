@@ -21,6 +21,7 @@
 #include "bosslifegage.h"
 #include "parameter.h"
 #include "result.h"
+#include "sound.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -49,9 +50,6 @@ CGameManager::~CGameManager()
 //========================
 HRESULT CGameManager::Init(void)
 {
-	// スコアの生成
-	// CScore::Create(D3DXVECTOR3(1120.0f, 50.0f, 0.0f), 120.0f, 60.0f);
-
 	// シリンダー生成
 	m_pMeshCylinder = CMeshCylinder::Create(D3DXVECTOR3(0.0f, -20.0f, 0.0f), 550.0f);
 
@@ -81,6 +79,15 @@ HRESULT CGameManager::Init(void)
 
 	// タイマー生成
 	m_pTime = CTime::Create(D3DXVECTOR3(680.0f, 50.0f, 0.0f), 100.0f, 50.0f);
+
+	// サウンド取得
+	CSound* pSound = CManager::GetSound();
+
+	// nullだったら
+	if (pSound == nullptr) return E_FAIL;
+
+	// サウンド再生
+	pSound->PlaySound(CSound::SOUND_LABEL_GAMEBGM);
 
 	// 初期化結果を返す
 	return S_OK;
