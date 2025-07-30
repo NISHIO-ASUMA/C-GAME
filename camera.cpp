@@ -444,7 +444,7 @@ void CCamera::TitleCamera(void)
 	if (!m_isRotation)
 	{
 		// エンターキー押下で回転開始
-		if (CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
+		if ((CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN)) || (CManager::GetJoyPad()->GetTrigger(CJoyPad::JOYKEY_A)))
 		{
 			// フラグを有効化
 			m_isRotation = true;

@@ -221,7 +221,7 @@ bool CInputKeyboard::GetRepeat(int nKey,int nMaxTime)
 	// キーカウントを加算
 	m_nKeyPressCount++;
 
-	if (m_aOldState[nKey] & 0x80 && (m_aKeystate[nKey] & 0x80) && nMaxTime <= m_nKeyPressCount)
+	if (m_aOldState[nKey] & 0x80 && (m_aKeystate[nKey] & 0x80) && nMaxTime >= m_nKeyPressCount)
 	{
 		isRepeat = true;
 		m_nKeyPressCount = 0;
@@ -241,6 +241,7 @@ CJoyPad::CJoyPad()
 	m_OldKeyState = {};
 	m_pDevice = NULL;
 	m_pInput = NULL;
+	m_nPressCount = NULL;
 }
 //====================================
 // ゲームパッドのデストラクタ
@@ -281,6 +282,9 @@ void CJoyPad::Uninit(void)
 //====================================
 void CJoyPad::Update(void)
 {
+	// 前回入力値
+	m_OldKeyState = m_joyKeyState;
+
 	XINPUT_STATE joykeyState;			// 入力情報を取得
 
 	// ジョイパッドの状態を取得
@@ -292,6 +296,12 @@ void CJoyPad::Update(void)
 		m_joyKeyStateTrigger.Gamepad.wButtons = Button & ~OldButton;
 
 		m_joyKeyState = joykeyState;							// ジョイパッドのプレス情報を保存(格納)
+	}
+	else
+	{
+		// 状態リセット
+		ZeroMemory(&m_joyKeyState, sizeof(XINPUT_STATE));
+		ZeroMemory(&m_joyKeyStateTrigger, sizeof(XINPUT_STATE));
 	}
 }
 //====================================
@@ -327,14 +337,25 @@ bool CJoyPad::GetRelease(JOYKEY Key)
 //====================================
 // ゲームパッドのリピート情報の取得
 //====================================
-bool CJoyPad::GetRepeat(JOYKEY Key)
+bool CJoyPad::GetRepeat(JOYKEY Key,int nMaXTime)
 {
 	// フラグ変数宣言
 	bool isRepeat = false;
 
-	if (m_OldKeyState.Gamepad.wButtons & (0x01 << Key) && !((m_OldKeyState.Gamepad.wButtons & (0x01 << Key))))
+	// 今フレームもキーが押されている
+	if (m_joyKeyState.Gamepad.wButtons & (0x01 << Key))
 	{
-		isRepeat = true;
+		m_nPressCount++;
+
+		if (m_nPressCount >= nMaXTime)
+		{
+			isRepeat = true;
+			m_nPressCount = 0;
+		}
+	}
+	else
+	{
+		m_nPressCount = 0;
 	}
 
 	// 結果を返す

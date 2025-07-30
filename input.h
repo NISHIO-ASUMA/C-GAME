@@ -94,13 +94,15 @@ public:
 	bool GetPress(JOYKEY Key);
 	bool GetTrigger(JOYKEY Key);
 	bool GetRelease(JOYKEY Key);
-	bool GetRepeat(JOYKEY Key);
+	bool GetRepeat(JOYKEY Key, int nMaXTime);
 	bool GetLeftStick(void);
 
 private:
 	XINPUT_STATE m_joyKeyState;		   // ジョイパッドのプレス情報
 	XINPUT_STATE m_OldKeyState;		   // 過去のジョイパッド入力情報
 	XINPUT_STATE m_joyKeyStateTrigger; // ジョイパッドのトリガー情報
+	int m_nPressCount;
+
 };
 
 //*******************************

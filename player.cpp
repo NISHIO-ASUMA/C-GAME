@@ -282,6 +282,7 @@ void CPlayer::Update(void)
 
 	// 入力取得
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+	CJoyPad* pJoyPad = CManager::GetJoyPad();
 
 	// 武器のワールドマトリックスとボス方向取得
 	CModel* pModelWeapon = GetModelPartType(CModel::PARTTYPE_WEAPON);
@@ -291,7 +292,7 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 vecToBoss = VecToBoss(m_pos);
 
 	// ジャンプ状態時の更新関数
-	UpdateJumpAction(pInput, mtxWorld, vecToBoss);
+	UpdateJumpAction(pInput, mtxWorld, vecToBoss, pJoyPad);
 
 	// 当たり判定処理関数
 	Collision();
@@ -486,7 +487,7 @@ void CPlayer::ChangeState(CPlayerStateBase* pNewState,int id)
 //=========================================
 // 識別番号ごとの攻撃更新処理
 //=========================================
-void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const D3DXVECTOR3 DestMove)
+void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const D3DXVECTOR3 DestMove, CJoyPad* pPad)
 {
 	// キーフラグをセット
 	bool isKeyPress = false;
@@ -494,13 +495,13 @@ void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const 
 	//====================
 	// 攻撃処理
 	//====================
-	if (pInputKeyboard->GetPress(DIK_RETURN) && m_pMotion->GetMotionType() != CPlayer::PLAYERMOTION_JUMPATTACK)
+	if ((pInputKeyboard->GetPress(DIK_RETURN) || pPad->GetPress(pPad->JOYKEY_X) && m_pMotion->GetMotionType() != CPlayer::PLAYERMOTION_JUMPATTACK))
 	{
 		// キーフラグをセット
 		isKeyPress = true;
 
 		// 15フレーム攻撃キーを入力していたら
-		if (pInputKeyboard->GetRepeat(DIK_RETURN, KeyRepeatCount))
+		if ((pInputKeyboard->GetRepeat(DIK_RETURN, KeyRepeatCount)) || ((pPad->GetRepeat(pPad->JOYKEY_X, KeyRepeatCount))))
 		{
 			// 弾を生成
 			CBullet::Create(D3DXVECTOR3(pMtx._41, pMtx._42, pMtx._43), DestMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 60);
@@ -551,11 +552,10 @@ void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const 
 		m_isAttack = false;
 	}
 }
-
 //=========================================
 // 識別番号ごとの移動更新処理
 //=========================================
-void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard)
+void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard, CJoyPad* pPad)
 {
 	// ジャンプ中かつ攻撃中なら移動処理を禁止
 	if (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK)
@@ -575,7 +575,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 	case NUMBER_MAIN: // メインプレイヤー
 
 		// キー入力時の角度計算
-		if (pInputKeyboard->GetPress(DIK_A))
+		if (pInputKeyboard->GetPress(DIK_A) || (pPad->GetPress(pPad->JOYKEY_LEFT)))
 		{
 			// 角度更新
 			m_fAngle += PLAYER_MOVE;
@@ -586,7 +586,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 移動モーションに変更
 			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
 		}
-		else if (pInputKeyboard->GetPress(DIK_D))
+		else if (pInputKeyboard->GetPress(DIK_D) || (pPad->GetPress(pPad->JOYKEY_RIGHT)))
 		{
 			// 角度更新
 			m_fAngle -= PLAYER_MOVE;
@@ -607,7 +607,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 	case NUMBER_SUB: // 対角線上のプレイヤー
 
 		// キー入力時の角度計算
-		if (pInputKeyboard->GetPress(DIK_A)) // Aキー
+		if (pInputKeyboard->GetPress(DIK_A) || (pPad->GetPress(pPad->JOYKEY_LEFT))) // Aキー
 		{
 			// 角度更新
 			m_fAngle += PLAYER_MOVE;
@@ -618,7 +618,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 移動モーションに変更
 			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
 		}
-		else if (pInputKeyboard->GetPress(DIK_D)) // Dキー
+		else if (pInputKeyboard->GetPress(DIK_D) || (pPad->GetPress(pPad->JOYKEY_RIGHT))) // Dキー
 		{
 			// 角度更新
 			m_fAngle -= PLAYER_MOVE;
@@ -674,13 +674,13 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 //=========================================
 // 識別番号ごとのジャンプ更新処理
 //=========================================
-void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove)
+void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove, CJoyPad* pPad)
 {
 	// モーションのフラグ
 	bool isJumpAttacking = (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK);
 
 	// 空中攻撃中
-	if (isJumpAttacking && pInputKeyboard->GetPress(DIK_RETURN))
+	if (isJumpAttacking && (pInputKeyboard->GetPress(DIK_RETURN)) || (pPad->GetPress(pPad->JOYKEY_X)))
 	{
 		// 一定の高さで静止する
 		m_move.y = 0.0f;
@@ -694,7 +694,7 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 	// ジャンプキー入力 かつ ジャンプフラグがfalseの時
 	if (!m_isJump)
 	{
-		if (pInputKeyboard->GetTrigger(DIK_SPACE))
+		if (pInputKeyboard->GetTrigger(DIK_SPACE) || (pPad->GetPress(pPad->JOYKEY_A)))
 		{
 			// フラグを有効化
 			m_isJump = true;
@@ -717,10 +717,10 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 		m_pMotion->SetMotion(PLAYERMOTION_JUMP);
 
 		// ジャンプ中に攻撃キー入力
-		if (pInputKeyboard->GetPress(DIK_RETURN))
+		if ((pInputKeyboard->GetPress(DIK_RETURN)) || ((pPad->GetPress(pPad->JOYKEY_X))))
 		{
 			// 攻撃キーを15フレーム押し続けていたら
-			if (pInputKeyboard->GetRepeat(DIK_RETURN, KeyRepeatCount))
+			if ((pInputKeyboard->GetRepeat(DIK_RETURN, KeyRepeatCount)) || ((pPad->GetRepeat(pPad->JOYKEY_X, KeyRepeatCount))))
 			{
 				// 弾を生成
 				CBullet::Create(D3DXVECTOR3(pMtx._41, pMtx._42, pMtx._43), DestMove, CBullet::BTYPE_PLAYER, 5.0f, 5.0f, 45);
@@ -893,6 +893,14 @@ bool CPlayer::isMoveInputKey(CInputKeyboard* pKeyInput)
 	return (pKeyInput->GetPress(DIK_A) || pKeyInput->GetPress(DIK_D) ||
 			pKeyInput->GetPress(DIK_W) || pKeyInput->GetPress(DIK_S));
 	
+}
+//===============================
+// キー押下時の入力取得
+//===============================
+bool CPlayer::isMovePadButton(CJoyPad* pPad)
+{
+	// いずれかの移動キー入力
+	return (pPad->GetPress(CJoyPad::JOYKEY_LEFT) || pPad->GetPress(CJoyPad::JOYKEY_RIGHT));
 }
 //===============================
 // 初期座標計算関数

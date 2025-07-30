@@ -20,6 +20,7 @@
 //**********************
 class CShadow;
 class CInputKeyboard;
+class CJoyPad;
 class CCamera;
 class CParameter;
 class CShadowS;
@@ -79,15 +80,20 @@ public:
 	CMotion* GetMotion(void) { return m_pMotion; }
 	CParameter* GetParameter(void) { return m_pParameter;}
 
-	void UpdateAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos); // 通常攻撃更新関数
-	void UpdateMove(const D3DXVECTOR3 DestPos, CInputKeyboard* pInputKeyboard);   // 移動更新関数
-	void UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove);
+	void UpdateAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestPos, CJoyPad* pPad); // 通常攻撃更新関数
+	void UpdateMove(const D3DXVECTOR3 DestPos, CInputKeyboard* pInputKeyboard,CJoyPad * pPad);   // 移動更新関数
+	void UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove, CJoyPad* pPad);
 
 	void Collision(void);
 	void AddMove(void) {m_pos += m_move;}
 
 	D3DXVECTOR3 VecToBoss(const D3DXVECTOR3& pPos);
+
+
 	bool isMoveInputKey(CInputKeyboard* pKeyInput);
+	bool isMovePadButton(CJoyPad* pPad);
+
+
 	bool isLanding(void) { return m_isJump; }
 	void InitPos(float fAngle);
 

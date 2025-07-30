@@ -67,9 +67,11 @@ void CPlayerStateNeutral::OnUpdate()
 {
 	// キー入力情報の取得
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+	CJoyPad* pPad = CManager::GetJoyPad();
 
 	// 移動入力があれば移動状態へ
-	if (m_pPlayer->isMoveInputKey(pInput)&& m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE)
+	if ((m_pPlayer->isMoveInputKey(pInput) || m_pPlayer->isMovePadButton(pPad)) &&
+		m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE)
 	{
 		// 状態変更
 		m_pPlayer->ChangeState(new CPlayerStateMove,ID_MOVE);
@@ -79,7 +81,8 @@ void CPlayerStateNeutral::OnUpdate()
 	}
 
 	// 攻撃キー入力時
-	if (pInput->GetPress(DIK_RETURN)&& m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE)
+	if ((pInput->GetPress(DIK_RETURN) || pPad->GetPress(CJoyPad::JOYKEY_X)) &&
+		m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE) 
 	{
 		// ステート変更
 		m_pPlayer->ChangeState(new CPlayerStateAction,ID_ACTION);
@@ -126,6 +129,7 @@ void CPlayerStateAction::OnUpdate()
 {
 	// 入力情報の取得
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+	CJoyPad * pPad = CManager::GetJoyPad();
 
 	// 武器の位置取得
 	CModel* pModelWeapon = m_pPlayer->GetModelPartType(CModel::PARTTYPE_WEAPON);
@@ -140,7 +144,7 @@ void CPlayerStateAction::OnUpdate()
 	D3DXVECTOR3 VecBoss = m_pPlayer->VecToBoss(m_pPlayer->GetPos());
 
 	// 攻撃更新
-	m_pPlayer->UpdateAction(pInput, mtxWorld, VecBoss);
+	m_pPlayer->UpdateAction(pInput, mtxWorld, VecBoss, pPad);
 }
 //==================================
 // 攻撃状態終了関数
@@ -179,20 +183,18 @@ void CPlayerStateMove::OnUpdate()
 {
 	// キー入力を取得	
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+	CJoyPad* pPad = CManager::GetJoyPad();
 
 	// シリンダー座標の取得
 	D3DXVECTOR3 MeshPos = CGameManager::GetCylinder()->GetPos();
 
 	// 移動処理実行
-	m_pPlayer->UpdateMove(MeshPos, pInput);
+	m_pPlayer->UpdateMove(MeshPos, pInput, pPad);
 
-	// キーを離したらニュートラルに戻る
-	if (!m_pPlayer->isMoveInputKey(pInput))
+	if (!m_pPlayer->isMoveInputKey(pInput) && !m_pPlayer->isMovePadButton(pPad))
 	{
 		// ニュートラルに遷移
-		m_pPlayer->ChangeState(new CPlayerStateNeutral,ID_NEUTRAL);
-
-		// ここで処理を返す
+		m_pPlayer->ChangeState(new CPlayerStateNeutral, ID_NEUTRAL);
 		return;
 	}
 }
