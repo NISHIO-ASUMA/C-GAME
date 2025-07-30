@@ -14,6 +14,7 @@
 #include "title.h"
 #include "result.h"
 #include "gamemanager.h"
+#include "player.h"
 
 //**************************
 // 静的メンバ変数宣言
@@ -167,6 +168,17 @@ void CGame::Update(void)
 
 		// ボス死亡フラグが有効なら
 		if (pBoss->IsDaeth())
+		{
+			// 状態変更
+			m_nGametype = GAMESTATE_END;
+		}
+
+		// プレイヤー取得
+		CPlayer* pPlayer = CPlayer::GetIdxPlayer(1);
+
+		if (pPlayer == nullptr) return;
+
+		if (pPlayer->IsDeath())
 		{
 			// 状態変更
 			m_nGametype = GAMESTATE_END;

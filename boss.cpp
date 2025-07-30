@@ -402,11 +402,8 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 			return true;
 		}
 	}
-	else
-	{
-		// “–‚½‚ç‚È‚¢‚Æ‚«
-		return false;
-	}
+
+	return false;
 }
 
 //====================================

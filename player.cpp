@@ -34,6 +34,11 @@ constexpr int   NUMBER_MAIN = 0;			// メイン操作プレイヤー番号
 constexpr int   NUMBER_SUB = 1;				// 分身操作プレイヤー番号
 constexpr int   KeyRepeatCount = 15;		// キーのリピートカウント
 
+//**********************
+// 静的メンバ変数宣言
+//**********************
+bool CPlayer::m_isDeath = false;  // 死亡フラグ
+
 //===============================
 // オーバーロードコンストラクタ
 //===============================
@@ -149,6 +154,7 @@ HRESULT CPlayer::Init(void)
 	m_fAngle = NULL;
 
 	// フラグを設定
+	m_isDeath = false;
 	m_isJump = false;
 	m_isLanding = false;
 	m_isMoving = false;
@@ -252,6 +258,8 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(void)
 {
+	if (m_isDeath) return;
+
 	// 攻撃中はボスの方向に体を向ける
 	if (m_isAttack)
 	{
@@ -966,8 +974,14 @@ void CPlayer::HitDamage(int nDamage)
 	// 現在体力が0以下
 	if (nHp <= 0)
 	{
-		// プレイヤー処理終了
-		Uninit();
+		// 現在体力をセット
+		m_pParameter->SetHp(nHp);
+
+		// 死亡フラグをセット
+		m_isDeath = true;
+
+		// モーションセット
+		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
 		// ここで処理を返す
 		return;

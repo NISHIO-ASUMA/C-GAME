@@ -50,7 +50,7 @@ HRESULT CPauseManager::Init(void)
 	m_nSelectIdx = CPause::MENU_RETRY;
 
 	// 基準座標を設定
-	D3DXVECTOR3 Bacepos = D3DXVECTOR3(200.0f, 80.0f, 0.0f);
+	D3DXVECTOR3 Bacepos = D3DXVECTOR3(200.0f, 200.0f, 0.0f);
 	
 	// ポーズ生成
 	for (int nPause = 0; nPause < SELECT_MAX; nPause++)

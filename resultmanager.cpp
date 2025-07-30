@@ -13,6 +13,7 @@
 #include "sound.h"
 #include "input.h"
 #include "title.h"
+#include "resultui.h"
 
 //=================================
 // コンストラクタ
@@ -32,7 +33,10 @@ CResultManager::~CResultManager()
 // 初期化処理
 //=================================
 HRESULT CResultManager::Init(void)
-{
+{	
+	// ui生成
+	CResultUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 360.0f, 0.0f), COLOR_WHITE, 350.0f, 200.0f, 0);
+
 	// サウンド取得
 	CSound* pSound = CManager::GetSound();
 

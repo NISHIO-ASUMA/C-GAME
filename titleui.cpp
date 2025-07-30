@@ -118,11 +118,11 @@ void CTitleUi::SetTexture(int nType)
 	switch (nType)
 	{
 	case MENU_GAME:			// ゲームメニュー
-		m_nTexIdx = pTexture->Register("data\\TEXTURE\\title000.png");
+		m_nTexIdx = pTexture->Register("data\\TEXTURE\\titlemenu001.png");
 		break;
 
 	case MENU_TUTORIAL:		// チュートリアルメニュー
-		m_nTexIdx = pTexture->Register("data\\TEXTURE\\title001.png");
+		m_nTexIdx = pTexture->Register("data\\TEXTURE\\titilemenu_002.png");
 		break;
 
 	default:

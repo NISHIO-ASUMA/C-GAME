@@ -203,6 +203,7 @@
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="resultmanager.cpp" />
+    <ClCompile Include="resultui.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="resultmanager.h" />
+    <ClInclude Include="resultui.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />

@@ -60,7 +60,7 @@ HRESULT CGameManager::Init(void)
 	CMeshField::Create(D3DXVECTOR3(0.0f, -150.0f, 0.0f), 2000.0f);
 
 	// ボス生成
-	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f, 5);
+	m_pBoss = CBoss::Create(D3DXVECTOR3(0.0f, -600.0f, 0.0f), 60.0f, 1000);
 
 	// プレイヤー生成
 	CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, -550.0f), VECTOR3_NULL, 10, 0, "data\\MOTION\\Player\\Player100motion.txt");
@@ -108,5 +108,5 @@ void CGameManager::Uninit(void)
 //========================
 void CGameManager::Update(void)
 {
-
+	// 無し
 }

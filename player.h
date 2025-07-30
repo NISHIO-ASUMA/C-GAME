@@ -92,8 +92,10 @@ public:
 	void InitPos(float fAngle);
 
 	void StartJump(void);
-	
 	void GravityScal(void);
+
+	static bool IsDeath(void) { return m_isDeath; }
+
 	static inline constexpr int MAX_MODEL = 19; // プレイヤーで使うモデルの数
 	PLAYERMOTION GetNowMotion(void) const;
 
@@ -126,6 +128,7 @@ private:
 	bool m_isMoving;		// 移動キー判定
 	bool m_isAttack;		// 攻撃判定
 	bool m_isShadow;
+	static bool m_isDeath;
 
 	float m_fAngle;			// 現在の角度
 	int m_nIdxPlayer;		// プレイヤーの識別番号

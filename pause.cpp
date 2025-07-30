@@ -131,15 +131,15 @@ void CPause::SetTexture(void)
 		break;
 
 	case MENU_RETRY: // リトライ選択時
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\pause_retry.png"); 		// テクスチャ割り当て
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\pausemenu_retry.png"); 		// テクスチャ割り当て
 		break;
 
 	case MENU_CONTINUE: // コンテニュー選択時
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\pause_continue.png"); 	// テクスチャ割り当て
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\pausemenu_continue.png"); 	// テクスチャ割り当て
 		break;
 
 	case MENU_QUIT: // クイット選択時
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\pause_quit.png"); 		// テクスチャ割り当て
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\pausemenu_quit.png"); 		// テクスチャ割り当て
 		break;
 
 	default:
