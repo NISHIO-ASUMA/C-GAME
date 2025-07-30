@@ -60,6 +60,7 @@ HRESULT CResult::Init(void)
 	// マネージャーの初期化処理
 	m_pResultManager->Init();
 
+
 	// 初期化結果を返す
 	return S_OK;
 }

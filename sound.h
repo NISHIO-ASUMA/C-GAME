@@ -5,16 +5,8 @@
 //
 //=====================================
 
-//**************************
-// 二重インクルードガード
-//**************************
-#ifndef _SOUND_H_ 
-#define _SOUND_H_ 
-
-//**************************
-// インクルードファイル宣言
-//**************************
-
+#ifndef _SOUND_H_ // このマクロ定義がされてなかったら
+#define _SOUND_H_ // 2重インクルード防止のマクロ定義
 
 //******************************
 // サウンドクラスを定義
@@ -26,7 +18,8 @@ public:
 	enum SOUND_LABEL
 	{
 		SOUND_LABEL_TITLE_BGM,	// タイトルBGM
-		SOUND_LABEL_GAMEBGM,  // ゲームBGM
+		SOUND_LABEL_GAMEBGM,	// ゲームBGM
+		SOUND_LABEL_RESULTBGM,  // リザルトBGM
 		SOUND_LABEL_MAX
 	};
 
@@ -44,17 +37,18 @@ public:
 
 private:
 	// サウンド情報の構造体定義
-	typedef struct
+	struct SOUNDINFO
 	{
 		const char* pFilename;	// ファイル名
 		int nCntLoop;			// ループカウント
-	} SOUNDINFO;
+	};
 
 	// サウンドの情報列挙型宣言
 	SOUNDINFO m_aSoundInfo[SOUND_LABEL_MAX] =
 	{
-		{"data/BGM/titlebgm.wav", -1},	 // タイトルBGM
+		{"data/BGM/titlebgm.wav", -1},		 // タイトルBGM
 		{"data/BGM/gamebgm.wav",-1},		 // ゲームBGM
+		{"data/BGM/resultbgm.wav",-1},		 // リザルトBGM
 	};
 
 	IXAudio2* m_pXAudio2;									// XAudio2オブジェクトへのインターフェイス

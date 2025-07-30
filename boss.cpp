@@ -22,6 +22,8 @@
 constexpr float HITRANGE = 12.0f; // コリジョンサイズ
 constexpr int COOLTIME = 60;	  // 初期クールタイム
 
+bool CBoss::m_isdaeth = false;    // 死亡フラグ
+
 //====================================
 // オーバーロードコンストラクタ
 //====================================
@@ -45,8 +47,6 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 
 	m_fSize = NULL;
 	m_isAttacked = false;
-	m_isdaeth = false;
-
 }
 //====================================
 // デストラクタ
@@ -110,6 +110,9 @@ CModel* CBoss::GetModelPartType(CModel::PARTTYPE modelpart)
 //====================================
 HRESULT CBoss::Init(void)
 {
+	// フラグを初期化
+	m_isdaeth = false;
+
 	// オブジェクトの種類をセット
 	SetObjType(TYPE_BOSS);
 
@@ -170,8 +173,6 @@ void CBoss::Uninit(void)
 		m_pParam = nullptr;
 	}
 
-	m_isdaeth = true;
-
 	// 自身の破棄
 	CObject::Release();
 }
@@ -194,7 +195,7 @@ void CBoss::Update(void)
 	}
 
 	// クールタイム中なら待機モーション更新だけ
-	if (m_nCoolTime > 0)
+	if (m_nCoolTime > 0 && m_isdaeth == false)
 	{
 		// クールタイムを減らす
 		m_nCoolTime--;
@@ -233,8 +234,8 @@ void CBoss::Update(void)
 		break;
 
 	case PATTERN_HAND:
-		m_pMotion->SetMotion(TYPE_ACTION);
-		m_nCoolTime = 120;
+		m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
+		m_nCoolTime = 90;
 		break;
 
 	case PATTERN_BULLET:
@@ -245,6 +246,11 @@ void CBoss::Update(void)
 	case PATTERN_CIRCLE:
 		// 薙ぎ払いモーション
 		m_nCoolTime = 150;
+		break;
+
+	case PATTERN_DEATH:
+		// 死亡モーション
+		m_nCoolTime = 300;
 		break;
 
 	default:
@@ -287,30 +293,30 @@ void CBoss::Draw(void)
 	}
 
 	// デバッグフォント
-	CDebugproc::Print("ボス座標 [ %.2f ,%.2f , %.2f]", m_pos.x,m_pos.y,m_pos.z);
-	CDebugproc::Draw(0, 40);
+	{
+		CDebugproc::Print("ボス座標 [ %.2f ,%.2f , %.2f]", m_pos.x, m_pos.y, m_pos.z);
+		CDebugproc::Draw(0, 40);
 
-	CDebugproc::Print("ボスモーション数 { %d }", m_type);
-	CDebugproc::Draw(0, 180);
+		CDebugproc::Print("ボスモーション数 { %d }", m_type);
+		CDebugproc::Draw(0, 180);
 
-	CDebugproc::Print("ボス右手座標 { %.2f,%.2f,%.2f }", GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._41, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._42, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._43);
-	CDebugproc::Draw(0, 300);
+		CDebugproc::Print("ボス右手座標 { %.2f,%.2f,%.2f }", GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._41, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._42, GetModelPartType(CModel::PARTTYPE_RIGHT_HAND)->GetMtxWorld()._43);
+		CDebugproc::Draw(0, 300);
 
-	CDebugproc::Print("ボス体力 { %d }",m_pParam->GetHp());
-	CDebugproc::Draw(0, 400);
+		CDebugproc::Print("ボス体力 { %d }", m_pParam->GetHp());
+		CDebugproc::Draw(0, 400);
 
-	// デバッグフォント
-	m_pMotion->Debug();
+		// デバッグフォント
+		m_pMotion->Debug();
+	}
 }
 //====================================
 // 右手とプレイヤーの当たり判定
 //====================================
 bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 {
-	if (m_isdaeth) return false;
-
 	// 一定フレーム内
-	if (m_pMotion->CheckFrame(100, 150, PATTERN_HAND))
+	if (m_pMotion->CheckFrame(100, 150, PATTERN_HAND) && m_isdaeth == false)
 	{
 		// モデルのパーツ取得
 		CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
@@ -341,6 +347,9 @@ bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 //====================================
 void CBoss::Hit(int nDamage)
 {
+	// フラグが立っていたら
+	if (m_isdaeth) return;
+
 	// 体力を取得
 	int nHp = m_pParam->GetHp();
 
@@ -354,6 +363,9 @@ void CBoss::Hit(int nDamage)
 
 		// ボスを破棄
 		Uninit();
+
+		// TODO : ここに死亡モーション設定に変更
+
 	}
 	else
 	{

@@ -18,7 +18,9 @@
 //***********************************
 LPD3DXFONT CDebugproc::m_pFont = nullptr;  // フォントへのポインタ
 char CDebugproc::m_aStr[MAX_WORD] = {};	   // 文字列を格納するバッファ
-inline constexpr int FontSize = 20;
+bool CDebugproc::m_isUse = false;
+
+inline constexpr int FontSize = 20;		// フォントサイズ
 
 //===============================
 // コンストラクタ
@@ -54,6 +56,9 @@ HRESULT CDebugproc::Init(void)
 	// 文字列クリア
 	memset(m_aStr, 0, sizeof(m_aStr));
 
+	// 使用状態時
+	m_isUse = true;
+
 	return S_OK;
 }
 //===============================
@@ -76,21 +81,28 @@ void CDebugproc::Uninit(void)
 //===============================
 void CDebugproc::Update(void)
 {
-	// 無し
+	// キー入力で表示切替
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F1))
+	{
+		m_isUse = m_isUse ? false : true;
+	}
 }
 //===============================
 // デバッグプロセスの描画処理
 //===============================
 void CDebugproc::Draw(int PosX,int PosY)
 {
-	// ウィンドウレクト
-	RECT rect = { PosX,PosY,SCREEN_WIDTH,SCREEN_HEIGHT };
+	if (m_isUse)
+	{
+		// ウィンドウレクト
+		RECT rect = { PosX,PosY,SCREEN_WIDTH,SCREEN_HEIGHT };
 
-	// フォントの生成
-	m_pFont->DrawText(NULL, m_aStr, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(255, 255, 255, 255));
+		// フォントの生成
+		m_pFont->DrawText(NULL, m_aStr, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(255, 255, 255, 255));
 
-	// バッファのクリア
-	memset(m_aStr, 0, sizeof(m_aStr));
+		// バッファのクリア
+		memset(m_aStr, 0, sizeof(m_aStr));
+	}
 }
 //===============================
 // フォント描画関数

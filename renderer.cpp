@@ -312,6 +312,9 @@ void CRenderer::Update(void)
 	// キーボードのポインタ
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 
+	// デバッグ情報の更新処理
+	m_pDebug->Update();
+
 	// 全オブジェクト更新処理
 	CObject::UpdateAll();
 

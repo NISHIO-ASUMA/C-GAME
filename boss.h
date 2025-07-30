@@ -45,6 +45,7 @@ public:
 		PATTERN_HAND, // 殴り
 		PATTERN_BULLET, // 弾発射
 		PATTERN_CIRCLE, // 振り回し攻撃
+		PATTERN_DEATH,	// 死亡モーション
 		PATTERN_MAX
 	};
 
@@ -65,7 +66,7 @@ public:
 	float GetSize(void) { return m_fSize; }
 
 	bool CollisionRightHand(D3DXVECTOR3* pPos);
-	bool IsDaeth(void) { return m_isdaeth;}
+	static bool IsDaeth(void) { return m_isdaeth;}
 
 	CModel*GetModelPartType(CModel::PARTTYPE modelpart);
 
@@ -87,7 +88,7 @@ private:
 
 	int m_nCoolTime;	// クールタイム
 	bool m_isAttacked;  // 攻撃しているか
-	bool m_isdaeth;
+	static bool m_isdaeth;
 };
 
 #endif
