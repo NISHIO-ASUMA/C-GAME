@@ -114,6 +114,12 @@ void CTitleManager::Update(void)
 	if (pKey == nullptr) return;
 	if (pJoyPad == nullptr) return;
 
+	// サウンド取得
+	CSound* pSound = CManager::GetSound();
+
+	// nullだったら
+	if (pSound == nullptr) return;
+
 	// カメラ取得
 	CCamera* pCamera = CManager::GetCamera();
 
@@ -147,6 +153,9 @@ void CTitleManager::Update(void)
 	// 上キー入力
 	if (pKey->GetTrigger(DIK_UP) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_UP))
 	{
+		// サウンド再生
+		pSound->PlaySound(CSound::SOUND_LABEL_SELECT);
+
 		// インデックス番号を減算
 		m_nIdx--;
 
@@ -158,6 +167,9 @@ void CTitleManager::Update(void)
 	// 下キー入力
 	if (pKey->GetTrigger(DIK_DOWN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_DOWN))
 	{
+		// サウンド再生
+		pSound->PlaySound(CSound::SOUND_LABEL_SELECT);
+
 		// インデックス番号を加算
 		m_nIdx++;
 
@@ -195,6 +207,9 @@ void CTitleManager::Update(void)
 	// 決定処理
 	if ((pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A)) && pCamera->GetFinishRotation())
 	{
+		// サウンド再生
+		pSound->PlaySound(CSound::SOUND_LABEL_RETURN);
+
 		switch (m_nIdx)
 		{
 		case CTitleUi::MENU_GAME:		// ゲームモード

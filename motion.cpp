@@ -608,6 +608,10 @@ void CMotion::SetParts(std::ifstream& file, CModel** pModel)
 				{
 					pModel[nIdx]->SetPartType(CModel::PARTTYPE_RIGHT_HAND);
 				}
+				else if (partTypeStr == "LEFTHAND") // ¶Žè
+				{
+					pModel[nIdx]->SetPartType(CModel::PARTTYPE_LEFT_HAND);
+				}
 				else // –³‚¢‚Æ‚«
 				{
 					pModel[nIdx]->SetPartType(CModel::PARTTYPE_NONE); 

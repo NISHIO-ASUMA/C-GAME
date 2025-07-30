@@ -813,6 +813,16 @@ void CPlayer::Collision(void)
 		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
 	}
 
+	// 当たり判定の距離
+	if (pBoss->CollisionImpactScal(&m_pos) && pBoss->IsDaeth() == false)
+	{
+		// 当たったらダメージモーションに切り替え
+		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+
+		// ステート変更
+		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+	}
+
 	//=============================
 	// 敵との当たり判定
 	//=============================

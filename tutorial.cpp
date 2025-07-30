@@ -10,6 +10,8 @@
 //**********************
 #include "tutorial.h"
 #include "tutorialmanager.h"
+#include "manager.h"
+#include "sound.h"
 
 //===============================
 // オーバーロードコンストラクタ
@@ -36,6 +38,15 @@ HRESULT CTutorial::Init(void)
 
 	// nullではなかったら
 	if (m_pTutoManager != nullptr) m_pTutoManager->Init();
+
+	// サウンド取得
+	CSound* pSound = CManager::GetSound();
+
+	// nullだったら
+	if (pSound == nullptr) return E_FAIL;
+
+	// サウンド再生
+	pSound->PlaySound(CSound::SOUND_LABEL_TUTORIALBGM);
 
 	// 初期化結果を返す
 	return S_OK;

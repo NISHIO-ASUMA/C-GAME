@@ -15,6 +15,7 @@
 #include "parameter.h"
 #include "result.h"
 #include <ctime>
+#include "meshimpact.h"
 
 //****************************
 // 定数宣言
@@ -123,7 +124,7 @@ HRESULT CBoss::Init(void)
 	m_nCoolTime = COOLTIME;
 
 	// モーションの読み込み
-	m_pMotion = CMotion::Load("data\\Boss\\Bossmotion.txt", NUMMODELS, m_pModel, CBoss::TYPE_MAX);
+	m_pMotion = CMotion::Load("data\\MOTION\\Boss\\Bossmotion.txt", NUMMODELS, m_pModel, CBoss::TYPE_MAX);
 
 	// モーション数を設定
 	m_pMotion->SetMotionNum(m_type);
@@ -235,12 +236,13 @@ void CBoss::Update(void)
 
 	case PATTERN_HAND:
 		m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
-		m_nCoolTime = 90;
+		m_nCoolTime = 180;		// クールタイム
 		break;
 
-	case PATTERN_BULLET:
-		// 弾追尾モーション
-		m_nCoolTime = 180;
+	case PATTERN_IMPACT:
+		// 叩きつけ
+		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
+		m_nCoolTime = 180;		// クールタイム
 		break;
 
 	case PATTERN_CIRCLE:
@@ -250,7 +252,7 @@ void CBoss::Update(void)
 
 	case PATTERN_DEATH:
 		// 死亡モーション
-		m_nCoolTime = 300;
+		m_nCoolTime = 180;
 		break;
 
 	default:
@@ -342,6 +344,71 @@ bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 		return false;
 	}
 }
+//====================================
+// インパクトモーション時の当たり判定
+//====================================
+bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
+{
+	// モデルのパーツ取得
+	CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
+
+	// nullだったら
+	if (!pRightHand) return false;
+
+	// モデルのパーツ取得
+	CModel* pLeftHand = GetModelPartType(CModel::PARTTYPE_LEFT_HAND); // 右手
+
+	// nullだったら
+	if (!pLeftHand) return false;
+
+	// 手のワールドマトリックスを取得
+	D3DXMATRIX mtxRight = pRightHand->GetMtxWorld();
+	D3DXMATRIX mtxLeft = pLeftHand->GetMtxWorld();
+
+	// 一定フレーム内
+	if (m_pMotion->CheckFrame(120, 160, PATTERN_IMPACT) && m_isdaeth == false)
+	{
+		// 確定フレーム内
+		if (m_pMotion->CheckFrame(130, 130, PATTERN_IMPACT))
+		{
+			// メッシュインパクトを両手から生成
+			CMeshImpact::Create(D3DXVECTOR3(mtxRight._41, mtxRight._42, mtxRight._43), 60, 60.0f, 30.0f, 5.0f);
+			CMeshImpact::Create(D3DXVECTOR3(mtxLeft._41, mtxLeft._42, mtxLeft._43), 100, 60.0f, 30.0f, 5.0f);
+		}
+
+		// 座標を格納
+		D3DXVECTOR3 posRight(mtxRight._41, mtxRight._42, mtxRight._43);
+		D3DXVECTOR3 posLeft(mtxLeft._41, mtxLeft._42, mtxLeft._43);
+
+		// プレイヤーとの距離を測定
+		const float fHitRadius = 20.0f * HITRANGE; // 判定半径
+
+		// 差分計算用
+		D3DXVECTOR3 diff = VECTOR3_NULL;
+
+		// 右手との差分
+		diff = posRight - *pPos;
+
+		if (D3DXVec3Length(&diff) <= fHitRadius)
+		{
+			return true;
+		}
+
+		// 左手との差分
+		diff = posLeft - *pPos;
+
+		if (D3DXVec3Length(&diff) <= fHitRadius)
+		{
+			return true;
+		}
+	}
+	else
+	{
+		// 当たらないとき
+		return false;
+	}
+}
+
 //====================================
 // ヒット処理
 //====================================

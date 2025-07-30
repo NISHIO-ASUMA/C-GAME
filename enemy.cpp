@@ -304,5 +304,5 @@ void CEnemy::ChangeState(CEnemyStateBase* pNewState, int id)
 //=================================
 void CEnemy::UpdateMoving(void)
 {
-
+	// –³‚µ
 }

@@ -104,6 +104,12 @@ void CPauseManager::Update(void)
 	if (pKey == nullptr) return;
 	if (pJoyPad == nullptr) return;
 
+	// サウンド取得
+	CSound* pSound = CManager::GetSound();
+
+	// nullだったら
+	if (pSound == nullptr) return;
+
 	// 選択インデックス範囲
 	const int SELECT_BEGIN = 1;
 	const int SELECT_END = SELECT_MAX - 1;
@@ -111,6 +117,9 @@ void CPauseManager::Update(void)
 	// 上キー入力
 	if (pKey->GetTrigger(DIK_UP) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_UP))
 	{
+		// サウンド再生
+		pSound->PlaySound(pSound->SOUND_LABEL_SELECT);
+
 		// インデックス番号を減算
 		m_nSelectIdx--;
 
@@ -122,6 +131,9 @@ void CPauseManager::Update(void)
 	// 下キー入力
 	if (pKey->GetTrigger(DIK_DOWN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_DOWN))
 	{
+		// サウンド再生
+		pSound->PlaySound(pSound->SOUND_LABEL_SELECT);
+
 		// インデックス番号を加算
 		m_nSelectIdx++;
 
@@ -135,6 +147,12 @@ void CPauseManager::Update(void)
 
 	// nullだったら
 	if (pFade == nullptr) return;
+
+	// カメラ取得
+	CCamera* pCamera = CManager::GetCamera();
+
+	// nullだったら
+	if (pCamera == nullptr) return;
 
 	// 選択されているメニューのポリゴンカラーを変更
 	for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
@@ -156,6 +174,9 @@ void CPauseManager::Update(void)
 	// 決定処理
 	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A))
 	{
+		// サウンド再生
+		pSound->PlaySound(pSound->SOUND_LABEL_RETURN);
+
 		switch (m_nSelectIdx)
 		{
 		case CPause::MENU_BACK:	// 背景
@@ -171,8 +192,11 @@ void CPauseManager::Update(void)
 			break;
 
 		case CPause::MENU_QUIT:		// 退出時
-			if (pFade != nullptr) pFade->SetFade(new CTitle(false));	// タイトルシーンに遷移
+			if (pFade != nullptr) pFade->SetFade(new CTitle(true));	// タイトルシーンに遷移
 			SetEnablePause(false);	// ポーズ終了
+
+			pCamera->SetFinishRotation(false);
+			pCamera->SetIsRotation(false);
 			break;
 		}
 	}

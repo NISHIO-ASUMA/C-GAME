@@ -20,6 +20,10 @@ public:
 		SOUND_LABEL_TITLE_BGM,	// タイトルBGM
 		SOUND_LABEL_GAMEBGM,	// ゲームBGM
 		SOUND_LABEL_RESULTBGM,  // リザルトBGM
+		SOUND_LABEL_TUTORIALBGM, // チュートリアルBGM
+
+		SOUND_LABEL_SELECT, // キー選択SE
+		SOUND_LABEL_RETURN, // 決定キーSE
 		SOUND_LABEL_MAX
 	};
 
@@ -49,6 +53,9 @@ private:
 		{"data/BGM/titlebgm.wav", -1},		 // タイトルBGM
 		{"data/BGM/gamebgm.wav",-1},		 // ゲームBGM
 		{"data/BGM/resultbgm.wav",-1},		 // リザルトBGM
+		{"data/BGM/tutorialbgm.wav",-1},	 // チュートリアルBGM
+		{"data/SE/keyselect.wav",0},		 // 選択キーSE
+		{"data/SE/keyenter.wav",0},			 // 決定キーSE
 	};
 
 	IXAudio2* m_pXAudio2;									// XAudio2オブジェクトへのインターフェイス

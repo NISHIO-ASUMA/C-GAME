@@ -33,6 +33,7 @@ public:
 	{
 		TYPE_NEUTRAL = 0,	// ƒjƒ…[ƒgƒ‰ƒ‹
 		TYPE_ACTION,		// ˜rUŒ‚
+		TYPE_IMPACT,		// ’@‚«‚Â‚¯ÕŒ‚”g
 		TYPE_MAX
 	};
 
@@ -43,7 +44,7 @@ public:
 	{
 		PATTERN_NONE, // ‰½‚às“®‚µ‚Ä‚¢‚È‚¢
 		PATTERN_HAND, // ‰£‚è
-		PATTERN_BULLET, // ’e”­Ë
+		PATTERN_IMPACT, // ’@‚«‚Â‚¯
 		PATTERN_CIRCLE, // U‚è‰ñ‚µUŒ‚
 		PATTERN_DEATH,	// €–Sƒ‚[ƒVƒ‡ƒ“
 		PATTERN_MAX
@@ -66,6 +67,8 @@ public:
 	float GetSize(void) { return m_fSize; }
 
 	bool CollisionRightHand(D3DXVECTOR3* pPos);
+	bool CollisionImpactScal(D3DXVECTOR3* pPos);
+
 	static bool IsDaeth(void) { return m_isdaeth;}
 
 	CModel*GetModelPartType(CModel::PARTTYPE modelpart);
