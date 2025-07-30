@@ -154,7 +154,7 @@ void CPauseManager::Update(void)
 	}
 
 	// Œˆ’èˆ—
-	if (pKey->GetTrigger(DIK_RETURN))
+	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_A))
 	{
 		switch (m_nSelectIdx)
 		{

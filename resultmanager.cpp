@@ -58,14 +58,22 @@ void CResultManager::Uninit(void)
 //=================================
 void CResultManager::Update(void)
 {
-	// 入力デバイス
+	// 入力デバイスを取得
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+	CJoyPad* pJyoPad = CManager::GetJoyPad();
 
-	// カメラ取得
+	// 取得失敗時
+	if (pInput == nullptr) return;
+	if (pJyoPad == nullptr) return;
+
+	// カメラを取得
 	CCamera* pCamera = CManager::GetCamera();
 
+	// 取得失敗時
+	if (pCamera == nullptr) return;
+
 	// 決定キーが押された
-	if (pInput->GetTrigger(DIK_RETURN))
+	if (pInput->GetTrigger(DIK_RETURN) || pJyoPad->GetTrigger(pJyoPad->JOYKEY_A))
 	{
 		// ポインタ取得
 		CFade* pFade = CManager::GetFade();
@@ -73,7 +81,7 @@ void CResultManager::Update(void)
 		// nullじゃないとき
 		if (pFade != nullptr)
 		{
-			// 旋回off
+			// カメラの旋回off
 			pCamera->SetIsRotation(false);
 			pCamera->SetFinishRotation(false);
 

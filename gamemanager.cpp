@@ -108,19 +108,5 @@ void CGameManager::Uninit(void)
 //========================
 void CGameManager::Update(void)
 {
-	//// 未使用なら
-	//if (m_pBoss->IsDaeth())
-	//{
-	//	// フェード取得
-	//	CFade* pFade = CManager::GetFade();
 
-	//	if (pFade != nullptr)
-	//	{
-	//		// リザルトシーンに遷移
-	//		pFade->SetFade(new CResult());
-
-	//		// ここで処理を返す
-	//		return;
-	//	}
-	//}
 }

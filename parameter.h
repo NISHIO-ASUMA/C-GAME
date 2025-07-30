@@ -24,7 +24,6 @@ public:
 	
 private:
 	int m_nHp; // ‘Ì—Í
-
 };
 
 #endif
