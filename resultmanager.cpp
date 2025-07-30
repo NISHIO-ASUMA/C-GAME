@@ -21,6 +21,7 @@
 CResultManager::CResultManager()
 {
 	// 値のクリア
+	m_isKeyDown = false;
 }
 //=================================
 // デストラクタ
@@ -77,7 +78,7 @@ void CResultManager::Update(void)
 	if (pCamera == nullptr) return;
 
 	// 決定キーが押された
-	if (pInput->GetTrigger(DIK_RETURN) || pJyoPad->GetTrigger(pJyoPad->JOYKEY_A))
+	if ((pInput->GetTrigger(DIK_RETURN) || pJyoPad->GetTrigger(pJyoPad->JOYKEY_A)) && !m_isKeyDown)
 	{
 		// ポインタ取得
 		CFade* pFade = CManager::GetFade();
@@ -85,6 +86,9 @@ void CResultManager::Update(void)
 		// nullじゃないとき
 		if (pFade != nullptr)
 		{
+			// フラグ有効化
+			m_isKeyDown = true;
+
 			// カメラの旋回off
 			pCamera->SetIsRotation(false);
 			pCamera->SetFinishRotation(false);

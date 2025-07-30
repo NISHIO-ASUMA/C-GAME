@@ -557,7 +557,7 @@ void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const 
 //=========================================
 void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard, CJoyPad* pPad)
 {
-	// ジャンプ中かつ攻撃中なら移動処理を禁止
+	// ジャンプ攻撃中なら移動処理を禁止
 	if (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK)
 	{
 		return; // この時は移動や方向変更なし
@@ -600,7 +600,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 		else
 		{
 			// 移動モーション時,ニュートラルモーションに変更
-			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE)m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL);
+			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE) m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL);
 		}
 		break;
 

@@ -22,7 +22,7 @@ public:
 	void Update(void);
 
 private:
-
+	bool m_isKeyDown;
 };
 
 #endif
