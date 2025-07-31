@@ -26,7 +26,7 @@ CPlayerStateBase::CPlayerStateBase()
 {
 	// 値のクリア
 	m_pPlayer = nullptr;
-	m_ID = ID_NONE;
+	m_ID = ID_NEUTRAL;
 }
 //==================================
 // プレイヤー状態デストラクタ
@@ -105,7 +105,8 @@ void CPlayerStateNeutral::OnExit()
 //==================================
 CPlayerStateAction::CPlayerStateAction()
 {
-	// 無し
+	// セット
+	SetID(ID_ACTION);
 }
 //==================================
 // デストラクタ
@@ -160,7 +161,8 @@ void CPlayerStateAction::OnExit()
 //==================================
 CPlayerStateMove::CPlayerStateMove()
 {
-	// 無し
+	// セット
+	SetID(ID_MOVE);
 }
 //==================================
 // 移動状態デストラクタ
@@ -195,6 +197,8 @@ void CPlayerStateMove::OnUpdate()
 	{
 		// ニュートラルに遷移
 		m_pPlayer->ChangeState(new CPlayerStateNeutral, ID_NEUTRAL);
+
+		// ここで処理を返す
 		return;
 	}
 }
@@ -211,6 +215,9 @@ void CPlayerStateMove::OnExit()
 //==================================
 CPlayerStateDamage::CPlayerStateDamage(int nDamage)
 {
+	// id変更
+	SetID(ID_DAMAGE);
+
 	// 値のクリア
 	m_nStateCount = NULL;
 	m_nDamage = nDamage;

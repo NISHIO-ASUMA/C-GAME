@@ -106,11 +106,11 @@ void CCamera::Update(void)
 		// タイトルカメラ作成
 		TitleCamera();
 	}
-	else if (pMode == CScene::MODE_GAME)
-	{
-		// ロックオンにする
-		m_pCamera.nMode = MODE_LOCKON;
-	}
+	//else if (pMode == CScene::MODE_GAME)
+	//{
+	//	// ロックオンにする
+	//	m_pCamera.nMode = MODE_LOCKON;
+	//}
 
 #ifdef _DEBUG
 	// カメラモード変更

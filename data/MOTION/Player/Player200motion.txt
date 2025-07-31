@@ -2594,7 +2594,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 4 / 5 >> ---
-		FRAME = 10
+		FRAME = 20
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -44.00 0.00 
 			ROT = 1.62 0.00 0.00 
@@ -2691,5 +2691,5 @@ MOTIONSET
 		END_KEY
 	END_KEYSET
 END_MOTIONSET
-END_SCRIPT		# この行は絶対消さないこと！
 
+END_SCRIPT		# この行は絶対消さないこと！

@@ -75,6 +75,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_isAttack = false;
 	m_isMoving = false;
 	m_isShadow = false;
+	m_isStateSynchro = false;
 }
 //===============================
 // デストラクタ
@@ -258,8 +259,6 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(void)
 {
-	if (m_isDeath) return;
-
 	// 攻撃中はボスの方向に体を向ける
 	if (m_isAttack)
 	{
@@ -273,6 +272,58 @@ void CPlayer::Update(void)
 		}
 	}
 
+	// SUBプレイヤーだけ処理
+	if (m_nIdxPlayer == NUMBER_SUB)
+	{
+		// MAINプレイヤー取得
+		CPlayer* pMain = CPlayer::GetIdxPlayer(NUMBER_MAIN);
+
+		// モーションを統一する
+		m_pMotion->SetMotion(pMain->GetNowMotion());
+
+		// MAINと状態が一致したら同期許可
+		if (m_pStateMachine->GetNowStateID() == pMain->m_pStateMachine->GetNowStateID())
+		{
+			m_isStateSynchro = true;
+		}
+
+		// モーション一致していたら
+		if (m_isStateSynchro)
+		{
+			// モーションを統一する
+			m_pMotion->SetMotion(pMain->GetNowMotion());
+
+			// ステートが異なる場合のみ変更
+			int mainStateID = pMain->m_pStateMachine->GetNowStateID();
+			int subStateID = m_pStateMachine->GetNowStateID();
+
+			if (mainStateID != subStateID)
+			{
+				switch (mainStateID)
+				{
+				case CPlayerStateBase::ID_NEUTRAL:
+					ChangeState(new CPlayerStateNeutral(), CPlayerStateBase::ID_NEUTRAL);
+					break;
+
+				case CPlayerStateBase::ID_MOVE:
+					ChangeState(new CPlayerStateMove(), CPlayerStateBase::ID_MOVE);
+					break;
+
+				case CPlayerStateBase::ID_ACTION:
+					ChangeState(new CPlayerStateAction(), CPlayerStateBase::ID_ACTION);
+					break;
+
+				case CPlayerStateBase::ID_DAMAGE:
+					ChangeState(new CPlayerStateDamage(0), CPlayerStateBase::ID_DAMAGE);
+					break;
+
+				default:
+					break;
+				}
+			}
+		}
+	}
+
 	// nullptrじゃないとき
 	if (m_pStateMachine != nullptr)
 	{
@@ -280,9 +331,12 @@ void CPlayer::Update(void)
 		m_pStateMachine->Update();
 	}
 
-	// 入力取得
-	CInputKeyboard* pInput = CManager::GetInputKeyboard();
-	CJoyPad* pJoyPad = CManager::GetJoyPad();
+	// 入力デバイスのポインタ取得
+	CInputKeyboard* pInput = nullptr;
+	CJoyPad* pJoyPad = nullptr;
+
+	pInput = CManager::GetInputKeyboard();
+	pJoyPad = CManager::GetJoyPad();
 
 	// 武器のワールドマトリックスとボス方向取得
 	CModel* pModelWeapon = GetModelPartType(CModel::PARTTYPE_WEAPON);
@@ -296,46 +350,6 @@ void CPlayer::Update(void)
 
 	// 当たり判定処理関数
 	Collision();
-
-	// SUBプレイヤーだけ処理
-	if (m_nIdxPlayer == NUMBER_SUB)
-	{
-		// MAINプレイヤー取得
-		CPlayer* pMain = CPlayer::GetIdxPlayer(NUMBER_MAIN);
-
-		// モーションを統一する
-		m_pMotion->SetMotion(pMain->GetNowMotion());
-
-		// ステートを統一
-		int mainStateID = pMain->m_pStateMachine->GetNowStateID();
-		int subStateID = m_pStateMachine->GetNowStateID();
-
-		// もし一致していなかったら
-		if (mainStateID != subStateID)
-		{
-			switch (mainStateID)
-			{
-			case CPlayerStateBase::ID_DAMAGE: //ダメージ
-				ChangeState(new CPlayerStateDamage(0), CPlayerStateBase::ID_DAMAGE);
-				break;
-
-			case CPlayerStateBase::ID_MOVE: // 移動
-				ChangeState(new CPlayerStateMove(), CPlayerStateBase::ID_MOVE);
-				break;
-
-			case CPlayerStateBase::ID_ACTION: //アクション
-				ChangeState(new CPlayerStateAction(), CPlayerStateBase::ID_ACTION);
-				break;
-
-			case CPlayerStateBase::ID_NEUTRAL: // ニュートラル
-				ChangeState(new CPlayerStateNeutral(), CPlayerStateBase::ID_NEUTRAL);
-				break;
-
-			default:
-				break;
-			}
-		}
-	}
 
 	// 現在のy座標が0.0f以下の時
 	if (m_pos.y <= 0.0f)
@@ -361,11 +375,8 @@ void CPlayer::Update(void)
 		m_pShadowS->SetRot(GetIdxPlayer(0)->GetRot()); 
 	}
 
-	// 現在体力の取得
-	int nHp = m_pParameter->GetHp();
-
-	// 生きているなら
-	if (nHp >= 0) m_pMotion->Update(m_apModel, MAX_MODEL); // モーションの全体更新
+	// モーションの全体更新
+	m_pMotion->Update(m_apModel, MAX_MODEL); 
 }
 //===============================
 // プレイヤー描画処理
@@ -417,6 +428,15 @@ void CPlayer::Draw(void)
 	CDebugproc::Print("プレイヤーの体力 { %d } ", m_pParameter->GetHp());
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 340);
+
+	// モーション描画
+	CDebugproc::Print("MAINプレイヤーのモーション { %d } ", CPlayer::GetIdxPlayer(NUMBER_MAIN)->GetNowMotion());
+	// デバッグフォント描画
+	CDebugproc::Draw(0, 600);
+	// モーション描画
+	CDebugproc::Print("SUBプレイヤーのモーション { %d } ", CPlayer::GetIdxPlayer(NUMBER_SUB)->GetNowMotion());
+	// デバッグフォント描画
+	CDebugproc::Draw(0, 620);
 }
 
 //=========================================
@@ -482,6 +502,10 @@ void CPlayer::ChangeState(CPlayerStateBase* pNewState,int id)
 
 	// ステート変更
 	m_pStateMachine->ChangeState(pNewState);
+
+	// 同期を一時解除
+	if (m_nIdxPlayer == NUMBER_SUB)
+		m_isStateSynchro = false;
 }
 
 //=========================================
@@ -489,6 +513,9 @@ void CPlayer::ChangeState(CPlayerStateBase* pNewState,int id)
 //=========================================
 void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const D3DXVECTOR3 DestMove, CJoyPad* pPad)
 {
+	// SUBプレイヤーがステート未同期なら処理しない
+	if (m_nIdxPlayer == NUMBER_SUB && !m_isStateSynchro) return;
+
 	// キーフラグをセット
 	bool isKeyPress = false;
 
@@ -557,6 +584,9 @@ void CPlayer::UpdateAction(CInputKeyboard* pInputKeyboard,D3DXMATRIX pMtx,const 
 //=========================================
 void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboard, CJoyPad* pPad)
 {
+	// SUBプレイヤーがステート未同期なら処理しない
+	if (m_nIdxPlayer == NUMBER_SUB && !m_isStateSynchro) return;
+
 	// ジャンプ攻撃中なら移動処理を禁止
 	if (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK)
 	{
@@ -991,7 +1021,6 @@ void CPlayer::HitDamage(int nDamage)
 		// モーションセット
 		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-		// ここで処理を返す
 		return;
 	}
 	else
@@ -1003,3 +1032,10 @@ void CPlayer::HitDamage(int nDamage)
 		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 	}
 }
+
+#if 0
+// SUBプレイヤーがステート未同期なら処理しない
+if (m_nIdxPlayer == NUMBER_SUB && !m_isStateSynchro) return;
+
+
+#endif

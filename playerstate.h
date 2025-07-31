@@ -26,7 +26,6 @@ public:
 	//***************************
 	enum ID
 	{
-		ID_NONE, // Ý’è‚È‚µ
 		ID_NEUTRAL, // ‘Ò‹@
 		ID_MOVE, // ˆÚ“®
 		ID_ACTION, // UŒ‚

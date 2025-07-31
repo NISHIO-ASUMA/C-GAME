@@ -27,7 +27,6 @@ class CShadowS;
 class CStateMachine;
 class CPlayerStateBase;
 
-
 //*************************
 // プレイヤークラスを定義
 //*************************
@@ -134,6 +133,7 @@ private:
 	bool m_isMoving;		// 移動キー判定
 	bool m_isAttack;		// 攻撃判定
 	bool m_isShadow;
+	bool m_isStateSynchro;
 	static bool m_isDeath;
 
 	float m_fAngle;			// 現在の角度

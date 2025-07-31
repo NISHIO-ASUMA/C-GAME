@@ -221,7 +221,7 @@ bool CInputKeyboard::GetRepeat(int nKey,int nMaxTime)
 	// キーカウントを加算
 	m_nKeyPressCount++;
 
-	if (m_aOldState[nKey] & 0x80 && (m_aKeystate[nKey] & 0x80) && nMaxTime >= m_nKeyPressCount)
+	if (m_aOldState[nKey] & 0x80 && (m_aKeystate[nKey] & 0x80) && nMaxTime <= m_nKeyPressCount)
 	{
 		isRepeat = true;
 		m_nKeyPressCount = 0;
@@ -347,7 +347,7 @@ bool CJoyPad::GetRepeat(JOYKEY Key,int nMaXTime)
 	{
 		m_nPressCount++;
 
-		if (m_nPressCount >= nMaXTime)
+		if (nMaXTime <= m_nPressCount)
 		{
 			isRepeat = true;
 			m_nPressCount = 0;

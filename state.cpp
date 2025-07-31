@@ -111,10 +111,12 @@ void CStateMachine::OnExit()
 		m_pNowState = nullptr;
 	}
 }
-
+//==================================
+// 現在状態を取得
+//==================================
 int CStateMachine::GetNowStateID()
 {
 	if (m_pNowState)
 		return m_pNowState->GetID(); // 仮想関数として
-	return CPlayerStateBase::ID_NONE;
+	return CPlayerStateBase::ID_NEUTRAL; // ニュートラル
 }
