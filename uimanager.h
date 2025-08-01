@@ -11,8 +11,6 @@
 //****************************
 // インクルードファイル宣言
 //****************************
-#include "ui.h"
-#include <vector>
 
 //****************************
 // UI管理クラスを定義
@@ -27,11 +25,11 @@ public:
 	void Uninit(void);
 	void Update(void);
 
-	static CUi* Create(D3DXVECTOR3 pos,int nType,float fWidth,float fHeight);
-
 private:
-	static std::vector<CUi*>m_Uiobject; // UIの動的配列
 	static int m_nIdxUi;			// UIのインデックス番号
+
+	// NOTE : 出すuiを配列で持ってロードで適用する処理を作成
+
 };
 
 #endif

@@ -12,11 +12,12 @@
 #include "manager.h"
 #include "gamemanager.h"
 #include "parameter.h"
+#include "object2D.h"
 
 //===============================
 // オーバーロードコンストラクタ
 //===============================
-CBossLifeGage::CBossLifeGage(int nPriority) : CObject2D(nPriority)
+CBossLifeGage::CBossLifeGage(int nPriority) : CGage(nPriority)
 {
 	// 値のクリア
 	m_nIdxTex = NULL;
@@ -113,21 +114,8 @@ void CBossLifeGage::Update(void)
 		// 現在の体力を取得
 		m_nCurrentLifeLength = pParam->GetHp();
 
-		// 比率を出す
-		float fRatio = 1.0f;
-
-		// 0以上なら
-		if (m_nMaxLifeLength > NULL)
-		{
-			// 割合を計算する
-			fRatio = static_cast<float>(m_nCurrentLifeLength) / static_cast<float>(m_nMaxLifeLength);
-		}
-
-		// 表示する体力バーの最大幅
-		const float fMaxWidth = SCREEN_WIDTH * 0.4f; // 必要に応じて調整
-
-		// サイズを比率で反映
-		SetSize(fMaxWidth * fRatio, 60.0f);
+		// ゲージの長さ設定
+		SetGageLength(m_nMaxLifeLength, m_nCurrentLifeLength, 0.4f, 60.0f);
 	}
 
 	// 親クラスの更新処理

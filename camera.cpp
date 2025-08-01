@@ -198,6 +198,7 @@ void CCamera::SetCamera(void)
 	// プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &m_pCamera.mtxprojection);
 
+	// デバッグフォント
 	CDebugproc::Print("Camera : PosV [ %.2f, %.2f, %.2f ]", m_pCamera.posV.x, m_pCamera.posV.y, m_pCamera.posV.z);
 	CDebugproc::Draw(0, 100);
 

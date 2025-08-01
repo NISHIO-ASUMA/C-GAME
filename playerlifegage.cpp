@@ -1,9 +1,9 @@
-//=========================================
+//============================================
 //
-// プレイヤー体力処理 [ playerlifegage.h ]
+// プレイヤー体力処理 [ playerlifegage.cpp ]
 // Author: Asuma Nishio
 //
-//=========================================
+//============================================
 
 //**********************
 // インクルードファイル
@@ -13,16 +13,18 @@
 #include "parameter.h"
 #include "manager.h"
 #include "texture.h"
+#include "object2D.h"
 
 //========================
 // コンストラクタ
 //========================
-CPlayerLifeGage::CPlayerLifeGage(int nPriority) : CObject2D(nPriority)
+CPlayerLifeGage::CPlayerLifeGage(int nPriority) : CGage(nPriority)
 {
 	// 値のクリア
 	m_pPlayer = nullptr;
 	m_nLifeLength = NULL;
 	m_gage = GAGE_FRAME;
+	m_nMaxLifeLength = NULL;
 }
 //========================
 // デストラクタ
@@ -53,7 +55,7 @@ HRESULT CPlayerLifeGage::Init(void)
 		CParameter* pParam = m_pPlayer->GetParameter();
 
 		// 現在の体力を取得する
-		m_nLifeLength = pParam->GetHp();
+		m_nMaxLifeLength = pParam->GetHp();
 	}
 
 	// 初期化結果を返す
@@ -81,8 +83,8 @@ void CPlayerLifeGage::Update(void)
 		// 現在の体力を取得する
 		m_nLifeLength = pParam->GetHp();
 
-		// サイズセット
-		SetSize(m_nLifeLength * GAGE_WIDTH, GAGE_HEIGHT);
+		// ゲージの長さ設定
+		SetGageLength(m_nMaxLifeLength, m_nLifeLength, 0.28f, GAGE_HEIGHT);
 	}
 
 	// 親クラスの更新処理
@@ -123,7 +125,7 @@ CPlayerLifeGage* CPlayerLifeGage::Create(D3DXVECTOR3 pos, float fWidth, float fH
 		return nullptr;
 	}
 
-	// オブジェクト設定
+	// 2Dオブジェクト設定
 	pLifeGage->SetPos(pos);
 	pLifeGage->SetSize(fWidth, fHeight);
 	pLifeGage->SetGage(gagetype);
@@ -146,12 +148,12 @@ void CPlayerLifeGage::SetTexture(int Type)
 	{
 	case GAGE_FRAME:	// フレーム
 		// 割り当て
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\lifeframe.png");
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\playerlife_frame000.png");
 		break;
 
 	case GAGE_BAR:	// 本体ゲージ
 		// 割り当て
-		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\lifegage.png");
+		m_nIdxTexture = pTexture->Register("data\\TEXTURE\\playerlife_gage000.png");
 		break;
 
 	default:

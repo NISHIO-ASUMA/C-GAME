@@ -50,6 +50,8 @@ private:
 		"data\\TEXTURE\\pausemenu_retry.png",
 		"data\\TEXTURE\\pausemenu_quit.png",
 		"data\\TEXTURE\\resultlogo.png",
+		"data\\TEXTURE\\playerlife_frame000.png",
+		"data\\TEXTURE\\playerlife_gage000.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[NUM_TEXTURE];	// テクスチャポインタ

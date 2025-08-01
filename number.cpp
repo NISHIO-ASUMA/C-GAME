@@ -74,9 +74,9 @@ HRESULT CNumber::Init(D3DXVECTOR3 pos,float fwidth,float fheight)
 
 	//テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(0.1f, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(DIGIT_VALUE, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(0.1f, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(DIGIT_VALUE, 1.0f);
 
 	//頂点バッファをアンロック
 	m_pVtxBuff->Unlock();
@@ -142,7 +142,7 @@ void CNumber::SetSize(float fWidth, float fHeight)
 //==================================
 // 桁数計算処理
 //==================================
-void CNumber::SetDidgit(int nDigit)
+void CNumber::SetDigit(int nDigit)
 {
 	// 頂点情報のポインタ
 	VERTEX_2D* pVtx;
@@ -151,13 +151,13 @@ void CNumber::SetDidgit(int nDigit)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// テクスチャ座標の計算
-	float TexU = nDigit * 0.1f;
+	float TexU = nDigit * DIGIT_VALUE;
 
 	// テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(TexU, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(TexU + 0.1f, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(TexU + DIGIT_VALUE, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(TexU, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(TexU + 0.1f, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(TexU + DIGIT_VALUE, 1.0f);
 
 	// 頂点バッファのアンロック
 	m_pVtxBuff->Unlock();

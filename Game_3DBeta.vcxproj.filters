@@ -79,6 +79,9 @@
     <Filter Include="ソース ファイル\Charactor\Boss">
       <UniqueIdentifier>{c8d870e8-491c-4cd2-b8d2-204d450afe42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Gage">
+      <UniqueIdentifier>{2fc95f6c-3ed5-4fd4-ba41-d22d621cc6f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bg.cpp">
@@ -164,9 +167,6 @@
     </ClCompile>
     <ClCompile Include="meshimpact.cpp">
       <Filter>ソース ファイル\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="gage.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="object.cpp">
       <Filter>ソース ファイル\Object</Filter>
@@ -261,14 +261,8 @@
     <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\Charactor\Player</Filter>
     </ClCompile>
-    <ClCompile Include="playerlifegage.cpp">
-      <Filter>ソース ファイル\Charactor\Player</Filter>
-    </ClCompile>
     <ClCompile Include="boss.cpp">
       <Filter>ソース ファイル\Charactor\Boss</Filter>
-    </ClCompile>
-    <ClCompile Include="bosslifegage.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="gamemanager.cpp">
       <Filter>ソース ファイル\MainScenes\SceneManagers</Filter>
@@ -278,6 +272,15 @@
     </ClCompile>
     <ClCompile Include="resultui.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="playerlifegage.cpp">
+      <Filter>ソース ファイル\Gage</Filter>
+    </ClCompile>
+    <ClCompile Include="bosslifegage.cpp">
+      <Filter>ソース ファイル\Gage</Filter>
+    </ClCompile>
+    <ClCompile Include="gage.cpp">
+      <Filter>ソース ファイル\Gage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

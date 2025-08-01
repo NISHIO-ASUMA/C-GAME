@@ -12,7 +12,7 @@
 // インクルードファイル
 //**********************
 #include "object.h"
-#include "object2D.h"
+#include "gage.h"
 
 //**********************
 // 前方宣言
@@ -22,7 +22,7 @@ class CPlayer;
 //*************************
 // 体力ゲージクラスを定義
 //*************************
-class CPlayerLifeGage : public CObject2D
+class CPlayerLifeGage : public CGage
 {
 public:
 	//**********************
@@ -50,11 +50,12 @@ public:
 	void SetGage(int type) { m_gage = type; }
 
 private:
-	static constexpr float GAGE_WIDTH = 46.0f;	// 基準値に掛ける倍率
-	static constexpr float GAGE_HEIGHT = 38.0f; // ゲージの高さの固定値
+	static constexpr float GAGE_WIDTH = 40.0f;	// 基準値に掛ける倍率
+	static constexpr float GAGE_HEIGHT = 45.0f; // ゲージの高さの固定値
 
 	int m_nIdxTexture;		// テクスチャインデックス
 	int m_nLifeLength;		// バーの長さ基準値
+	int m_nMaxLifeLength;	// 最初の体力値
 	CPlayer* m_pPlayer;		// プレイヤークラスポインタ
 	int m_gage;			// 列挙変数
 

@@ -144,7 +144,7 @@ void CScore::Update(void)
 		m_apNumber[nCntScore]->Update();
 
 		// Œ…XV
-		m_apNumber[nCntScore]->SetDidgit(digit);
+		m_apNumber[nCntScore]->SetDigit(digit);
 	}
 }
 //==========================================

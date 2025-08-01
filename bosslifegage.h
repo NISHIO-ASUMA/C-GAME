@@ -12,7 +12,7 @@
 // インクルードファイル
 //**********************
 #include "object.h"
-#include "object2D.h"
+#include "gage.h"
 
 //**********************
 // 前方宣言
@@ -22,7 +22,7 @@ class CBoss;
 //***************************
 // ボス体力管理クラスを定義
 //***************************
-class CBossLifeGage : public CObject2D
+class CBossLifeGage : public CGage
 {
 public:
 	//***********************

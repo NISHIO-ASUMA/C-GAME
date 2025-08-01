@@ -88,10 +88,8 @@ public:
 
 	D3DXVECTOR3 VecToBoss(const D3DXVECTOR3& pPos);
 
-
 	bool isMoveInputKey(CInputKeyboard* pKeyInput);
 	bool isMovePadButton(CJoyPad* pPad);
-
 
 	bool isLanding(void) { return m_isJump; }
 	void InitPos(float fAngle);
@@ -135,6 +133,8 @@ private:
 	bool m_isShadow;
 	bool m_isStateSynchro;
 	static bool m_isDeath;
+
+	bool m_isConectPad;
 
 	float m_fAngle;			// 現在の角度
 	int m_nIdxPlayer;		// プレイヤーの識別番号

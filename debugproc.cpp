@@ -14,13 +14,16 @@
 #include "manager.h"
 
 //***********************************
+// 定数宣言
+//***********************************
+inline constexpr int FontSize = 20;		// フォントサイズ
+
+//***********************************
 // 静的メンバ変数
 //***********************************
 LPD3DXFONT CDebugproc::m_pFont = nullptr;  // フォントへのポインタ
 char CDebugproc::m_aStr[MAX_WORD] = {};	   // 文字列を格納するバッファ
 bool CDebugproc::m_isUse = false;
-
-inline constexpr int FontSize = 20;		// フォントサイズ
 
 //===============================
 // コンストラクタ

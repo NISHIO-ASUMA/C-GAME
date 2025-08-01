@@ -23,10 +23,12 @@ public:
 	void Draw(void);
 	void SetPos(D3DXVECTOR3 pos);
 	void SetSize(float fWidth, float fHeight);
-	void SetDidgit(int nDigit);
+	void SetDigit(int nDigit);
 
 private:
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;     // 頂点バッファのポインタ
+	static constexpr float DIGIT_VALUE = 0.1f; // テクスチャ分割数割合
+
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファのポインタ
 
 	D3DXVECTOR3 m_pos;				// 座標情報
 	float m_fWidth, m_fHeight;		// 横幅,高さ

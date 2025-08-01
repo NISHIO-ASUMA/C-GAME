@@ -13,7 +13,6 @@
 //****************************
 // 静的メンバ変数宣言
 //****************************
-std::vector<CUi*>CUimanager::m_Uiobject = {};
 int CUimanager::m_nIdxUi = NULL;
 
 //===============================
@@ -21,7 +20,6 @@ int CUimanager::m_nIdxUi = NULL;
 //===============================
 CUimanager::CUimanager()
 {
-	m_Uiobject.clear();
 }
 //===============================
 // デストラクタ
@@ -33,27 +31,7 @@ CUimanager::~CUimanager()
 //===============================
 // 生成処理
 //===============================
-CUi* CUimanager::Create(D3DXVECTOR3 pos, int nType, float fWidth, float fHeight)
-{
-	// ポインタ生成
-	CUi* pNewUi = CUi::Create(pos, nType, fWidth, fHeight);
 
-	if (pNewUi)
-	{
-		// 配列追加
-		m_Uiobject.push_back(pNewUi);
-
-		// インデックス加算
-		m_nIdxUi++;
-
-		// 生成されたポインタを返す
-		return pNewUi;
-	}
-	else
-	{
-		return nullptr;
-	}
-}
 //===============================
 // 初期化処理
 //===============================
@@ -66,8 +44,6 @@ HRESULT CUimanager::Init(void)
 //===============================
 void CUimanager::Uninit(void)
 {
-	// 配列クリア
-	m_Uiobject.clear();
 }
 //===============================
 // 更新処理

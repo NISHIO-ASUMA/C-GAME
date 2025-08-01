@@ -76,6 +76,7 @@ CPlayer::CPlayer(int nPriority) : CObject(nPriority)
 	m_isMoving = false;
 	m_isShadow = false;
 	m_isStateSynchro = false;
+	m_isConectPad = false;
 }
 //===============================
 // デストラクタ
@@ -433,6 +434,7 @@ void CPlayer::Draw(void)
 	CDebugproc::Print("MAINプレイヤーのモーション { %d } ", CPlayer::GetIdxPlayer(NUMBER_MAIN)->GetNowMotion());
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 600);
+
 	// モーション描画
 	CDebugproc::Print("SUBプレイヤーのモーション { %d } ", CPlayer::GetIdxPlayer(NUMBER_SUB)->GetNowMotion());
 	// デバッグフォント描画

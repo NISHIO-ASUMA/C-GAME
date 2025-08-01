@@ -18,7 +18,6 @@
 CGage::CGage(int nPriority) : CObject2D(nPriority)
 {
 	// 値のクリア
-	m_nTextIdx = NULL;
 }
 //===============================
 // デストラクタ
@@ -35,6 +34,7 @@ HRESULT CGage::Init(void)
 	// 親クラスの初期化
 	CObject2D::Init();
 
+	// 初期化結果を返す
 	return S_OK;
 }
 //===============================
@@ -91,19 +91,28 @@ CGage* CGage::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 	// 2Dオブジェクト設定
 	pGage->SetPos(pos);
 	pGage->SetSize(fWidth, fHeight);
-	pGage->SetTexture();
 
 	// ポインタを返す
 	return pGage;
 }
-//===================================
-// テクスチャ設定関数
-//===================================
-void CGage::SetTexture(void)
+//===============================
+// ゲージの長さ設定処理
+//===============================
+void CGage::SetGageLength(const int nMaxLife, const int nCurrentLife, float fValue,float Height)
 {
-	// テクスチャポインタ取得
-	CTexture* pTexture = CManager::GetTexture();
+	// 最大比率を出す
+	float fRatio = 1.0f;
 
-	// テクスチャ割り当て
-	m_nTextIdx = pTexture->Register("data\\TEXTURE\\lifebar_gage.png");
+	// 0以上なら
+	if (nMaxLife > NULL)
+	{
+		// 割合を計算する
+		fRatio = static_cast<float>(nCurrentLife) / static_cast<float>(nMaxLife);
+	}
+
+	// 表示する体力バーの最大幅
+	const float fMaxWidth = SCREEN_WIDTH * fValue;
+
+	// サイズを比率で反映
+	SetSize(fMaxWidth * fRatio, Height);
 }

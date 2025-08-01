@@ -152,7 +152,7 @@ void CTime::Update(void)
 		if (m_pNumber[nCnt] != nullptr)
 		{
 			m_pNumber[nCnt]->Update();
-			m_pNumber[nCnt]->SetDidgit(digit);
+			m_pNumber[nCnt]->SetDigit(digit);
 		}
 	}
 }

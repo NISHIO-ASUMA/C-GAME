@@ -33,9 +33,9 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CGage* Create(D3DXVECTOR3 pos, float fWidth, float fHeight);
+	void SetGageLength(const int nMaxLife, const int nCurrentLife, float fValue, float Height);
 
-	void SetTexture(void);
+	static CGage* Create(D3DXVECTOR3 pos, float fWidth, float fHeight);
 
 private:
 	int m_nTextIdx;	// テクスチャ識別番号
