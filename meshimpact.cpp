@@ -413,7 +413,7 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 		float fDisSize = (m_fOutRadius - m_fInRadius) * 0.8f;
 
 		// Y•ûŒü‚ÅŠO‚ê‚Ä‚é‚È‚ç“–‚½‚ç‚È‚¢
-		if (fabsf(dy) > fHeightTolerance) continue;
+ 		if (fabsf(dy) > fHeightTolerance) continue;
 
 		// XZ•½–Ê‚Ì”ÍˆÍŒvŽZ
 		float fDisVerTexXZ = sqrtf(dx * dx + dz * dz);

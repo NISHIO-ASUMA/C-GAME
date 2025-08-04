@@ -372,8 +372,8 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 		if (m_pMotion->CheckFrame(130, 130, PATTERN_IMPACT))
 		{
 			// メッシュインパクトを両手から生成
-			CMeshImpact::Create(D3DXVECTOR3(mtxRight._41, mtxRight._42, mtxRight._43), 60, 60.0f, 30.0f, 5.0f);
-			CMeshImpact::Create(D3DXVECTOR3(mtxLeft._41, mtxLeft._42, mtxLeft._43), 100, 60.0f, 30.0f, 5.0f);
+			CMeshImpact::Create(D3DXVECTOR3(mtxRight._41, mtxRight._42, mtxRight._43), 120, 60.0f, 30.0f, 5.0f);
+			CMeshImpact::Create(D3DXVECTOR3(mtxLeft._41, mtxLeft._42, mtxLeft._43), 120, 60.0f, 30.0f, 5.0f);
 		}
 
 		// 座標を格納

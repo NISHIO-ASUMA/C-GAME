@@ -143,6 +143,9 @@ void CPlayerStateAction::OnUpdate()
 	CInputKeyboard* pInput = CManager::GetInputKeyboard();
 	CJoyPad * pPad = CManager::GetJoyPad();
 
+	// 重力
+	m_pPlayer->GravityScal();
+
 	// 武器の位置取得
 	CModel* pModelWeapon = m_pPlayer->GetModelPartType(CModel::PARTTYPE_WEAPON);
 
@@ -274,6 +277,11 @@ void CPlayerStateDamage::OnStart()
 //==================================
 void CPlayerStateDamage::OnUpdate()
 {
+	// 空中時,重力
+	m_pPlayer->GravityScal();
+
+	m_pPlayer->AddMove();
+
 	// 状態管理カウンターをデクリメント
 	m_nStateCount--;
 
@@ -357,5 +365,5 @@ void CPlayerStateJump::OnExit()
 	m_pPlayer->SetJump(false);
 
 	// 着地を未使用
-	m_pPlayer->SetLanding(true);
+	m_pPlayer->SetLanding(false);
 }

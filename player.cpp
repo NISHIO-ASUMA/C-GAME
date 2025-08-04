@@ -260,6 +260,7 @@ void CPlayer::Uninit(void)
 //============================================================
 void CPlayer::Update(void)
 {
+
 	// 攻撃中はボスの方向に体を向ける
 	if (m_isAttack)
 	{
@@ -278,6 +279,17 @@ void CPlayer::Update(void)
 	{
 		// MAINプレイヤー取得
 		CPlayer* pMain = CPlayer::GetIdxPlayer(NUMBER_MAIN);
+
+		// 角度統一
+		m_fAngle = pMain->m_fAngle;
+
+		// 座標統一
+		float fRadius = CGameManager::GetCylinder()->GetRadius();
+		float IdxAngle = m_fAngle + D3DX_PI;
+		D3DXVECTOR3 DestPos = CGameManager::GetCylinder()->GetPos();
+
+		m_pos.x = DestPos.x - sinf(IdxAngle) * fRadius;
+		m_pos.z = DestPos.z - cosf(IdxAngle) * fRadius;
 
 		// モーションを統一する
 		m_pMotion->SetMotion(pMain->GetNowMotion());
@@ -345,9 +357,6 @@ void CPlayer::Update(void)
 
 	D3DXMATRIX mtxWorld = pModelWeapon->GetMtxWorld();
 	D3DXVECTOR3 vecToBoss = VecToBoss(m_pos);
-
-	// ジャンプ状態時の更新関数
-	// UpdateJumpAction(pInput, mtxWorld, vecToBoss, pJoyPad);
 
 	// 当たり判定処理関数
 	Collision();
@@ -442,6 +451,11 @@ void CPlayer::Draw(void)
 	CDebugproc::Print("SUBプレイヤーのモーション { %d } ", CPlayer::GetIdxPlayer(NUMBER_SUB)->GetNowMotion());
 	// デバッグフォント描画
 	CDebugproc::Draw(0, 620);
+
+	CDebugproc::Print("MAIN角度 { %.2f }", CPlayer::GetIdxPlayer(NUMBER_MAIN)->m_fAngle);
+	CDebugproc::Draw(0, 660);
+	CDebugproc::Print("SUB 角度 { %.2f }", CPlayer::GetIdxPlayer(NUMBER_SUB)->m_fAngle);
+	CDebugproc::Draw(0, 680);
 }
 
 //=========================================
@@ -717,7 +731,7 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 	 // ジャンプ中に移動する場合
 	 if (!isJumpAttacking && m_pMotion->GetMotionType() == PLAYERMOTION_JUMP)
 	 {
-		 // 地形の中心座標を取得
+		 // メッシュシリンダーの取得
 		 D3DXVECTOR3 DestPos = CGameManager::GetCylinder()->GetPos();
 
 		 // 移動処理呼び出し
@@ -786,6 +800,16 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 		// ここで処理を返す
 		return;
 	}
+
+	// 着地時に移動キー入力が存在しているなら
+	if (m_pMotion->GetMotionType() == PLAYERMOTION_LANDING && (isMoveInputKey(pInputKeyboard) || isMovePadButton(pPad)))
+	{
+		// 移動状態に変更
+		ChangeState(new CPlayerStateMove(), CPlayerStateBase::ID_MOVE);
+
+		// ここで処理を返す
+		return;
+	}
 }
 //=============================
 // コリジョン処理関数
@@ -808,7 +832,7 @@ void CPlayer::Collision(void)
 			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
 
 			// コリジョンした時 かつ IDがダメージ以外
-			if (pImpact->Collision(&m_pos) == true )
+			if (pImpact->Collision(&m_pos) == true)
 			{
 				// 当たったらダメージモーションに切り替え
 				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
@@ -836,24 +860,27 @@ void CPlayer::Collision(void)
 		return;
 	}
 
-	// 当たり判定の距離
-	if (pBoss->CollisionRightHand(&m_pos) && pBoss->IsDaeth() == false)
+	if (m_nIdxPlayer == NUMBER_MAIN)
 	{
-		// 当たったらダメージモーションに切り替え
-		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+		// 当たり判定の距離
+		if (pBoss->CollisionRightHand(&m_pos) && pBoss->IsDaeth() == false)
+		{
+			// 当たったらダメージモーションに切り替え
+			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-		// ステート変更
-		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
-	}
+			// ステート変更
+			ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+		}
 
-	// 当たり判定の距離
-	if (pBoss->CollisionImpactScal(&m_pos) && pBoss->IsDaeth() == false)
-	{
-		// 当たったらダメージモーションに切り替え
-		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
+		// 当たり判定の距離
+		if (pBoss->CollisionImpactScal(&m_pos) && pBoss->IsDaeth() == false)
+		{
+			// 当たったらダメージモーションに切り替え
+			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);
 
-		// ステート変更
-		ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+			// ステート変更
+			ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
+		}
 	}
 
 	//=============================
@@ -1031,9 +1058,9 @@ void CPlayer::HitDamage(int nDamage)
 	}
 }
 
-#if 0
-// SUBプレイヤーがステート未同期なら処理しない
-if (m_nIdxPlayer == NUMBER_SUB && !m_isStateSynchro) return;
-
-
-#endif
+void CPlayer::GravityScal(void)
+{
+		// 重力値を適用
+		m_move.y -= 0.7f;
+	
+}
