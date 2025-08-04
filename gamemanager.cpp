@@ -30,6 +30,7 @@ CBlock* CGameManager::m_pBlock = nullptr;				// ブロック
 CMeshCylinder* CGameManager::m_pMeshCylinder = nullptr;	// 円柱
 CBoss* CGameManager::m_pBoss = nullptr;					// ボス
 CTime* CGameManager::m_pTime = nullptr;					// タイマー
+CUimanager* CGameManager::m_puimanager = nullptr;
 
 //========================
 // コンストラクタ
@@ -89,6 +90,15 @@ HRESULT CGameManager::Init(void)
 	// サウンド再生
 	pSound->PlaySound(CSound::SOUND_LABEL_GAMEBGM);
 
+	//// uiマネージャー生成
+	//m_puimanager = new CUimanager;
+
+	//// nullじゃなかったら初期化
+	//if (m_puimanager != nullptr)
+	//{
+	//	m_puimanager->Init();
+	//}
+
 	// 初期化結果を返す
 	return S_OK;
 }
@@ -102,6 +112,19 @@ void CGameManager::Uninit(void)
 	m_pBoss = nullptr;
 	m_pMeshCylinder = nullptr;
 	m_pTime = nullptr;
+
+	// nullじゃなかったら
+	if (m_puimanager != nullptr)
+	{
+		// 終了処理
+		m_puimanager->Uninit();
+
+		// ポインタの破棄
+		delete m_puimanager;
+
+		// null初期化
+		m_puimanager = nullptr;
+	}
 }
 //========================
 // 更新処理

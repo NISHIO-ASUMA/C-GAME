@@ -52,6 +52,7 @@ private:
 		"data\\TEXTURE\\resultlogo.png",
 		"data\\TEXTURE\\playerlife_frame000.png",
 		"data\\TEXTURE\\playerlife_gage000.png",
+		"data\\TEXTURE\\time000.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[NUM_TEXTURE];	// テクスチャポインタ

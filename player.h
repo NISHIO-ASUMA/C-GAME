@@ -38,7 +38,7 @@ public:
 	//***********************************
 	enum PLAYERMOTION
 	{
-		PLAYERMOTION_NEUTRAL = 0,	// ニュートラル
+		PLAYERMOTION_NEUTRAL,		// ニュートラル
 		PLAYERMOTION_MOVE,			// 移動
 		PLAYERMOTION_ACTION,		// アクション
 		PLAYERMOTION_JUMP,			// ジャンプ
@@ -66,6 +66,7 @@ public:
 	void SetRotDest(D3DXVECTOR3 rotDest) { m_rotDest = rotDest; }
 	bool IsJumping() { return m_isJump; } 	// ジャンプ状態の確認
 	void SetJump(bool isJump) { m_isJump = isJump; }
+	void SetLanding(bool isLanding) { m_isLanding = isLanding; }
 
 	static CPlayer* GetIdxPlayer(int Idx); // インデックス番号で取得
 	int GetPlayerIndex() const { return m_nIdxPlayer; }
@@ -86,10 +87,14 @@ public:
 	void Collision(void);
 	void AddMove(void) {m_pos += m_move;}
 
+	void SetValue(float fValue) {m_fValue = fValue;}
+	void JumpMove(void) { m_move.y = m_fValue; }
+
 	D3DXVECTOR3 VecToBoss(const D3DXVECTOR3& pPos);
 
 	bool isMoveInputKey(CInputKeyboard* pKeyInput);
 	bool isMovePadButton(CJoyPad* pPad);
+	bool isAttackeyPress(CInputKeyboard* pKeyInput);
 
 	bool isLanding(void) { return m_isJump; }
 	void InitPos(float fAngle);
@@ -140,6 +145,8 @@ private:
 	int m_nIdxPlayer;		// プレイヤーの識別番号
 
 	const char* m_pFilename; // 読み込むファイル名
+
+	float m_fValue;
 
 };
 

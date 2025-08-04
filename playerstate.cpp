@@ -1,4 +1,4 @@
-//============================================
+//=============================================
 //
 // プレイヤー状態管理処理 [ playerstate.cpp ]
 // Author: Asuma Nishio
@@ -86,6 +86,17 @@ void CPlayerStateNeutral::OnUpdate()
 	{
 		// ステート変更
 		m_pPlayer->ChangeState(new CPlayerStateAction,ID_ACTION);
+
+		// ここで処理を返す
+		return;
+	}
+
+	// Spaceキー もしくは PadのAキー
+	if ((pInput->GetPress(DIK_SPACE) || pPad->GetPress(CJoyPad::JOYKEY_A)) &&
+		m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE)
+	{
+		// ステート変更
+		m_pPlayer->ChangeState(new CPlayerStateJump, ID_JUMP);
 
 		// ここで処理を返す
 		return;
@@ -193,10 +204,24 @@ void CPlayerStateMove::OnUpdate()
 	// 移動処理実行
 	m_pPlayer->UpdateMove(MeshPos, pInput, pPad);
 
-	if (!m_pPlayer->isMoveInputKey(pInput) && !m_pPlayer->isMovePadButton(pPad))
+	// キー入力が無い
+	if (!m_pPlayer->isMoveInputKey(pInput) && !m_pPlayer->isMovePadButton(pPad)
+		&& m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE)
 	{
 		// ニュートラルに遷移
 		m_pPlayer->ChangeState(new CPlayerStateNeutral, ID_NEUTRAL);
+
+		// ここで処理を返す
+		return;
+	}
+
+	// ジャンプキー入力時にステート変更
+	if ((pInput->GetPress(DIK_SPACE) || pPad->GetPress(CJoyPad::JOYKEY_A)) &&
+		m_pPlayer->GetNowMotion() != CPlayer::PLAYERMOTION_DAMAGE		   &&
+		!m_pPlayer->IsJumping())
+	{
+		// ジャンプに遷移
+		m_pPlayer->ChangeState(new CPlayerStateJump, ID_JUMP);
 
 		// ここで処理を返す
 		return;
@@ -270,4 +295,67 @@ void CPlayerStateDamage::OnUpdate()
 void CPlayerStateDamage::OnExit()
 {
 	// 無し
+}
+
+
+//==================================
+// ジャンプ状態時コンスタラクタ
+//==================================
+CPlayerStateJump::CPlayerStateJump()
+{
+	// IDをセット
+	SetID(ID_JUMP);
+}
+//==================================
+// ジャンプ状態時デストラクタ
+//==================================
+CPlayerStateJump::~CPlayerStateJump()
+{
+	// 無し
+}
+//==================================
+// ジャンプ状態時開始関数
+//==================================
+void CPlayerStateJump::OnStart()
+{
+	// ジャンプ開始
+	m_pPlayer->StartJump();
+
+	// ジャンプモーションに変更
+	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_JUMP);
+}
+//==================================
+// ジャンプ状態時更新関数
+//==================================
+void CPlayerStateJump::OnUpdate()
+{
+	// 入力情報の取得
+	CInputKeyboard* pInput = CManager::GetInputKeyboard();
+	CJoyPad* pPad = CManager::GetJoyPad();
+
+	// 武器の位置取得
+	CModel* pModelWeapon = m_pPlayer->GetModelPartType(CModel::PARTTYPE_WEAPON);
+
+	// nullだったら
+	if (!pModelWeapon) return;
+
+	// 腕のワールドマトリックスを取得
+	D3DXMATRIX mtxWorld = pModelWeapon->GetMtxWorld();
+
+	// プレイヤーとボス間でベクトル生成
+	D3DXVECTOR3 VecBoss = m_pPlayer->VecToBoss(m_pPlayer->GetPos());
+
+	// ジャンプ更新関数
+	m_pPlayer->UpdateJumpAction(pInput, mtxWorld, VecBoss, pPad);
+}
+//==================================
+// ジャンプ状態時終了関数
+//==================================
+void CPlayerStateJump::OnExit()
+{
+	// ジャンプを未使用
+	m_pPlayer->SetJump(false);
+
+	// 着地を未使用
+	m_pPlayer->SetLanding(true);
 }

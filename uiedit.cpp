@@ -112,6 +112,7 @@ void CUiedit::Draw(void)
 //===============================
 void CUiedit::AddUi(D3DXVECTOR3 pos, int type, float width, float height)
 {
+#if 0
 	// Ui‚ğ¶¬‚·‚é
 	CUi* pUi = CUi::Create(pos, type, width, height);
 
@@ -129,6 +130,7 @@ void CUiedit::AddUi(D3DXVECTOR3 pos, int type, float width, float height)
 
 	// ”z—ñ‚É’Ç‰Á‚·‚é
 	m_pUi.push_back(info);
+#endif
 }
 //===============================
 // ‘‚«o‚µˆ—

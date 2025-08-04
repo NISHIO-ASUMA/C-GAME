@@ -347,7 +347,7 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 vecToBoss = VecToBoss(m_pos);
 
 	// ジャンプ状態時の更新関数
-	UpdateJumpAction(pInput, mtxWorld, vecToBoss, pJoyPad);
+	// UpdateJumpAction(pInput, mtxWorld, vecToBoss, pJoyPad);
 
 	// 当たり判定処理関数
 	Collision();
@@ -410,10 +410,13 @@ void CPlayer::Draw(void)
 		m_apModel[nCnt]->Draw();
 	}
 
-	// 状態
-	CDebugproc::Print("現在のSTATE { %d } ", m_State);
-	// デバッグフォント描画
-	CDebugproc::Draw(0, 160);
+	if (m_nIdxPlayer == NUMBER_MAIN)
+	{
+		// 状態
+		CDebugproc::Print("ジャンプのフラグ { m_isJump = %d } ", m_isJump);
+		// デバッグフォント描画
+		CDebugproc::Draw(0, 160);
+	}
 
 	// 識別描画
 	CDebugproc::Print("MAINプレイヤーの座標 { %.2f,%.2f,%.2f }", CPlayer::GetIdxPlayer(0)->GetPos().x, CPlayer::GetIdxPlayer(0)->GetPos().y, CPlayer::GetIdxPlayer(0)->GetPos().z);
@@ -615,8 +618,8 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle - D3DX_PI * 0.5f; // 左向きに設定
 
-			// 移動モーションに変更
-			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE); // 移動モーションに変更
+
 		}
 		else if (pInputKeyboard->GetPress(DIK_D) || (pPad->GetPress(pPad->JOYKEY_RIGHT)))
 		{
@@ -626,8 +629,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle + D3DX_PI * 0.5f; // 右向きに設定
 
-			// 移動モーションに変更
-			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE); // 移動モーションに変更
 		}
 		else
 		{
@@ -647,8 +649,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle - D3DX_PI * 0.5f; // 左向きに設定
 
-			// 移動モーションに変更
-			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE); // 移動モーションに変更
 		}
 		else if (pInputKeyboard->GetPress(DIK_D) || (pPad->GetPress(pPad->JOYKEY_RIGHT))) // Dキー
 		{
@@ -658,8 +659,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle + D3DX_PI * 0.5f; // 右向きに設定
 
-			// 移動モーションに変更
-			m_pMotion->SetMotion(PLAYERMOTION_MOVE);
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE); // 移動モーションに変更
 		}
 		else
 		{
@@ -708,11 +708,24 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 //=========================================
 void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, const D3DXVECTOR3 DestMove, CJoyPad* pPad)
 {
-	// モーションのフラグ
-	bool isJumpAttacking = (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK);
+	 // SUBプレイヤーがステート未同期なら処理しない
+	 if (m_nIdxPlayer == NUMBER_SUB && !m_isStateSynchro) return;
 
-	// 空中攻撃中
-	if (isJumpAttacking && (pInputKeyboard->GetPress(DIK_RETURN)) || (pPad->GetPress(pPad->JOYKEY_X)))
+	 // モーションのフラグ
+	 bool isJumpAttacking = (m_pMotion->GetMotionType() == PLAYERMOTION_JUMPATTACK);
+
+	 // ジャンプ中に移動する場合
+	 if (!isJumpAttacking && m_pMotion->GetMotionType() == PLAYERMOTION_JUMP)
+	 {
+		 // 地形の中心座標を取得
+		 D3DXVECTOR3 DestPos = CGameManager::GetCylinder()->GetPos();
+
+		 // 移動処理呼び出し
+		 UpdateMove(DestPos, pInputKeyboard, pPad);
+	 }
+
+	// ジャンプ攻撃中に空中で静止する
+	if (isJumpAttacking && ((pInputKeyboard->GetPress(DIK_RETURN)) || (pPad->GetPress(pPad->JOYKEY_X))))
 	{
 		// 一定の高さで静止する
 		m_move.y = 0.0f;
@@ -723,31 +736,12 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 		m_move.y -= 0.7f;
 	}
 
-	// ジャンプキー入力 かつ ジャンプフラグがfalseの時
-	if (!m_isJump)
-	{
-		if (pInputKeyboard->GetTrigger(DIK_SPACE) || (pPad->GetPress(pPad->JOYKEY_A)))
-		{
-			// フラグを有効化
-			m_isJump = true;
-
-			// 未着地判定に変更
-			m_isLanding = false;
-
-			// 上昇値を設定
-			m_move.y = PLAYER_JUMPVALUE;
-		}
-	}
-
 	// 高さ更新
 	AddMove();
 
 	// ジャンプ中処理
 	if (m_isJump)
 	{
-		// ジャンプモーションに変更
-		m_pMotion->SetMotion(PLAYERMOTION_JUMP);
-
 		// ジャンプ中に攻撃キー入力
 		if ((pInputKeyboard->GetPress(DIK_RETURN)) || ((pPad->GetPress(pPad->JOYKEY_X))))
 		{
@@ -770,18 +764,17 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 				D3DXVec3Normalize(&BossDir, &BossDir);
 				m_rot.y = atan2f(-BossDir.x, -BossDir.z);
 			}
-
 		}
+	}
 
-		// 着地時の処理
-		if (m_isLanding)
-		{
-			// 着地モーションに変更
-			m_pMotion->SetMotion(PLAYERMOTION_LANDING);
+	// 着地時の処理
+	if (m_isLanding)
+	{
+		// 着地モーションに変更
+		m_pMotion->SetMotion(PLAYERMOTION_LANDING);
 
-			// ジャンプ可能状態に変更
-   			m_isJump = false;
-		}
+		// ジャンプ可能状態に変更
+		m_isJump = false;
 	}
 
 	// モーション終了時　かつ 種類が着地モーション
@@ -985,6 +978,9 @@ void CPlayer::StartJump(void)
 
 		// 上昇値を設定
 		m_move.y = PLAYER_JUMPVALUE;
+
+		// 移動更新
+		AddMove();
 	}
 }
 //===============================

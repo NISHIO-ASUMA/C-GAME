@@ -49,7 +49,6 @@ inline const D3DXCOLOR COLOR_YERROW = { 1.0f, 1.0f, 0.0f, 1.0f }; // ‰©F
 inline const D3DXCOLOR COLOR_BLUE = { 0.0f, 0.0f, 1.0f, 1.0f }; // Â
 
 inline const D3DXCOLOR COLOR_NULL = { 0.0f, 0.0f, 0.0f, 0.0f } ; // Š®‘S“§–¾
-
 inline constexpr int MAX_WORD = 512;			// Å‘å•¶š”z—ñ”
 
 //**************************

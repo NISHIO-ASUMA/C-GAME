@@ -37,9 +37,9 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	static CUi* Create(D3DXVECTOR3 pos, int nType, float fWidth, float fHeight);
+	static CUi* Create(D3DXVECTOR3 pos, float fWidth, float fHeight,const char * Filename,int nAnchorType);
 
-	void SetTexture(int nType);
+	void SetTexture(const char * pRegistername);
 
 private:
 	int m_nTexIdxType;		// テクスチャインデックス

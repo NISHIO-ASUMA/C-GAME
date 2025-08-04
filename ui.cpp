@@ -51,22 +51,22 @@ void CUi::Uninit(void)
 //===============================
 void CUi::Update(void)
 {
-	// 座標取得
-	D3DXVECTOR3 Pos = GetPos();
+	//// 座標取得
+	//D3DXVECTOR3 Pos = GetPos();
 
-	// 0.0fより小さい位置にいる
-	if (Pos.y <= 180.0f)
-	{
-		Pos.y += 5.0f;
-	}
+	//// 0.0fより小さい位置にいる
+	//if (Pos.y <= 180.0f)
+	//{
+	//	Pos.y += 5.0f;
+	//}
 
-	// 座標セット
-	SetPos(Pos);
+	//// 座標セット
+	//SetPos(Pos);
 
-	if (m_type == UITYPE_NONE)
-	{
-		SetFlash(10, 20);
-	}
+	//if (m_type == UITYPE_NONE)
+	//{
+	//	SetFlash(10, 20);
+	//}
 
 	// オブジェクトの更新
 	CObject2D::Update();
@@ -76,7 +76,7 @@ void CUi::Update(void)
 //===============================
 void CUi::Draw(void)
 {
-	// フラグの取得
+	// カメラの取得
 	CCamera* pCamera = CManager::GetCamera();
 
 	// 取得失敗時
@@ -99,17 +99,29 @@ void CUi::Draw(void)
 		// オブジェクトの描画
 		CObject2D::Draw();
 	}
+	else
+	{
+		// デバイス取得
+		LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+		// テクスチャセット
+		CTexture* pTexture = CManager::GetTexture();
+
+		// 割り当て
+		pDevice->SetTexture(0, pTexture->GetAddress(m_nTexIdxType));
+
+		// オブジェクトの描画
+		CObject2D::Draw();
+	}
+	
 }
 //===============================
 // 生成処理
 //===============================
-CUi* CUi::Create(D3DXVECTOR3 pos,int nType,float fWidth,float fHeight)
+CUi* CUi::Create(D3DXVECTOR3 pos, float fWidth, float fHeight, const char* Filename, int nAnchorType)
 {
 	// インスタンス生成
 	CUi* pUi = new CUi;
-
-	// テクスチャ設定
-	pUi->SetTexture(nType);
 
 	// 初期化失敗時
 	if (FAILED(pUi->Init()))
@@ -127,8 +139,10 @@ CUi* CUi::Create(D3DXVECTOR3 pos,int nType,float fWidth,float fHeight)
 	// オブジェクト設定
 	pUi->SetPos(pos);
 	pUi->SetSize(fWidth, fHeight);
-	pUi->SetAnchor(CObject2D::ANCHORTYPE_CENTER);
-	pUi->m_type = nType;
+	pUi->SetAnchor(nAnchorType);
+	pUi->SetTexture(Filename);
+
+	// pUi->m_type = nType;
 
 	// 生成されたポインタを返す
 	return pUi;
@@ -136,23 +150,15 @@ CUi* CUi::Create(D3DXVECTOR3 pos,int nType,float fWidth,float fHeight)
 //===============================
 // テクスチャセット処理
 //===============================
-void CUi::SetTexture(int nType)
+void CUi::SetTexture(const char* pRegistername)
 {
 	// テクスチャポインタ取得
 	CTexture* pTexture = CManager::GetTexture();
 
-	// テクスチャ設定
-	switch (nType)
+	// nullじゃなかったら
+	if (pTexture != nullptr)
 	{
-	case UITYPE_NONE:
-		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\Enterkey.png");
-		break;
-
-	case UITYPE_MOVE:
-		m_nTexIdxType = pTexture->Register("data\\TEXTURE\\logo.png");
-		break;
-
-	default:
-		break;
+		// テクスチャ設定
+		m_nTexIdxType = pTexture->Register(pRegistername);
 	}
 }

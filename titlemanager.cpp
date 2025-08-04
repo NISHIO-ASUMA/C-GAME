@@ -68,10 +68,6 @@ HRESULT CTitleManager::Init(void)
 		m_isuiCreate = true;
 	}
 
-	// タイトルキャプション生成
-	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, -60.0f, 0.0f), CUi::UITYPE_MOVE, 400.0f, 100.0f);
-	CUi::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 480.0f, 0.0f), CUi::UITYPE_NONE, 150.0f, 80.0f);
-
 	// 地面生成
 	CMeshField::Create(VECTOR3_NULL, FIELDWIDTH);
 
@@ -81,6 +77,8 @@ HRESULT CTitleManager::Init(void)
 	// タイトルプレイヤーを生成
 	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f),VECTOR3_NULL, 0, "data\\MOTION\\Player\\TitlePlayer100.txt");
 	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f),VECTOR3_NULL, 1, "data\\MOTION\\Player\\TitlePlayer200.txt");
+
+	CUi::Create(D3DXVECTOR3(400.0f, 150.0f, 0.0f), 200.0f, 60.0f, "data\\TEXTURE\\logo.png", 1);
 
 	// サウンド取得
 	CSound* pSound = CManager::GetSound();
