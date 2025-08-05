@@ -46,10 +46,9 @@ CMotion::CMotion()
 	m_isBlendMotion = false;
 	m_isFinishMotion = false;
 	m_isFirstMotion = false;
-
-	m_nNumModels = NULL;
 	m_isStopAction = false;
 
+	m_nNumModels = NULL;
 	m_nAllFrameCount = NULL;
 	m_nNumAllFrame = NULL;
 }
@@ -153,10 +152,11 @@ CMotion* CMotion::Load(const char* pFilename,const int nMaxParts, CModel** pMode
 // モーションセット
 //=================================
 void CMotion::SetMotion(int motiontype)
-{// ここはmotiontypeに渡された番号を取得する
-	// 同じだったら
+{
+	// ここはmotiontypeに渡された番号を取得する
 	if (m_motiontype == motiontype)
 	{
+		// 同じだったら
 		return;
 	}
 

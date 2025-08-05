@@ -12,7 +12,7 @@
 // マクロ定義
 //****************************
 #define CLASS_NAME "WindowClass"		// ウインドウクラスの名前
-#define WINDOW_NAME "C++3D"				// ウインドウの名前(キャプションに表示)
+#define WINDOW_NAME "Circle Shot!"		// ウインドウの名前
 
 //*****************************
 // メインプロセスクラスを定義
@@ -27,7 +27,6 @@ public:
 
 private:
 	RECT m_Windowrect;	// ウィンドウの幅
-
 };
 
 #endif

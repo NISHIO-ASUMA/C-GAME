@@ -20,6 +20,7 @@
 #include "titleplayer.h"
 #include "ui.h"
 #include "sound.h"
+#include "titlelogo.h"
 
 //============================
 // コンストラクタ
@@ -78,7 +79,8 @@ HRESULT CTitleManager::Init(void)
 	CTitlePlayer::Create(D3DXVECTOR3(180.0f,0.0f,0.0f),VECTOR3_NULL, 0, "data\\MOTION\\Player\\TitlePlayer100.txt");
 	CTitlePlayer::Create(D3DXVECTOR3(260.0f,0.0f,0.0f),VECTOR3_NULL, 1, "data\\MOTION\\Player\\TitlePlayer200.txt");
 
-	CUi::Create(D3DXVECTOR3(400.0f, 150.0f, 0.0f), 200.0f, 60.0f, "data\\TEXTURE\\logo.png", 1);
+	// ロゴ生成
+	CTitleLogo::Create(D3DXVECTOR3(200.0f, 90.0f, 0.0f), 200.0f, 60.0f, 1);
 
 	// サウンド取得
 	CSound* pSound = CManager::GetSound();
@@ -87,7 +89,7 @@ HRESULT CTitleManager::Init(void)
 	if (pSound == nullptr) return E_FAIL;
 
 	// サウンド再生
-	pSound->PlaySound(CSound::SOUND_LABEL_TITLE_BGM);
+	// pSound->PlaySound(CSound::SOUND_LABEL_TITLE_BGM);
 
 	// 初期化結果を返す
 	return S_OK;

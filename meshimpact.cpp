@@ -17,11 +17,15 @@
 //**********************
 // 定数宣言
 //**********************
-constexpr int NUM_X = 30; // X平面の分割数
-constexpr int NUM_Z = 1;  // Z平面の分割数
-constexpr int VERTEX = (NUM_X + 1) * (NUM_Z + 1); // 頂点数
-constexpr int PRIM = (VERTEX - 2);				  // ポリゴン数
-constexpr int INDEX = (VERTEX + 2);				  // インデックスバッファ数
+namespace 
+{
+	constexpr int NUM_X = 30; // X平面の分割数
+	constexpr int NUM_Z = 1;  // Z平面の分割数
+	constexpr int VERTEX = (NUM_X + 1) * (NUM_Z + 1); // 頂点数
+	constexpr int PRIM = (VERTEX - 2);				  // ポリゴン数
+	constexpr int INDEX = (VERTEX + 2);				  // インデックスバッファ数
+	constexpr float HEIGHTSIZE = 3.0f;
+}
 
 //===============================
 // オーバーロードコンストラクタ
@@ -275,7 +279,7 @@ void CMeshImpact::Update(void)
 	m_nLife--;
 
 	// TODO : ここを体力に応じて透明にしていく処理に変更
-	m_col.a -= 0.3f;
+	m_col.a -= 0.5f;
 
 	// 寿命が尽きた
 	if (m_nLife <= 0)
@@ -406,14 +410,14 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 		float dy = pPos->y - (m_pos.y + pVtx[nCnt].pos.y);
 		float dz = pPos->z - (m_pos.z + pVtx[nCnt].pos.z);
 
-		// Y方向の当たり判定幅を設定
-		const float fHeightTolerance = 5.0f; 
-
 		// 半径の差分をとる
-		float fDisSize = (m_fOutRadius - m_fInRadius) * 0.8f;
+		float fDisSize = (m_fOutRadius - m_fInRadius);
 
 		// Y方向で外れてるなら当たらない
- 		if (fabsf(dy) > fHeightTolerance) continue;
+		if (dy > HEIGHTSIZE)
+		{
+			continue;
+		}
 
 		// XZ平面の範囲計算
 		float fDisVerTexXZ = sqrtf(dx * dx + dz * dz);
@@ -423,9 +427,6 @@ bool CMeshImpact::Collision(D3DXVECTOR3* pPos)
 		{
 			// 当たっている
 			isHit = true;
-
-			// 処理を抜ける
-			break;
 		}
 	}
 

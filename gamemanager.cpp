@@ -88,7 +88,7 @@ HRESULT CGameManager::Init(void)
 	if (pSound == nullptr) return E_FAIL;
 
 	// サウンド再生
-	pSound->PlaySound(CSound::SOUND_LABEL_GAMEBGM);
+	// pSound->PlaySound(CSound::SOUND_LABEL_GAMEBGM);
 
 	//// uiマネージャー生成
 	//m_puimanager = new CUimanager;
@@ -132,12 +132,6 @@ void CGameManager::Uninit(void)
 void CGameManager::Update(void)
 {
 #ifdef _DEBUG
-
-	// 検証
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_L))
-	{
-		CMeshImpact::Create(VECTOR3_NULL, 120, 60.0f, 30.0f, 5.0f);
-	}
 
 #endif // _DEBUG
 

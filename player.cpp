@@ -832,7 +832,7 @@ void CPlayer::Collision(void)
 			CMeshImpact* pImpact = static_cast<CMeshImpact*>(pObj);
 
 			// コリジョンした時 かつ IDがダメージ以外
-			if (pImpact->Collision(&m_pos) == true)
+			if (pImpact->Collision(&m_pos))
 			{
 				// 当たったらダメージモーションに切り替え
 				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE);

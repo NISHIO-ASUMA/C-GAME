@@ -185,78 +185,83 @@ void CBoss::Update(void)
 	// 死んでいたら
 	if (m_isdaeth) return;
 
-	// フラグメント
-	static bool isCreating = false;
+	//// フラグメント
+	//static bool isCreating = false;
 
-	if (!isCreating)
+	//if (!isCreating)
+	//{
+	//	// 乱数の種を一度だけ設定する
+	//	srand((int)time(NULL));
+	//	isCreating = true;
+	//}
+
+	//// クールタイム中なら待機モーション更新だけ
+	//if (m_nCoolTime > 0 && m_isdaeth == false)
+	//{
+	//	// クールタイムを減らす
+	//	m_nCoolTime--;
+
+	//	// もし現在攻撃モーションが終わっていればニュートラルに戻す
+	//	if (m_pMotion->GetFinishMotion())
+	//	{
+	//		m_pMotion->SetMotion(TYPE_NEUTRAL);
+	//	}
+
+	//	// モーションの更新だけ行う
+	//	m_pMotion->Update(m_pModel, NUMMODELS);
+
+	//	// ここで処理を返す
+	//	return;
+	//}
+
+	//// モーション中か判別
+	//if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
+	//{
+	//	// 攻撃モーション中なので、続ける
+	//	m_pMotion->Update(m_pModel, NUMMODELS);
+
+	//	// ここでかえす
+	//	return;
+	//}
+
+	//// ランダムに行動パターンを決定する
+	//int nAttackPattern = rand() % PATTERN_MAX - 1;
+
+	//// 数値によって行動変化
+	//switch (nAttackPattern)
+	//{
+	//case PATTERN_NONE:
+	//	m_pMotion->SetMotion(TYPE_NEUTRAL);
+	//	break;
+
+	//case PATTERN_HAND:
+	//	m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
+	//	m_nCoolTime = 180;		// クールタイム
+	//	break;
+
+	//case PATTERN_IMPACT:
+	//	// 叩きつけ
+	//	m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
+	//	m_nCoolTime = 180;		// クールタイム
+	//	break;
+
+	//case PATTERN_CIRCLE:
+	//	// 薙ぎ払いモーション
+	//	m_nCoolTime = 150;
+	//	break;
+
+	//case PATTERN_DEATH:
+	//	// 死亡モーション
+	//	m_nCoolTime = 180;
+	//	break;
+
+	//default:
+	//	break;
+	//}
+
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F8))
 	{
-		// 乱数の種を一度だけ設定する
-		srand((int)time(NULL));
-		isCreating = true;
-	}
-
-	// クールタイム中なら待機モーション更新だけ
-	if (m_nCoolTime > 0 && m_isdaeth == false)
-	{
-		// クールタイムを減らす
-		m_nCoolTime--;
-
-		// もし現在攻撃モーションが終わっていればニュートラルに戻す
-		if (m_pMotion->GetFinishMotion())
-		{
-			m_pMotion->SetMotion(TYPE_NEUTRAL);
-		}
-
-		// モーションの更新だけ行う
-		m_pMotion->Update(m_pModel, NUMMODELS);
-
-		// ここで処理を返す
-		return;
-	}
-
-	// モーション中か判別
-	if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
-	{
-		// 攻撃モーション中なので、続ける
-		m_pMotion->Update(m_pModel, NUMMODELS);
-
-		// ここでかえす
-		return;
-	}
-
-	// ランダムに行動パターンを決定する
-	int nAttackPattern = rand() % PATTERN_MAX - 1;
-
-	// 数値によって行動変化
-	switch (nAttackPattern)
-	{
-	case PATTERN_NONE:
-		m_pMotion->SetMotion(TYPE_NEUTRAL);
-		break;
-
-	case PATTERN_HAND:
-		m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
-		m_nCoolTime = 180;		// クールタイム
-		break;
-
-	case PATTERN_IMPACT:
-		// 叩きつけ
 		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
-		m_nCoolTime = 180;		// クールタイム
-		break;
-
-	case PATTERN_CIRCLE:
-		// 薙ぎ払いモーション
-		m_nCoolTime = 150;
-		break;
-
-	case PATTERN_DEATH:
-		// 死亡モーション
-		m_nCoolTime = 180;
-		break;
-
-	default:
-		break;
 	}
 
 	// モーション全体更新
@@ -356,7 +361,7 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 	if (!pRightHand) return false;
 
 	// モデルのパーツ取得
-	CModel* pLeftHand = GetModelPartType(CModel::PARTTYPE_LEFT_HAND); // 右手
+	CModel* pLeftHand = GetModelPartType(CModel::PARTTYPE_LEFT_HAND); // 左手
 
 	// nullだったら
 	if (!pLeftHand) return false;
@@ -368,17 +373,19 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 	// 一定フレーム内
 	if (m_pMotion->CheckFrame(120, 160, PATTERN_IMPACT) && m_isdaeth == false)
 	{
-		// 確定フレーム内
-		if (m_pMotion->CheckFrame(130, 130, PATTERN_IMPACT))
-		{
-			// メッシュインパクトを両手から生成
-			CMeshImpact::Create(D3DXVECTOR3(mtxRight._41, mtxRight._42, mtxRight._43), 120, 60.0f, 30.0f, 5.0f);
-			CMeshImpact::Create(D3DXVECTOR3(mtxLeft._41, mtxLeft._42, mtxLeft._43), 120, 60.0f, 30.0f, 5.0f);
-		}
-
 		// 座標を格納
 		D3DXVECTOR3 posRight(mtxRight._41, mtxRight._42, mtxRight._43);
 		D3DXVECTOR3 posLeft(mtxLeft._41, mtxLeft._42, mtxLeft._43);
+
+		// 両手の座標の中心点を計算
+		D3DXVECTOR3 HandCenterPos = (posRight + posLeft) * 0.5f;
+
+		// 確定フレーム内
+		if (m_pMotion->CheckFrame(130, 130, PATTERN_IMPACT))
+		{
+			// 両手の間から一個のメッシュインパクトを生成する
+			CMeshImpact::Create(HandCenterPos, 200, 60.0f, 20.0f, 10.0f);
+		}
 
 		// プレイヤーとの距離を測定
 		const float fHitRadius = 20.0f * HITRANGE; // 判定半径
