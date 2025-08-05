@@ -190,6 +190,9 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	m_motiontype = Clump(m_motiontype, 0, m_nNumMotion);
 	m_nNextKey = Wrap(m_nKey + 1, 0, m_aMotionInfo[m_motiontype].nNumKey - 1);
 
+	m_motiontypeBlend = Clump(m_motiontypeBlend, 0, 1);
+	m_nNextKeyBlend = Wrap(m_nKeyBlend + 1, 0, m_aMotionInfo[m_motiontypeBlend].nNumKey - 1);
+
 	// フラグを生成
 	bool isPlayer = false;
 	bool isBoss = false;
@@ -206,8 +209,18 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		if (pModel->IsPlayer()) isPlayer = true; 	// プレイヤーモデルかどうか判定
 		if (pModel->IsBoss()) isBoss = true; 		// ボスモデルかどうか判定
 
-		// 現在のモーション更新
-		UpdateCurrentMotion(ppModel, nCnt);
+
+		// ブレンド開始しているなら
+		if (m_isFirstMotion)
+		{
+			// ブレンド更新
+			UpdateBlend(ppModel, nCnt);
+		}
+		else
+		{
+			// 現在のモーション更新
+			UpdateCurrentMotion(ppModel, nCnt);
+		}
 	}
 
 	// フレーム進行処理
@@ -612,8 +625,13 @@ void CMotion::SetParts(std::ifstream& file, CModel** pModel)
 				{
 					pModel[nIdx]->SetPartType(CModel::PARTTYPE_LEFT_HAND);
 				}
-				else // 無いとき
+				else if (partTypeStr == "HEAD") // 頭
 				{
+					pModel[nIdx]->SetPartType(CModel::PARTTYPE_HEAD);
+				}
+				else 
+				{
+					// 無いとき
 					pModel[nIdx]->SetPartType(CModel::PARTTYPE_NONE); 
 				}
 			}
@@ -805,6 +823,50 @@ void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMoti
 		// キー情報カウントを加算
 		rotKeyIndex++;
 	}
+}
+//======================================
+// モーションセット情報 (ブレンド実験)
+//======================================
+void CMotion::SetMotion(int nMotionType, bool isBlend, int nBlendFrame)
+{
+	// ここはmotiontypeに渡された番号を取得する
+	if (m_motiontype == nMotionType)
+	{
+		// 同じだったら
+		return;
+	}
+
+	// ブレンドが有効化
+	if (isBlend == true)
+	{
+		// 最初のモーションブレンドが終わってたら
+		if (m_isFirstMotion == false)
+		{
+			m_isFirstMotion = true;
+			m_nKeyBlend = 0;				// 0から始める
+			m_nCounterBlend = 0;			// 0から始める
+		}
+
+		m_isBlendMotion = isBlend;			// ブレンドがあるかどうか
+		m_nFrameBlend = 20;					// ブレンドのフレームを代入
+		m_motiontypeBlend = nMotionType;	// ブレンドするモーションのタイプを代入
+		m_isFinishMotion = false;
+
+	}
+	// モーションブレンドがない
+	else
+	{
+		m_isBlendMotion = isBlend;					// ブレンドがあるかどうか
+		m_nFrameBlend = 20;						// ブレンドのフレームを代入
+		m_motiontypeBlend = nMotionType;			// ブレンドするモーションのタイプを代入
+		m_isFinishMotion = false;
+	}
+
+	// 代入
+	m_motiontype = nMotionType;
+	m_nKey = 0;
+	m_nCounterMotion = 0;
+	m_nAllFrameCount = 0;
 }
 //======================================
 // モーションフレーム判定

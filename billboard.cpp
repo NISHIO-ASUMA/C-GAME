@@ -145,10 +145,10 @@ void CBillboard::Update(void)
 	pVtx[3].pos = D3DXVECTOR3(m_fWidth, -m_fHeight, 0.0f);
 
 	// 各頂点の法線(ベクトル)の設定
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 1つ目の法線情報
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 2つ目の法線情報
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 3つ目の法線情報
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 4つ目の法線情報
+	pVtx[0].nor = 
+	pVtx[1].nor = 
+	pVtx[2].nor = 
+	pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);	// 法線情報
 
 	// 頂点カラーの設定
 	pVtx[0].col = 

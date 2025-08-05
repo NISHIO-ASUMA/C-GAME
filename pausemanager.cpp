@@ -195,6 +195,7 @@ void CPauseManager::Update(void)
 			if (pFade != nullptr) pFade->SetFade(new CTitle(true));	// タイトルシーンに遷移
 			SetEnablePause(false);	// ポーズ終了
 
+			// カメラの設定を初期化する
 			pCamera->SetFinishRotation(false);
 			pCamera->SetIsRotation(false);
 			break;

@@ -78,6 +78,9 @@ public:
 	void SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int nCntKey);
 	void SetKeyDate(std::istringstream& ss, const std::string& param, CMotion* pMotion, int nCntMotion, int nCntKey, int& posKeyIndex, int& rotKeyIndex);
 
+
+	void SetMotion(int nMotionType, bool isBlend, int nBlendFrame);
+
 	// ゲッター
 	int GetMotionType(void) { return m_motiontype; }
 	bool GetFinishMotion(void) { return m_isFinishMotion; }
@@ -87,15 +90,17 @@ public:
 private: 
 	std::vector<INFO> m_aMotionInfo; // モーション情報を動的確保
 
-	int m_nNumMotion;					// モーションの総数
 	bool m_isLoopMotion;				// ループするかどうか
+
+	int m_nNumMotion;					// モーションの総数
 	int m_nNumKey;						// キーの総数
 	int m_nKey;							// 現在のキーNo
 	int m_nCounterMotion;				// モーションのカウンター
 	int m_nNextKey;						// 次のキー
 	int m_motiontype;					// モーションタイプ
 	int m_type;
-//----------------------------------------------------------------------
+
+// ブレンド----------------------------------------------------------------
 	bool m_isBlendMotion;				// ブレンドがあるかどうか
 	bool m_isFinishMotion;				// モーションが終わったかどうか
 	bool m_isFirstMotion;				// モーションが始まったフラグ
@@ -105,11 +110,11 @@ private:
 	int m_nCounterBlend;				// ブレンドカウンター
 	int m_nKeyBlend;					// ブレンドモーションの現在のキー
 	int m_nNextKeyBlend;				// ブレンドモーションの次のキー
-//----------------------------------------------------------------------
+//    ----------------------------------------------------------------------
 
 	int m_nNumModels;
-	int m_nNumAllFrame;   // 全体フレーム数
-	int m_nAllFrameCount;
+	int m_nNumAllFrame;	  // キーごとのフレーム数
+	int m_nAllFrameCount; // 全体フレーム数
 	bool m_isStopAction;
 };
 

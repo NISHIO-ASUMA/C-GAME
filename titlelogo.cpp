@@ -112,5 +112,5 @@ void CTitleLogo::SetTexture(void)
 	if (pTexture == nullptr) return;
 
 	// テクスチャ割り当て
-	m_nTexIdx = pTexture->Register("data\\TEXTURE\\logo.png");
+	m_nTexIdx = pTexture->Register("data\\TEXTURE\\effect001.png");
 }

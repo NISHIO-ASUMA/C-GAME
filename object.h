@@ -51,6 +51,7 @@ public:
 		SHADOW,//影
 		IMPACT, // 衝撃波
 		PLAYER, // プレイヤー
+		BILLBOARD,	// ビルボード
 		EFFECT, // エフェクト
 		UI,  // 2DUI関係
 		PAUSE,	// ポーズ

@@ -76,9 +76,9 @@ HRESULT CObject2D::Init(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点座標の設定
-	pVtx[0].pos = VECTOR3_NULL;
-	pVtx[1].pos = VECTOR3_NULL;
-	pVtx[2].pos = VECTOR3_NULL;
+	pVtx[0].pos = 
+	pVtx[1].pos = 
+	pVtx[2].pos = 
 	pVtx[3].pos = VECTOR3_NULL;
 
 	// rhwの設定(1.0fで固定)
@@ -88,9 +88,9 @@ HRESULT CObject2D::Init(void)
 	pVtx[3].rhw = 1.0f;
 
 	// 頂点カラーの設定
-	pVtx[0].col = COLOR_WHITE;
-	pVtx[1].col = COLOR_WHITE;
-	pVtx[2].col = COLOR_WHITE;
+	pVtx[0].col = 
+	pVtx[1].col = 
+	pVtx[2].col = 
 	pVtx[3].col = COLOR_WHITE;
 
 	//テクスチャ座標の設定

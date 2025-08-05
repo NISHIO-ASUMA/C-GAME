@@ -1,1 +1,38 @@
-明日はメッシュの判定を直す
+
+#if 0
+//================================================================================================================
+// モーションの設定処理
+//================================================================================================================
+void SetMotion(MOTION* pMotion, MOTIONTYPE motiontype, bool Blend, int nFrameBlend)
+{
+	Player* pPlayer = GetPlayer();                 // プレイヤーを取得
+
+	// 最初のブレンド
+	// モーションブレンドがあるかどうか
+	if (Blend == true)
+	{
+		// 最初のモーションブレンドが終わってたら
+		if (pMotion->bFirstMotion == false)
+		{
+			pMotion->bFirstMotion = true;
+			pMotion->nKeyBlend = 0;							// 0から始める
+			pMotion->nCounterBlend = 0;						// 0から始める
+		}
+		pMotion->bBlendMotion = Blend;					// ブレンドがあるかどうか
+		pMotion->nFrameBlend = 10;						// ブレンドのフレームを代入
+		pMotion->motiontypeBlend = motiontype;			// ブレンドするモーションのタイプを代入
+		pMotion->bFinishMotion = false;
+
+	}
+	// モーションブレンドがない
+	else
+	{
+		pMotion->bBlendMotion = Blend;					// ブレンドがあるかどうか
+		pMotion->motionType = motiontype;			// ブレンドするモーションのタイプを代入
+		pMotion->motiontypeBlend = motiontype;			// ブレンドするモーションのタイプを代入
+		pMotion->bFinishMotion = false;
+	}
+}
+#endif
+
+TODO : もーしょんブレンドを夏休みに実装させる

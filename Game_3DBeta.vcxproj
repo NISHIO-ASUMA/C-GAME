@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="attacksign.cpp" />
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="block.cpp" />
@@ -226,6 +227,7 @@
     <ClCompile Include="uimanager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="attacksign.h" />
     <ClInclude Include="bg.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="block.h" />

@@ -16,6 +16,7 @@
 #include "result.h"
 #include <ctime>
 #include "meshimpact.h"
+#include "particle.h"
 
 //****************************
 // 定数宣言
@@ -185,84 +186,87 @@ void CBoss::Update(void)
 	// 死んでいたら
 	if (m_isdaeth) return;
 
-	//// フラグメント
-	//static bool isCreating = false;
+	// フラグメント
+	static bool isCreating = false;
 
-	//if (!isCreating)
-	//{
-	//	// 乱数の種を一度だけ設定する
-	//	srand((int)time(NULL));
-	//	isCreating = true;
-	//}
+	if (!isCreating)
+	{
+		// 乱数の種を一度だけ設定する
+		srand((int)time(NULL));
+		isCreating = true;
+	}
 
-	//// クールタイム中なら待機モーション更新だけ
-	//if (m_nCoolTime > 0 && m_isdaeth == false)
-	//{
-	//	// クールタイムを減らす
-	//	m_nCoolTime--;
+	// クールタイム中なら待機モーション更新だけ
+	if (m_nCoolTime > 0 && m_isdaeth == false)
+	{
+		// クールタイムを減らす
+		m_nCoolTime--;
 
-	//	// もし現在攻撃モーションが終わっていればニュートラルに戻す
-	//	if (m_pMotion->GetFinishMotion())
-	//	{
-	//		m_pMotion->SetMotion(TYPE_NEUTRAL);
-	//	}
+		// もし現在攻撃モーションが終わっていればニュートラルに戻す
+		if (m_pMotion->GetFinishMotion())
+		{
+			m_pMotion->SetMotion(TYPE_NEUTRAL);
+		}
 
-	//	// モーションの更新だけ行う
-	//	m_pMotion->Update(m_pModel, NUMMODELS);
+		// モーションの更新だけ行う
+		m_pMotion->Update(m_pModel, NUMMODELS);
 
-	//	// ここで処理を返す
-	//	return;
-	//}
+		// ここで処理を返す
+		return;
+	}
 
-	//// モーション中か判別
-	//if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
-	//{
-	//	// 攻撃モーション中なので、続ける
-	//	m_pMotion->Update(m_pModel, NUMMODELS);
+	// モーション中か判別
+	if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
+	{
+		// 攻撃モーション中なので、続ける
+		m_pMotion->Update(m_pModel, NUMMODELS);
 
-	//	// ここでかえす
-	//	return;
-	//}
+		// ここでかえす
+		return;
+	}
 
-	//// ランダムに行動パターンを決定する
-	//int nAttackPattern = rand() % PATTERN_MAX - 1;
+	// ランダムに行動パターンを決定する
+	int nAttackPattern = rand() % PATTERN_MAX - 1;
 
-	//// 数値によって行動変化
-	//switch (nAttackPattern)
-	//{
-	//case PATTERN_NONE:
-	//	m_pMotion->SetMotion(TYPE_NEUTRAL);
-	//	break;
+	// 数値によって行動変化
+	switch (nAttackPattern)
+	{
+	case PATTERN_NONE:
+		m_pMotion->SetMotion(TYPE_NEUTRAL);
+		break;
 
-	//case PATTERN_HAND:
-	//	m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
-	//	m_nCoolTime = 180;		// クールタイム
-	//	break;
+	case PATTERN_HAND:
+		m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
+		m_nCoolTime = 180;		// クールタイム
+		break;
 
-	//case PATTERN_IMPACT:
-	//	// 叩きつけ
-	//	m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
-	//	m_nCoolTime = 180;		// クールタイム
-	//	break;
+	case PATTERN_IMPACT:
+		// 叩きつけ
+		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
+		m_nCoolTime = 180;		// クールタイム
+		break;
 
-	//case PATTERN_CIRCLE:
-	//	// 薙ぎ払いモーション
-	//	m_nCoolTime = 150;
-	//	break;
+	case PATTERN_CIRCLE:
+		// 薙ぎ払いモーション
+		m_nCoolTime = 150;
+		break;
 
-	//case PATTERN_DEATH:
-	//	// 死亡モーション
-	//	m_nCoolTime = 180;
-	//	break;
+	case PATTERN_DEATH:
+		// 死亡モーション
+		m_nCoolTime = 180;
+		break;
 
-	//default:
-	//	break;
-	//}
+	default:
+		break;
+	}
 
+#ifdef _DEBUG
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F8))
 	{
 		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
 	}
+#endif // _DEBUG
+
 
 	// モーション全体更新
 	m_pMotion->Update(m_pModel, NUMMODELS);
@@ -366,9 +370,24 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 	// nullだったら
 	if (!pLeftHand) return false;
 
+	// モデルのパーツ取得
+	CModel* pHead = GetModelPartType(CModel::PARTTYPE_HEAD); // 頭
+
+	// nullだったら
+	if (!pHead) return false;
+
 	// 手のワールドマトリックスを取得
 	D3DXMATRIX mtxRight = pRightHand->GetMtxWorld();
 	D3DXMATRIX mtxLeft = pLeftHand->GetMtxWorld();
+	D3DXMATRIX mtxHead = pHead->GetMtxWorld();
+
+	// 頭パーティクル
+	D3DXVECTOR3 posHead(mtxHead._41, mtxHead._42 + 60.0f, mtxHead._43 - 80.0f);
+
+	if (m_pMotion->CheckFrame(60, 150, PATTERN_IMPACT))
+	{
+		CParticle::Create(posHead, COLOR_RED, 40, 500, 100, 60);
+	}
 
 	// 一定フレーム内
 	if (m_pMotion->CheckFrame(120, 160, PATTERN_IMPACT) && m_isdaeth == false)

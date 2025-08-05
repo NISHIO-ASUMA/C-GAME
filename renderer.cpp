@@ -1,4 +1,4 @@
-//====================================
+//=====================================
 //
 // レンダリング処理 [ renderer.cpp ]
 // Author: Asuma Nishio
@@ -80,7 +80,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_d3dpp.EnableAutoDepthStencil = TRUE;						// デプスバッファとステンシルバッファを作成
 	m_d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;				// デプスバッファとして16bitを使用
 	m_d3dpp.Windowed = bWindow;									// ウインドウモード
-	m_d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;	// リフレッシュシート
+	m_d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;	// リフレッシュレート
 	m_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;	// インターバル
 
 	// Direct3Dデバイスの生成(描画処理と頂点処理をハードウェアで行う)
