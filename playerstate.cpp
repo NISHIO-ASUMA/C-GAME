@@ -56,9 +56,9 @@ CPlayerStateNeutral::~CPlayerStateNeutral()
 // 待機状態開始関数
 //==================================
 void CPlayerStateNeutral::OnStart()
-{
+{		
 	// ニュートラルモーションに設定
-	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_NEUTRAL);
+	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_NEUTRAL,true,15);
 }
 //==================================
 // 待機状態更新関数
@@ -280,6 +280,7 @@ void CPlayerStateDamage::OnUpdate()
 	// 空中時,重力
 	m_pPlayer->GravityScal();
 
+	// 位置更新
 	m_pPlayer->AddMove();
 
 	// 状態管理カウンターをデクリメント
@@ -365,5 +366,5 @@ void CPlayerStateJump::OnExit()
 	m_pPlayer->SetJump(false);
 
 	// 着地を未使用
-	m_pPlayer->SetLanding(false);
+	m_pPlayer->SetLanding(true);
 }

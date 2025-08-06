@@ -78,7 +78,6 @@ public:
 	void SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int nCntKey);
 	void SetKeyDate(std::istringstream& ss, const std::string& param, CMotion* pMotion, int nCntMotion, int nCntKey, int& posKeyIndex, int& rotKeyIndex);
 
-
 	void SetMotion(int nMotionType, bool isBlend, int nBlendFrame);
 
 	// ゲッター
@@ -86,6 +85,7 @@ public:
 	bool GetFinishMotion(void) { return m_isFinishMotion; }
 
 	bool CheckFrame(int nStartMotion, int nEndMotion, int nMotionType);
+	void NorRot(float* pRotX, float* pRotY, float* pRotZ);
 
 private: 
 	std::vector<INFO> m_aMotionInfo; // モーション情報を動的確保

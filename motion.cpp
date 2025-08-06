@@ -167,6 +167,53 @@ void CMotion::SetMotion(int motiontype)
 	m_nAllFrameCount = 0;
 	m_isFinishMotion = false;
 }
+//======================================
+// モーションセット情報 (ブレンド実験)
+//======================================
+void CMotion::SetMotion(int nMotionType, bool isBlend, int nBlendFrame)
+{
+	// ここはmotiontypeに渡された番号を取得する
+	if (m_motiontype == nMotionType)
+	{
+		// 同じだったら
+		return;
+	}
+
+	// ブレンドが有効化
+	if (isBlend == true)
+	{
+		// 最初のモーションブレンドが終わってたら
+		if (!m_isFirstMotion)
+		{
+			m_isFirstMotion = true;
+			m_nKeyBlend = 0;				// 0から始める
+			m_nCounterBlend = 0;			// 0から始める
+		}
+
+		m_isBlendMotion = isBlend;			// ブレンドがあるかどうか
+		m_nFrameBlend = nBlendFrame;					// ブレンドのフレームを代入
+		m_motiontypeBlend = nMotionType;	// ブレンドするモーションのタイプを代入
+		m_isFinishMotion = false;			// 終了判定を無効化
+
+	}
+	// モーションブレンドがない
+	else
+	{
+		// ここはmotiontypeに渡された番号を取得する
+		if (m_motiontype == nMotionType)
+		{
+			// 同じだったら
+			return;
+		}
+
+		// 代入
+		m_motiontype = nMotionType;
+		m_nKey = 0;
+		m_nCounterMotion = 0;
+		m_nAllFrameCount = 0;
+		m_isFinishMotion = false;
+	}
+}
 //==============================
 // モーション全体更新処理
 //==============================
@@ -190,8 +237,8 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	m_motiontype = Clump(m_motiontype, 0, m_nNumMotion);
 	m_nNextKey = Wrap(m_nKey + 1, 0, m_aMotionInfo[m_motiontype].nNumKey - 1);
 
-	m_motiontypeBlend = Clump(m_motiontypeBlend, 0, 1);
-	m_nNextKeyBlend = Wrap(m_nKeyBlend + 1, 0, m_aMotionInfo[m_motiontypeBlend].nNumKey - 1);
+	// 最後のキーとブレンドのキーを計算
+	int nLastKey = m_aMotionInfo[m_motiontype].nNumKey - 1;
 
 	// フラグを生成
 	bool isPlayer = false;
@@ -210,10 +257,10 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		if (pModel->IsBoss()) isBoss = true; 		// ボスモデルかどうか判定
 
 
-		// ブレンド開始しているなら
+		// ブレンド開始なら
 		if (m_isFirstMotion)
 		{
-			// ブレンド更新
+			// ブレンドモーションの更新
 			UpdateBlend(ppModel, nCnt);
 		}
 		else
@@ -255,12 +302,45 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	}
 	else
 	{
-		// カウンターを加算
-		m_nCounterMotion++;
+		// ブレンドが開始していなかったら
+		if (!m_isFirstMotion)
+		{
+			// カウンターを加算
+			m_nCounterMotion++;
+		}
 
 		// 全体フレームカウント
 		m_nAllFrameCount++;
 	}
+
+
+	// ブレンドモーションが始まったら
+	if (m_isFirstMotion == true)
+	{
+		// ブレンドモーションカウントをインクリメント
+		m_nCounterBlend++; 
+	}
+
+	// モーションの出だしのブレンドが終了した
+	if (m_isFirstMotion == true && m_nCounterBlend >= m_nFrameBlend)
+	{
+		m_nFrameBlend = 0;
+
+		// フラグをもとに戻す
+		m_isFirstMotion = false;
+
+		// モーションをブレンドしたモーションにする
+		m_motiontype = m_motiontypeBlend;
+
+		// キーをリセット
+		m_nKey = 0;
+
+		// ブレンドしたフレームから開始
+		m_nCounterMotion = 0;
+
+		m_nCounterBlend = 0;
+	}
+
 
 	// プレイヤーのモーションがアクション時 かつ 判別しているモデルがプレイヤーなら
 	if (isPlayer && m_motiontype == CPlayer::PLAYERMOTION_ACTION)
@@ -279,7 +359,7 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	}
 
 	// ボスの時
-	if (isBoss && m_motiontype != CBoss::PATTERN_NONE )
+	if (isBoss && m_motiontype != CBoss::PATTERN_NONE)
 	{
 		// 終了フラグを立てる
 		m_isFinishMotion = true;
@@ -288,11 +368,8 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	// 着地モーションの終了判定
 	if (isPlayer && m_motiontype == CPlayer::PLAYERMOTION_LANDING)
 	{
-		// 最後のキー
-		int lastKey = m_aMotionInfo[m_motiontype].nNumKey - 1;
-
 		// 最後のキーに達していて、カウンターも終了フレームを超えていたら
-		if (m_nKey >= lastKey - 1 &&
+		if (m_nKey >= nLastKey - 1 &&
 			m_nCounterMotion >= m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame)
 		{
 			m_isFinishMotion = true;
@@ -303,7 +380,7 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 	if (!m_aMotionInfo[m_motiontype].bLoop && m_aMotionInfo[m_motiontype].nNumKey - 1 <= m_nKey)
 	{
 		// ニュートラルにする
-		m_motiontype = NEUTRAL;
+		SetMotion(m_motiontype, true, 10);
 
 		// キー数を初期化
 		m_nKey = 0;
@@ -388,96 +465,105 @@ void CMotion::UpdateCurrentMotion(CModel** ppModel, int nModelCount)
 //======================================
 void CMotion::UpdateBlend(CModel** ppModel, int nModelCount)
 {
-// 現在キーの更新関係---------------------------------------------------------------------------------------
-	// キー情報から位置と向きを算出
-	D3DXVECTOR3 posMotion, rotMotion;
+	// ブレンド係数を計算
+	float fBlendFrame = static_cast<float>(m_nCounterBlend) / static_cast<float>(m_nFrameBlend);
+	float fRateMotion = static_cast<float>(m_nCounterMotion) / static_cast<float>(m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame);
 
-	// 座標の差分を計算する
-	posMotion.x = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fPosX - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosX;
-	posMotion.y = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fPosY - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosY;
-	posMotion.z = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fPosZ - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosZ;
+	// 現在のキーと次のキーを取得
+	const KEY& nowKey = m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount];
+	const KEY& nextKey = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount];
 
-	// 角度の差分を計算
-	rotMotion.x = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fRotX - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotX;
-	rotMotion.y = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fRotY - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotY;
-	rotMotion.z = m_aMotionInfo[m_motiontype].aKeyInfo[m_nNextKey].aKey[nModelCount].fRotZ - m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotZ;
+	const KEY& nowKeyBlend = m_aMotionInfo[m_motiontypeBlend].aKeyInfo[m_nKeyBlend].aKey[nModelCount];
+	const KEY& nextKeyBlend = m_aMotionInfo[m_motiontypeBlend].aKeyInfo[m_nNextKeyBlend].aKey[nModelCount];
 
-	// 求める値を保存する変数を宣言
-	D3DXVECTOR3 Pos, Rot;
+	//==========================
+	// 現在モーションの補間計算
+	//==========================
+	D3DXVECTOR3 DiffRot = VECTOR3_NULL; // 角度
+	D3DXVECTOR3	CurrentRot = VECTOR3_NULL; // 現在角度
 
-	// 補間係数を計算
-	float fDis = (float)m_nCounterMotion / m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame;
+	// 角度を計算する
+	DiffRot.x = nextKey.fRotX - nowKey.fRotX;
+	DiffRot.y = nextKey.fRotY - nowKey.fRotY;
+	DiffRot.z = nextKey.fRotZ - nowKey.fRotZ;
+
+	// 角度を正規化
+	// NorRot(&DiffRot.x, &DiffRot.y, &DiffRot.z);
+
+	// 現在角度に適用
+	CurrentRot.x = nowKey.fRotX + DiffRot.x * fRateMotion;
+	CurrentRot.y = nowKey.fRotY + DiffRot.y * fRateMotion;
+	CurrentRot.z = nowKey.fRotZ + DiffRot.z * fRateMotion;
+
+	// 座標を計算
+	D3DXVECTOR3 DiffPos = VECTOR3_NULL; // 座標
+	D3DXVECTOR3	CurrentPos = VECTOR3_NULL; // 現在座標
 
 	// 座標計算
-	Pos.x = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosX + posMotion.x * fDis);
-	Pos.y = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosY + posMotion.y * fDis);
-	Pos.z = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fPosZ + posMotion.z * fDis);
+	DiffPos.x = nextKey.fPosX - nowKey.fPosX;
+	DiffPos.y = nextKey.fPosY - nowKey.fPosY;
+	DiffPos.z = nextKey.fPosZ - nowKey.fPosZ;
+
+	// 現在座標に適用
+	CurrentPos.x = nowKey.fPosX + DiffPos.x * fRateMotion;
+	CurrentPos.y = nowKey.fPosY + DiffPos.y * fRateMotion;
+	CurrentPos.z = nowKey.fPosZ + DiffPos.z * fRateMotion;
+
+	//===============================
+	// ブレンドモーションの補間計算
+	//===============================
+	D3DXVECTOR3 DiffBlendRot = VECTOR3_NULL; // 角度
+	D3DXVECTOR3	BlendRot = VECTOR3_NULL;	 // ブレンド角度
+
+	// ブレンド角度を計算
+	DiffBlendRot.x = nextKeyBlend.fRotX - nowKeyBlend.fRotX;
+	DiffBlendRot.y = nextKeyBlend.fRotY - nowKeyBlend.fRotY;
+	DiffBlendRot.z = nextKeyBlend.fRotZ - nowKeyBlend.fRotZ;
+
+	// 角度を正規化
+	// NorRot(&DiffBlendRot.x, &DiffBlendRot.y, &DiffBlendRot.z);
+
+	// ブレンドの角度を適用
+	BlendRot.x = nowKeyBlend.fRotX + DiffBlendRot.x * fBlendFrame;
+	BlendRot.y = nowKeyBlend.fRotY + DiffBlendRot.y * fBlendFrame;
+	BlendRot.z = nowKeyBlend.fRotZ + DiffBlendRot.z * fBlendFrame;
+
+	D3DXVECTOR3 DiffBlendPos = VECTOR3_NULL; // 座標
+	D3DXVECTOR3	BlendPos = VECTOR3_NULL;	 // ブレンド座標
+
+	// ブレンド座標を計算
+	DiffBlendPos.x = nextKeyBlend.fPosX - nowKeyBlend.fPosX;
+	DiffBlendPos.y = nextKeyBlend.fPosY - nowKeyBlend.fPosY;
+	DiffBlendPos.z = nextKeyBlend.fPosZ - nowKeyBlend.fPosZ;
+
+	// ブレンドの座標を適用
+	BlendPos.x = nowKeyBlend.fPosX + DiffBlendPos.x * fBlendFrame;
+	BlendPos.y = nowKeyBlend.fPosY + DiffBlendPos.y * fBlendFrame;
+	BlendPos.z = nowKeyBlend.fPosZ + DiffBlendPos.z * fBlendFrame;
+
+	//===============================
+	// モデルの座標,角度に適用
+	//===============================
+
+	// 最終角度,座標
+	D3DXVECTOR3 LastRot = VECTOR3_NULL;
+	D3DXVECTOR3 LastPos = VECTOR3_NULL;
 
 	// 角度計算
-	Rot.x = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotX + rotMotion.x * fDis);
-	Rot.y = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotY + rotMotion.y * fDis);
-	Rot.z = (m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].aKey[nModelCount].fRotZ + rotMotion.z * fDis);
+	LastRot.x = CurrentRot.x + (BlendRot.x - CurrentRot.x) * fBlendFrame;
+	LastRot.y = CurrentRot.y + (BlendRot.y - CurrentRot.y) * fBlendFrame;
+	LastRot.z = CurrentRot.z + (BlendRot.z - CurrentRot.z) * fBlendFrame;
 
-// ブレンド関連の更新処理---------------------------------------------------------------------------------------
+	// 座標計算
+	LastPos.x = CurrentPos.x + (BlendPos.x - CurrentPos.x) * fBlendFrame;
+	LastPos.y = CurrentPos.y + (BlendPos.y - CurrentPos.y) * fBlendFrame;
+	LastPos.z = CurrentPos.z + (BlendPos.z - CurrentPos.z) * fBlendFrame;
 
-	// キー変数
-	KEY KeyLastSet,DiffBlendKey,BlendKey;
-	KEY NextBlendKey, NowBlendKey,DiffBlend;
-
-	// フレーム計算
-	float fRateMotion, fRateBlend;
-	
-	// ブレンドの相対値計算
-	fRateMotion = (float)m_nCounterBlend / (float)m_aMotionInfo[m_motiontypeBlend].aKeyInfo[m_nKeyBlend].nFrame;
-
-	// ブレンドのフレーム
-	fRateBlend = (float)m_nCounterBlend / (float)m_nFrameBlend;
-
-	// キー代入
-	NextBlendKey = m_aMotionInfo[m_motiontypeBlend].aKeyInfo[m_nNextKeyBlend].aKey[nModelCount];
-	NowBlendKey = m_aMotionInfo[m_motiontypeBlend].aKeyInfo[m_nKeyBlend].aKey[nModelCount];
-
-// 差分計算-----------------------------
-	DiffBlendKey.fRotX = NextBlendKey.fRotX - NowBlendKey.fRotX;
-	DiffBlendKey.fRotY = NextBlendKey.fRotY - NowBlendKey.fRotY;
-	DiffBlendKey.fRotZ = NextBlendKey.fRotZ - NowBlendKey.fRotZ;
-
-// 差分計算-----------------------------
-	DiffBlendKey.fPosX = NextBlendKey.fPosX - NowBlendKey.fPosX;
-	DiffBlendKey.fPosY = NextBlendKey.fPosY - NowBlendKey.fPosY;
-	DiffBlendKey.fPosZ = NextBlendKey.fPosZ - NowBlendKey.fPosZ;
-
-// ブレンドの差分-----------------------
-	BlendKey.fRotX = NowBlendKey.fRotX + (DiffBlendKey.fRotX * fRateMotion);
-	BlendKey.fRotY = NowBlendKey.fRotY + (DiffBlendKey.fRotY * fRateMotion);
-	BlendKey.fRotZ = NowBlendKey.fRotZ + (DiffBlendKey.fRotZ * fRateMotion);
-
-// ブレンドの差分-----------------------
-	BlendKey.fPosX = NowBlendKey.fPosX + (DiffBlendKey.fPosX * fRateMotion);
-	BlendKey.fPosY = NowBlendKey.fPosY + (DiffBlendKey.fPosY * fRateMotion);
-	BlendKey.fPosZ = NowBlendKey.fPosZ + (DiffBlendKey.fPosZ * fRateMotion);
-
-// 全体の差分計算-----------------------
-	DiffBlend.fRotX = BlendKey.fRotX - Rot.x;
-	DiffBlend.fRotY = BlendKey.fRotY - Rot.y;
-	DiffBlend.fRotZ = BlendKey.fRotZ - Rot.z;
-
-	DiffBlend.fPosX = BlendKey.fPosX - Pos.x;
-	DiffBlend.fPosY = BlendKey.fPosY - Pos.y;
-	DiffBlend.fPosZ = BlendKey.fPosZ - Pos.z;
-
-// 値を求める---------------------------
-	KeyLastSet.fRotX = Rot.x + (DiffBlend.fRotX * fRateBlend);
-	KeyLastSet.fRotY = Rot.y + (DiffBlend.fRotY * fRateBlend);
-	KeyLastSet.fRotZ = Rot.z + (DiffBlend.fRotZ * fRateBlend);
-
-	KeyLastSet.fPosX = Pos.x + (DiffBlend.fPosX * fRateBlend);
-	KeyLastSet.fPosY = Pos.y + (DiffBlend.fPosY * fRateBlend);
-	KeyLastSet.fPosZ = Pos.z + (DiffBlend.fPosZ * fRateBlend);
-
-// 向き、座標を設定---------------------
-	ppModel[nModelCount]->SetPos(D3DXVECTOR3(KeyLastSet.fRotX, KeyLastSet.fRotY, KeyLastSet.fRotZ));
-	ppModel[nModelCount]->SetRot(D3DXVECTOR3(KeyLastSet.fPosX, KeyLastSet.fPosY, KeyLastSet.fPosZ));
+	//===============================
+	// モデルにセット
+	//===============================
+	ppModel[nModelCount]->SetPos(LastPos);
+	ppModel[nModelCount]->SetRot(LastRot);
 }
 
 //======================================
@@ -486,8 +572,11 @@ void CMotion::UpdateBlend(CModel** ppModel, int nModelCount)
 void CMotion::Debug(void)
 {
 	CDebugproc::Print("[現在フレームカウント] %d /  [ 最大モーションフレーム ] %d", m_nAllFrameCount, m_nNumAllFrame);
+	CDebugproc::Draw(800, 320);
 
-	CDebugproc::Draw(0, 320);
+	CDebugproc::Print("[ブレンドフレーム] %d / [ブレンドカウント] %d", m_nFrameBlend,m_nCounterBlend);
+	CDebugproc::Draw(800, 340);
+
 }
 
 //======================================
@@ -825,50 +914,6 @@ void CMotion::SetKeyDate(std::istringstream& ss, const std::string& param, CMoti
 	}
 }
 //======================================
-// モーションセット情報 (ブレンド実験)
-//======================================
-void CMotion::SetMotion(int nMotionType, bool isBlend, int nBlendFrame)
-{
-	// ここはmotiontypeに渡された番号を取得する
-	if (m_motiontype == nMotionType)
-	{
-		// 同じだったら
-		return;
-	}
-
-	// ブレンドが有効化
-	if (isBlend == true)
-	{
-		// 最初のモーションブレンドが終わってたら
-		if (m_isFirstMotion == false)
-		{
-			m_isFirstMotion = true;
-			m_nKeyBlend = 0;				// 0から始める
-			m_nCounterBlend = 0;			// 0から始める
-		}
-
-		m_isBlendMotion = isBlend;			// ブレンドがあるかどうか
-		m_nFrameBlend = 20;					// ブレンドのフレームを代入
-		m_motiontypeBlend = nMotionType;	// ブレンドするモーションのタイプを代入
-		m_isFinishMotion = false;
-
-	}
-	// モーションブレンドがない
-	else
-	{
-		m_isBlendMotion = isBlend;					// ブレンドがあるかどうか
-		m_nFrameBlend = 20;						// ブレンドのフレームを代入
-		m_motiontypeBlend = nMotionType;			// ブレンドするモーションのタイプを代入
-		m_isFinishMotion = false;
-	}
-
-	// 代入
-	m_motiontype = nMotionType;
-	m_nKey = 0;
-	m_nCounterMotion = 0;
-	m_nAllFrameCount = 0;
-}
-//======================================
 // モーションフレーム判定
 //======================================
 bool CMotion::CheckFrame(int nStartMotion, int nEndMotion, int nMotionType)
@@ -879,4 +924,37 @@ bool CMotion::CheckFrame(int nStartMotion, int nEndMotion, int nMotionType)
 
 	// それ以外の時
 	return false;
+}
+//======================================
+// 角度の正規化
+//======================================
+void CMotion::NorRot(float* pRotX, float* pRotY, float* pRotZ)
+{
+	// 角度の正規化
+	if (*pRotX > D3DX_PI)
+	{
+		*pRotX += -D3DX_PI * 2.0f;
+	}
+	else if (*pRotX < -D3DX_PI)
+	{
+		*pRotX += D3DX_PI * 2.0f;
+	}
+
+	if (*pRotY > D3DX_PI)
+	{
+		*pRotY += -D3DX_PI * 2.0f;
+	}
+	else if (*pRotY < -D3DX_PI)
+	{
+		*pRotY += D3DX_PI * 2.0f;
+	}
+
+	if (*pRotZ > D3DX_PI)
+	{
+		*pRotZ += -D3DX_PI * 2.0f;
+	}
+	else if (*pRotZ < -D3DX_PI)
+	{
+		*pRotZ += D3DX_PI * 2.0f;
+	}
 }

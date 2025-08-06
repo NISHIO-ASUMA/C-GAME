@@ -237,23 +237,23 @@ void CBoss::Update(void)
 
 	case PATTERN_HAND:
 		m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
-		m_nCoolTime = 180;		// クールタイム
+		m_nCoolTime = 60;		// クールタイム
 		break;
 
 	case PATTERN_IMPACT:
 		// 叩きつけ
 		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
-		m_nCoolTime = 180;		// クールタイム
+		m_nCoolTime = 60;		// クールタイム
 		break;
 
 	case PATTERN_CIRCLE:
 		// 薙ぎ払いモーション
-		m_nCoolTime = 150;
+		m_nCoolTime = 60;
 		break;
 
 	case PATTERN_DEATH:
 		// 死亡モーション
-		m_nCoolTime = 180;
+		m_nCoolTime = 60;
 		break;
 
 	default:
@@ -318,7 +318,7 @@ void CBoss::Draw(void)
 		CDebugproc::Draw(0, 400);
 
 		// デバッグフォント
-		m_pMotion->Debug();
+		// m_pMotion->Debug();
 	}
 }
 //====================================
@@ -327,7 +327,7 @@ void CBoss::Draw(void)
 bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 {
 	// 一定フレーム内
-	if (m_pMotion->CheckFrame(100, 150, PATTERN_HAND) && m_isdaeth == false)
+	if (m_pMotion->CheckFrame(120, 160, PATTERN_HAND) && m_isdaeth == false)
 	{
 		// モデルのパーツ取得
 		CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
@@ -403,7 +403,7 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 		if (m_pMotion->CheckFrame(130, 130, PATTERN_IMPACT))
 		{
 			// 両手の間から一個のメッシュインパクトを生成する
-			CMeshImpact::Create(HandCenterPos, 200, 60.0f, 20.0f, 10.0f);
+			// CMeshImpact::Create(HandCenterPos, 100, 60.0f, 20.0f, 15.0f);
 		}
 
 		// プレイヤーとの距離を測定
