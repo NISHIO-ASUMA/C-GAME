@@ -9,7 +9,7 @@
 #define _INPUT_H_ // 2重インクルード防止のマクロ定義
 
 //*******************************
-// 入力クラスを定義
+// 入力親クラスを定義
 //*******************************
 class CInput
 {
@@ -63,9 +63,9 @@ class CJoyPad : public CInput
 public:
 
 	// ジョイパッドのキーの列挙型
-	typedef enum
+	enum JOYKEY
 	{
-		JOYKEY_UP = 0,		 // 十字キー(上)
+		JOYKEY_UP,			 // 十字キー(上)
 		JOYKEY_DOWN,		 // 十字キー(下)
 		JOYKEY_LEFT,		 // 十字キー(左)
 		JOYKEY_RIGHT,		 // 十字キー(右)
@@ -82,7 +82,7 @@ public:
 		JOYKEY_X,			 // Xボタン
 		JOYKEY_Y,			 // Yボタン
 		JOYKEY_MAX			 // パッドの最大数
-	}JOYKEY;
+	};
 
 	CJoyPad();
 	~CJoyPad();
@@ -112,6 +112,7 @@ class CInputMouse : public CInput
 {
 public:
 
+	// マウスの列挙型
 	enum MOUSE
 	{
 		MOUSE_LEFT = 0,
@@ -134,9 +135,7 @@ public:
 	bool GetState(DIMOUSESTATE* mouseState);
 
 	D3DXVECTOR2 GetMouseVelocity() { return D3DXVECTOR2((float)m_CurrentMouseState.lX, (float)m_CurrentMouseState.lY); }
-
 	D3DXVECTOR2 GetMouseOldVelocity() { return D3DXVECTOR2((float)m_MouseOldState.lX, (float)m_MouseOldState.lY); }
-
 	BOOL IsMouseWheelPresent(void);
 
 private:

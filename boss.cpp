@@ -9,7 +9,6 @@
 // インクルードファイル宣言
 //****************************
 #include "boss.h"
-#include "motion.h"
 #include "debugproc.h"
 #include "manager.h"
 #include "parameter.h"
@@ -17,6 +16,7 @@
 #include <ctime>
 #include "meshimpact.h"
 #include "particle.h"
+#include "bossstate.h"
 
 //****************************
 // 定数宣言
@@ -37,6 +37,7 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 
 	m_pMotion = nullptr;
 	m_pParam = nullptr;
+	m_pState = nullptr;
 
 	m_type = NULL;
 	m_nCoolTime = NULL;
@@ -49,6 +50,7 @@ CBoss::CBoss(int nPriority) : CObject(nPriority)
 
 	m_fSize = NULL;
 	m_isAttacked = false;
+	m_nCurrentMotion = PATTERN_NONE;
 }
 //====================================
 // デストラクタ
@@ -189,15 +191,18 @@ void CBoss::Update(void)
 	// フラグメント
 	static bool isCreating = false;
 
+	// falseなら
 	if (!isCreating)
 	{
 		// 乱数の種を一度だけ設定する
 		srand((int)time(NULL));
+
+		// 2回目に入らないようにフラグを有効化
 		isCreating = true;
 	}
 
 	// クールタイム中なら待機モーション更新だけ
-	if (m_nCoolTime > 0 && m_isdaeth == false)
+	if (m_nCoolTime > 0)
 	{
 		// クールタイムを減らす
 		m_nCoolTime--;
@@ -205,7 +210,9 @@ void CBoss::Update(void)
 		// もし現在攻撃モーションが終わっていればニュートラルに戻す
 		if (m_pMotion->GetFinishMotion())
 		{
-			m_pMotion->SetMotion(TYPE_NEUTRAL);
+			m_pMotion->SetMotion(TYPE_NEUTRAL,false,0);
+
+			m_nCurrentMotion = TYPE_NEUTRAL;
 		}
 
 		// モーションの更新だけ行う
@@ -218,6 +225,8 @@ void CBoss::Update(void)
 	// モーション中か判別
 	if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
 	{
+		// m_pMotion->SetResetFrame(0);
+
 		// 攻撃モーション中なので、続ける
 		m_pMotion->Update(m_pModel, NUMMODELS);
 
@@ -225,39 +234,38 @@ void CBoss::Update(void)
 		return;
 	}
 
-	// ランダムに行動パターンを決定する
-	int nAttackPattern = rand() % PATTERN_MAX - 1;
-
-	// 数値によって行動変化
-	switch (nAttackPattern)
+	if (m_nCurrentMotion == PATTERN_NONE)
 	{
-	case PATTERN_NONE:
-		m_pMotion->SetMotion(TYPE_NEUTRAL);
-		break;
+		m_nCurrentMotion = rand() % PATTERN_MAX -1;
 
-	case PATTERN_HAND:
-		m_pMotion->SetMotion(TYPE_ACTION); // 殴り攻撃
-		m_nCoolTime = 60;		// クールタイム
-		break;
+		switch (m_nCurrentMotion)
+		{
+		case PATTERN_NONE:
+			m_pMotion->SetMotion(TYPE_NEUTRAL);
+			break;
 
-	case PATTERN_IMPACT:
-		// 叩きつけ
-		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
-		m_nCoolTime = 60;		// クールタイム
-		break;
+		case PATTERN_HAND:
+			m_pMotion->SetResetFrame(0);
+			m_pMotion->SetMotion(PATTERN_HAND); // 殴り攻撃
+			m_nCoolTime = 60;
+			break;
 
-	case PATTERN_CIRCLE:
-		// 薙ぎ払いモーション
-		m_nCoolTime = 60;
-		break;
+		case PATTERN_IMPACT:
+			m_pMotion->SetMotion(PATTERN_IMPACT); // 叩きつけ攻撃
+			m_pMotion->SetResetFrame(0);
+			m_nCoolTime = 60;
+			break;
 
-	case PATTERN_DEATH:
-		// 死亡モーション
-		m_nCoolTime = 60;
-		break;
+		case PATTERN_CIRCLE:
+			m_pMotion->SetResetFrame(0);
+			m_nCoolTime = 60;
+			break;
 
-	default:
-		break;
+		case PATTERN_DEATH:
+			m_pMotion->SetResetFrame(0);
+			m_nCoolTime = 60;
+			break;
+		}
 	}
 
 #ifdef _DEBUG
@@ -266,7 +274,6 @@ void CBoss::Update(void)
 		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
 	}
 #endif // _DEBUG
-
 
 	// モーション全体更新
 	m_pMotion->Update(m_pModel, NUMMODELS);
@@ -318,7 +325,7 @@ void CBoss::Draw(void)
 		CDebugproc::Draw(0, 400);
 
 		// デバッグフォント
-		// m_pMotion->Debug();
+		m_pMotion->Debug();
 	}
 }
 //====================================
@@ -327,7 +334,7 @@ void CBoss::Draw(void)
 bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 {
 	// 一定フレーム内
-	if (m_pMotion->CheckFrame(120, 160, PATTERN_HAND) && m_isdaeth == false)
+	if (m_pMotion->CheckFrame(110, 150, PATTERN_HAND) && m_isdaeth == false)
 	{
 		// モデルのパーツ取得
 		CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
@@ -381,14 +388,6 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 	D3DXMATRIX mtxLeft = pLeftHand->GetMtxWorld();
 	D3DXMATRIX mtxHead = pHead->GetMtxWorld();
 
-	// 頭パーティクル
-	D3DXVECTOR3 posHead(mtxHead._41, mtxHead._42 + 60.0f, mtxHead._43 - 80.0f);
-
-	if (m_pMotion->CheckFrame(60, 150, PATTERN_IMPACT))
-	{
-		CParticle::Create(posHead, COLOR_RED, 40, 500, 100, 60);
-	}
-
 	// 一定フレーム内
 	if (m_pMotion->CheckFrame(120, 160, PATTERN_IMPACT) && m_isdaeth == false)
 	{
@@ -407,7 +406,7 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 		}
 
 		// プレイヤーとの距離を測定
-		const float fHitRadius = 20.0f * HITRANGE; // 判定半径
+		const float fHitRadius = 25.0f * HITRANGE; // 判定半径
 
 		// 差分計算用
 		D3DXVECTOR3 diff = VECTOR3_NULL;
@@ -455,11 +454,22 @@ void CBoss::Hit(int nDamage)
 		Uninit();
 
 		// TODO : ここに死亡モーション設定に変更
-
+		// m_pMotion->SetMotion(CBoss::PATTERN_DEATH);
 	}
 	else
 	{
 		// セットする
 		m_pParam->SetHp(nHp);
 	}
+}
+//====================================
+// 状態変更処理処理
+//====================================
+void CBoss::ChangeState(CBossStateBace* pNewState, int Id)
+{
+	// 自分自身をセットする
+	pNewState->SetOwner(this);
+
+	// 状態を変更する
+	m_pState->ChangeState(pNewState);
 }

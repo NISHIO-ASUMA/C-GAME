@@ -36,7 +36,6 @@ CMotion::CMotion()
 	m_type = NULL;
 	m_nNextKey = NULL;
 
-// ブレンド---------------------------------------
 	m_motiontypeBlend = NULL;
 	m_nFrameBlend = NULL;
 	m_nCounterBlend = NULL;
@@ -191,7 +190,7 @@ void CMotion::SetMotion(int nMotionType, bool isBlend, int nBlendFrame)
 		}
 
 		m_isBlendMotion = isBlend;			// ブレンドがあるかどうか
-		m_nFrameBlend = nBlendFrame;					// ブレンドのフレームを代入
+		m_nFrameBlend = nBlendFrame;		// ブレンドのフレームを代入
 		m_motiontypeBlend = nMotionType;	// ブレンドするモーションのタイプを代入
 		m_isFinishMotion = false;			// 終了判定を無効化
 
@@ -276,23 +275,19 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		// カウンターをリセット
 		m_nCounterMotion = 0;
 
-		// プレイヤーモデルだったら
-		if ((m_motiontype == CPlayer::PLAYERMOTION_ACTION || m_motiontype == CPlayer::PLAYERMOTION_JUMPATTACK) && isPlayer)
+		// キー数が上限より一個下
+		if (m_nKey < m_aMotionInfo[m_motiontype].nNumKey -1)
 		{
-			// キー数が上限より一個下
-			if (m_nKey < m_aMotionInfo[m_motiontype].nNumKey - 1)
-			{
-				// キー数加算
-				m_nKey++;
-			}
-			else
-			{
-				// 最後のキーで止める
-				m_nKey = m_aMotionInfo[m_motiontype].nNumKey - 2;
+			// キー数加算
+			m_nKey++;
+		}
+		else if (m_nKey >= m_aMotionInfo[m_motiontype].nNumKey)
+		{
+			// キーをリセット
+			m_nKey = 0;
 
-				// フレームを最後のキーに設定
-				m_nCounterMotion = m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame;
-			}
+			// フレームをリセット
+			m_nCounterMotion = 0;
 		}
 		else
 		{
@@ -313,12 +308,11 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		m_nAllFrameCount++;
 	}
 
-
 	// ブレンドモーションが始まったら
 	if (m_isFirstMotion == true)
 	{
 		// ブレンドモーションカウントをインクリメント
-		m_nCounterBlend++; 
+		m_nCounterBlend++;
 	}
 
 	// モーションの出だしのブレンドが終了した
@@ -338,9 +332,9 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		// ブレンドしたフレームから開始
 		m_nCounterMotion = 0;
 
+		// ブレンドフレーム初期化
 		m_nCounterBlend = 0;
 	}
-
 
 	// プレイヤーのモーションがアクション時 かつ 判別しているモデルがプレイヤーなら
 	if (isPlayer && m_motiontype == CPlayer::PLAYERMOTION_ACTION)
@@ -358,21 +352,28 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		return;
 	}
 
-	// ボスの時
-	if (isBoss && m_motiontype != CBoss::PATTERN_NONE)
-	{
-		// 終了フラグを立てる
-		m_isFinishMotion = true;
-	}
-
 	// 着地モーションの終了判定
 	if (isPlayer && m_motiontype == CPlayer::PLAYERMOTION_LANDING)
 	{
 		// 最後のキーに達していて、カウンターも終了フレームを超えていたら
-		if (m_nKey >= nLastKey - 1 &&
+		if (m_nKey >= nLastKey -1&&
 			m_nCounterMotion >= m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame)
 		{
 			m_isFinishMotion = true;
+		}
+	}
+
+	// ボスの時 かつ 最後のキーのフレームに到達していたら
+	if (isBoss)
+	{
+		// 最後のキーに達していて、カウンターも終了フレームを超えていたら
+		if (m_nCounterMotion >= m_aMotionInfo[m_motiontype].aKeyInfo[m_nKey].nFrame)
+		{
+			m_isFinishMotion = true;
+
+			m_nCounterMotion = 0;
+
+			return;
 		}
 	}
 
@@ -577,6 +578,8 @@ void CMotion::Debug(void)
 	CDebugproc::Print("[ブレンドフレーム] %d / [ブレンドカウント] %d", m_nFrameBlend,m_nCounterBlend);
 	CDebugproc::Draw(800, 340);
 
+	CDebugproc::Print("[ キー数 ] %d  / [ 最大キー数] %d ",m_nKey, m_aMotionInfo[m_motiontype].nNumKey);
+	CDebugproc::Draw(800, 360);
 }
 
 //======================================

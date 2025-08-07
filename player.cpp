@@ -460,8 +460,8 @@ void CPlayer::Draw(void)
 	CDebugproc::Print("プレイヤーの状態 { %d }", GetIdxPlayer(NUMBER_MAIN)->GetStateMachine()->GetNowStateID());
 	CDebugproc::Draw(1100, 500);
 
-	if (m_nIdxPlayer == NUMBER_MAIN)
-		m_pMotion->Debug();
+	//if (m_nIdxPlayer == NUMBER_MAIN)
+	//	m_pMotion->Debug();
 
 }
 
@@ -1074,9 +1074,6 @@ void CPlayer::HitDamage(int nDamage)
 	{
 		// 現在体力をセット
 		m_pParameter->SetHp(nHp);
-
-		// モーションセット
-		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0);
 	}
 }
 //===============================

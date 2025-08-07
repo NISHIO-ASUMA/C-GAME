@@ -119,5 +119,5 @@ int CStateMachine::GetNowStateID()
 	if (m_pNowState)
 		return m_pNowState->GetID(); // 仮想関数として
 
-	return CPlayerStateBase::ID_NEUTRAL; // ニュートラル
+	return 0; // ニュートラル
 }

@@ -77,9 +77,9 @@ public:
 	void SetPartsMotion(std::ifstream& file, CMotion* pMotion, int nCntMotion);
 	void SetKey(std::ifstream& file, CMotion* pMotion, int nCntMotion, int nCntKey);
 	void SetKeyDate(std::istringstream& ss, const std::string& param, CMotion* pMotion, int nCntMotion, int nCntKey, int& posKeyIndex, int& rotKeyIndex);
-
 	void SetMotion(int nMotionType, bool isBlend, int nBlendFrame);
 
+	void SetResetFrame(int nFrame) { m_nCounterMotion = nFrame;}
 	// ÉQÉbÉ^Å[
 	int GetMotionType(void) { return m_motiontype; }
 	bool GetFinishMotion(void) { return m_isFinishMotion; }

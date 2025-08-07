@@ -1,4 +1,4 @@
-//====================================
+//=====================================
 //
 // メイン関数 [ main.cpp ]
 // Author: Asuma Nishio
@@ -131,7 +131,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 
 				dwFrameCount = 0;				// 0に戻す
 
-				CRenderer::GetFps(nCountFPS);   // FPS取得
+				CRenderer::GetFps(nCountFPS);	// FPS取得
 			}
 
 			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
@@ -141,7 +141,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE /*hInstancePrev
 				dwExecLastTime = dwCurrentTime;	
 
 				// フレームカウントを加算
-				dwFrameCount++;					
+				dwFrameCount++;
 
 				// マネージャー更新処理
 				pManager->Update();

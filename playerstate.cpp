@@ -17,7 +17,7 @@
 //******************************
 // 定数宣言
 //******************************
-constexpr int DAMAGECOUNT = 80;	// 最大ステートカウント
+constexpr int DAMAGECOUNT = 60;	// 最大ステートカウント
 
 //==================================
 // プレイヤー状態コンストラクタ
@@ -58,7 +58,7 @@ CPlayerStateNeutral::~CPlayerStateNeutral()
 void CPlayerStateNeutral::OnStart()
 {		
 	// ニュートラルモーションに設定
-	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_NEUTRAL,true,15);
+	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_NEUTRAL,true,10);
 }
 //==================================
 // 待機状態更新関数
@@ -265,6 +265,9 @@ void CPlayerStateDamage::OnStart()
 	// 一体目のプレイヤーの時
 	if (m_pPlayer->GetPlayerIndex() == 0)
 	{
+		// モーションセット
+		m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_DAMAGE, false, 0);
+
 		// 体力を減らす
 		m_pPlayer->HitDamage(m_nDamage);
 	}

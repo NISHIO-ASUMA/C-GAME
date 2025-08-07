@@ -13,12 +13,14 @@
 //******************************
 #include "object.h"
 #include "model.h"
+#include "motion.h"
 
 //**********************
 // 前方宣言
 //**********************
-class CMotion;
 class CParameter;
+class CStateMachine;
+class CBossStateBace;
 
 //**********************
 // ボスクラスを定義
@@ -75,6 +77,10 @@ public:
 
 	void Hit(int nDamage);
 
+	CMotion* GetMotion(void) { return m_pMotion; }
+
+	void ChangeState(CBossStateBace* pNewState, int Id); // ステート変更
+
 private:
 
 	static constexpr int NUMMODELS = 21; // 使うモデル数
@@ -86,10 +92,13 @@ private:
 	CModel* m_pModel[NUMMODELS]; // モデルのポインタ
 	CMotion* m_pMotion;		// モーションポインタ
 	CParameter* m_pParam;	// パラメーターポインタ
+	CStateMachine* m_pState;
+
 	int m_type;			   // モーションの種類変数
 	float m_fSize;		   // サイズ
 
 	int m_nCoolTime;	// クールタイム
+	int m_nCurrentMotion;
 	bool m_isAttacked;  // 攻撃しているか
 	static bool m_isdaeth;
 };
