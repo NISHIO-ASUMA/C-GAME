@@ -17,6 +17,7 @@
 #include "meshimpact.h"
 #include "particle.h"
 #include "bossstate.h"
+#include "state.h"
 
 //****************************
 // 定数宣言
@@ -24,6 +25,9 @@
 constexpr float HITRANGE = 12.0f; // コリジョンサイズ
 constexpr int COOLTIME = 60;	  // 初期クールタイム
 
+//****************************
+// 静的メンバ変数宣言
+//****************************
 bool CBoss::m_isdaeth = false;    // 死亡フラグ
 
 //====================================
@@ -132,6 +136,12 @@ HRESULT CBoss::Init(void)
 	// モーション数を設定
 	m_pMotion->SetMotionNum(m_type);
 
+	// ステート生成
+	m_pState = new CStateMachine;
+
+	// 初期状態をセット
+	ChangeState(new CBossStateNeutral(120), CBossStateBace::ID_NEUTRAL);
+
 	// 初期化結果を返す
 	return S_OK;
 }
@@ -175,6 +185,19 @@ void CBoss::Uninit(void)
 
 		// nullptrにする
 		m_pParam = nullptr;
+	}
+
+	// nullptrチェック
+	if (m_pState != nullptr)
+	{
+		// 終了処理
+		m_pState->OnExit();
+
+		// ポインタの破棄
+		delete m_pState;
+
+		// null初期化
+		m_pState = nullptr;
 	}
 
 	// 自身の破棄
@@ -274,6 +297,13 @@ void CBoss::Update(void)
 		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
 	}
 #endif // _DEBUG
+
+	// nullチェック
+	if (m_pState != nullptr)
+	{
+		// ステート更新
+		m_pState->Update();
+	}
 
 	// モーション全体更新
 	m_pMotion->Update(m_pModel, NUMMODELS);
@@ -463,7 +493,7 @@ void CBoss::Hit(int nDamage)
 	}
 }
 //====================================
-// 状態変更処理処理
+// 状態変更処理
 //====================================
 void CBoss::ChangeState(CBossStateBace* pNewState, int Id)
 {

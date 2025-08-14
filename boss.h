@@ -76,6 +76,7 @@ public:
 	CModel*GetModelPartType(CModel::PARTTYPE modelpart);
 
 	void Hit(int nDamage);
+	void SetCoolTime(int nCooltime) { m_nCoolTime = nCooltime; }
 
 	CMotion* GetMotion(void) { return m_pMotion; }
 
@@ -92,7 +93,7 @@ private:
 	CModel* m_pModel[NUMMODELS]; // モデルのポインタ
 	CMotion* m_pMotion;		// モーションポインタ
 	CParameter* m_pParam;	// パラメーターポインタ
-	CStateMachine* m_pState;
+	CStateMachine* m_pState; // ステートポインタ
 
 	int m_type;			   // モーションの種類変数
 	float m_fSize;		   // サイズ

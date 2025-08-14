@@ -62,7 +62,7 @@ private:
 class CBossStateNeutral : public CBossStateBace
 {
 public:
-	CBossStateNeutral();
+	CBossStateNeutral(int nTime);
 	~CBossStateNeutral();
 
 	// ステートが始まるときに一度だけ呼ばれる関数
@@ -73,6 +73,10 @@ public:
 
 	// ステートが終了する時に一度だけ呼ばれる関数
 	void OnExit(void);
+
+private:
+	int m_CoolTime;		// ステート切り替え時間
+	int m_nCurrentState; // 現在状態
 };
 
 //*****************************

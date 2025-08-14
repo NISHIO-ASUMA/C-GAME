@@ -159,6 +159,7 @@
     <ClCompile Include="block.cpp" />
     <ClCompile Include="blockManager.cpp" />
     <ClCompile Include="boss.cpp" />
+    <ClCompile Include="bossattackstate.cpp" />
     <ClCompile Include="bosslifegage.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="bullethorming.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="block.h" />
     <ClInclude Include="blockManager.h" />
     <ClInclude Include="boss.h" />
+    <ClInclude Include="bossattackstate.h" />
     <ClInclude Include="bosslifegage.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="bullethorming.h" />
