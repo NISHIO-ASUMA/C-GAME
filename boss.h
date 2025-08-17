@@ -76,7 +76,10 @@ public:
 	CModel*GetModelPartType(CModel::PARTTYPE modelpart);
 
 	void Hit(int nDamage);
+
 	void SetCoolTime(int nCooltime) { m_nCoolTime = nCooltime; }
+	void DecCoolTime(void) { if (m_nCoolTime > 0) m_nCoolTime--; }
+	int GetCoolTime(void) const { return m_nCoolTime; }
 
 	CMotion* GetMotion(void) { return m_pMotion; }
 

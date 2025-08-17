@@ -16,7 +16,7 @@
 //********************************
 // 殴り攻撃状態管理クラスを定義
 //********************************
-class CBosshandAttack : public CBossStateAttack
+class CBosshandAttack : public CBossStateBace
 {
 public:
 	CBosshandAttack();
@@ -38,7 +38,7 @@ private:
 //************************************
 // 叩きつけ攻撃状態管理クラスを定義
 //************************************
-class CBossimpactAttack : public CBossStateAttack
+class CBossimpactAttack : public CBossStateBace
 {
 public:
 	CBossimpactAttack();
@@ -60,7 +60,7 @@ private:
 //************************************
 // 振り回し攻撃状態管理クラスを定義
 //************************************
-class CBosscircleAttack : public CBossStateAttack
+class CBosscircleAttack : public CBossStateBace
 {
 public:
 	CBosscircleAttack();

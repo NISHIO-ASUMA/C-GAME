@@ -211,92 +211,8 @@ void CBoss::Update(void)
 	// 死んでいたら
 	if (m_isdaeth) return;
 
-	// フラグメント
-	static bool isCreating = false;
-
-	// falseなら
-	if (!isCreating)
-	{
-		// 乱数の種を一度だけ設定する
-		srand((int)time(NULL));
-
-		// 2回目に入らないようにフラグを有効化
-		isCreating = true;
-	}
-
-	// クールタイム中なら待機モーション更新だけ
-	if (m_nCoolTime > 0)
-	{
-		// クールタイムを減らす
-		m_nCoolTime--;
-
-		// もし現在攻撃モーションが終わっていればニュートラルに戻す
-		if (m_pMotion->GetFinishMotion())
-		{
-			m_pMotion->SetMotion(TYPE_NEUTRAL,false,0);
-
-			m_nCurrentMotion = TYPE_NEUTRAL;
-		}
-
-		// モーションの更新だけ行う
-		m_pMotion->Update(m_pModel, NUMMODELS);
-
-		// ここで処理を返す
-		return;
-	}
-
-	// モーション中か判別
-	if (!m_pMotion->GetFinishMotion() && m_pMotion->GetMotionType() != CBoss::PATTERN_NONE)
-	{
-		// m_pMotion->SetResetFrame(0);
-
-		// 攻撃モーション中なので、続ける
-		m_pMotion->Update(m_pModel, NUMMODELS);
-
-		// ここでかえす
-		return;
-	}
-
-	if (m_nCurrentMotion == PATTERN_NONE)
-	{
-		m_nCurrentMotion = rand() % PATTERN_MAX -1;
-
-		switch (m_nCurrentMotion)
-		{
-		case PATTERN_NONE:
-			m_pMotion->SetMotion(TYPE_NEUTRAL);
-			break;
-
-		case PATTERN_HAND:
-			m_pMotion->SetResetFrame(0);
-			m_pMotion->SetMotion(PATTERN_HAND); // 殴り攻撃
-			m_nCoolTime = 60;
-			break;
-
-		case PATTERN_IMPACT:
-			m_pMotion->SetMotion(PATTERN_IMPACT); // 叩きつけ攻撃
-			m_pMotion->SetResetFrame(0);
-			m_nCoolTime = 60;
-			break;
-
-		case PATTERN_CIRCLE:
-			m_pMotion->SetResetFrame(0);
-			m_nCoolTime = 60;
-			break;
-
-		case PATTERN_DEATH:
-			m_pMotion->SetResetFrame(0);
-			m_nCoolTime = 60;
-			break;
-		}
-	}
-
-#ifdef _DEBUG
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F8))
-	{
-		m_pMotion->SetMotion(TYPE_IMPACT); // 叩きつけ攻撃
-	}
-#endif // _DEBUG
+	// 減算
+	DecCoolTime();
 
 	// nullチェック
 	if (m_pState != nullptr)
@@ -353,6 +269,9 @@ void CBoss::Draw(void)
 
 		CDebugproc::Print("ボス体力 { %d }", m_pParam->GetHp());
 		CDebugproc::Draw(0, 400);
+
+		CDebugproc::Print("ボスクールタイム { %d }",m_nCoolTime);
+		CDebugproc::Draw(1080, 400);
 
 		// デバッグフォント
 		m_pMotion->Debug();

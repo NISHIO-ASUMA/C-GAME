@@ -639,7 +639,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle - D3DX_PI * 0.5f; // 左向きに設定
 
-			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0); // 移動モーションに変更
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0,false); // 移動モーションに変更
 		}
 		else if (pInputKeyboard->GetPress(DIK_D) || (pPad->GetPress(pPad->JOYKEY_RIGHT)))
 		{
@@ -649,12 +649,12 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle + D3DX_PI * 0.5f; // 右向きに設定
 
-			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0); // 移動モーションに変更
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0, false); // 移動モーションに変更
 		}
 		else
 		{
 			// 移動モーション時,ニュートラルモーションに変更
-			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE) m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL, false, 0);
+			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE) m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL, false, 0, false);
 		}
 		break;
 
@@ -669,7 +669,7 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle - D3DX_PI * 0.5f; // 左向きに設定
 
-			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0); // 移動モーションに変更
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0, false); // 移動モーションに変更
 		}
 		else if (pInputKeyboard->GetPress(DIK_D) || (pPad->GetPress(pPad->JOYKEY_RIGHT))) // Dキー
 		{
@@ -679,12 +679,12 @@ void CPlayer::UpdateMove(const D3DXVECTOR3 DestPos,CInputKeyboard* pInputKeyboar
 			// 目的角を計算
 			m_rotDest.y = m_fAngle + D3DX_PI * 0.5f; // 右向きに設定
 
-			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0); // 移動モーションに変更
+			if (!m_isJump) 	m_pMotion->SetMotion(PLAYERMOTION_MOVE, false, 0, false); // 移動モーションに変更
 		}
 		else
 		{
 			// 移動モーション時,ニュートラルモーションに変更
-			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE) m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL, false, 0);
+			if (m_pMotion->GetMotionType() == PLAYERMOTION_MOVE) m_pMotion->SetMotion(PLAYERMOTION_NEUTRAL, false, 0, false);
 		}
 		break;
 
@@ -775,7 +775,7 @@ void CPlayer::UpdateJumpAction(CInputKeyboard* pInputKeyboard, D3DXMATRIX pMtx, 
 			}
 
 			// ジャンプ攻撃モーションに変更
-			m_pMotion->SetMotion(PLAYERMOTION_JUMPATTACK,false,0);
+			m_pMotion->SetMotion(PLAYERMOTION_JUMPATTACK,false,0, false);
 
 			// 方向をボスに向かせる
 			D3DXVECTOR3 BossDir = CGameManager::GetBoss()->GetPos() - m_pos;
@@ -863,7 +863,7 @@ void CPlayer::Collision(void)
 		if (pBoss->CollisionRightHand(&m_pos) && pBoss->IsDaeth() == false)
 		{
 			// 当たったらダメージモーションに切り替え
-			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0);
+			m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0, false);
 
 			// ステート変更
 			ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
@@ -891,7 +891,7 @@ void CPlayer::Collision(void)
 			if (pImpact->Collision(&m_pos))
 			{
 				// 当たったらダメージモーションに切り替え
-				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0);
+				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0, false);
 
 				// ステート変更
 				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
@@ -926,7 +926,7 @@ void CPlayer::Collision(void)
 			if (pEnemy->Collision(&m_pos) == true )
 			{
 				// 当たったらダメージモーションに切り替え
-				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0);
+				m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0, false);
 
 				// ステート変更
 				ChangeState(new CPlayerStateDamage(1), CPlayerStateBase::ID_DAMAGE);
@@ -1066,7 +1066,7 @@ void CPlayer::HitDamage(int nDamage)
 		m_isDeath = true;
 
 		// モーションセット
-		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0);
+		m_pMotion->SetMotion(PLAYERMOTION_DAMAGE, false, 0, false);
 
 		return;
 	}

@@ -169,7 +169,7 @@ void CMotion::SetMotion(int motiontype)
 //======================================
 // モーションセット情報 (ブレンド実験)
 //======================================
-void CMotion::SetMotion(int nMotionType, bool isBlend, int nBlendFrame)
+void CMotion::SetMotion(int nMotionType, bool isBlend, int nBlendFrame,bool isBoss)
 {
 	// ここはmotiontypeに渡された番号を取得する
 	if (m_motiontype == nMotionType)
@@ -192,7 +192,11 @@ void CMotion::SetMotion(int nMotionType, bool isBlend, int nBlendFrame)
 		m_isBlendMotion = isBlend;			// ブレンドがあるかどうか
 		m_nFrameBlend = nBlendFrame;		// ブレンドのフレームを代入
 		m_motiontypeBlend = nMotionType;	// ブレンドするモーションのタイプを代入
-		m_isFinishMotion = false;			// 終了判定を無効化
+
+		if (isBoss == false)
+		{
+			m_isFinishMotion = false;			// 終了判定を無効化
+		}
 
 	}
 	// モーションブレンドがない
@@ -377,18 +381,6 @@ void CMotion::Update(CModel** ppModel, const int nMaxPart)
 		}
 	}
 
-	// Loopがfalse かつ キー数が超えたら
-	if (!m_aMotionInfo[m_motiontype].bLoop && m_aMotionInfo[m_motiontype].nNumKey - 1 <= m_nKey)
-	{
-		// ニュートラルにする
-		SetMotion(m_motiontype, true, 10);
-
-		// キー数を初期化
-		m_nKey = 0;
-
-		// モーションカウントを初期化
-		m_nCounterMotion = 0;
-	}
 
 	// 全体フレームカウント計算用
 	int nFrame = 0;
@@ -961,3 +953,15 @@ void CMotion::NorRot(float* pRotX, float* pRotY, float* pRotZ)
 		*pRotZ += D3DX_PI * 2.0f;
 	}
 }
+//// Loopがfalse かつ キー数が超えたら
+//if (!m_aMotionInfo[m_motiontype].bLoop && m_aMotionInfo[m_motiontype].nNumKey -1 <= m_nKey)
+//{
+//	// モーションカウントを初期化
+//	m_nCounterMotion = 0;
+
+//	// キー数を初期化
+//	m_nKey = 0;
+
+//	// ニュートラルにする
+//	SetMotion(NEUTRAL, true, 40,isBoss);
+//}

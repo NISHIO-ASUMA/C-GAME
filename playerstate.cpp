@@ -58,7 +58,7 @@ CPlayerStateNeutral::~CPlayerStateNeutral()
 void CPlayerStateNeutral::OnStart()
 {		
 	// ニュートラルモーションに設定
-	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_NEUTRAL,true,10);
+	m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_NEUTRAL,true,10, false);
 }
 //==================================
 // 待機状態更新関数
@@ -266,7 +266,7 @@ void CPlayerStateDamage::OnStart()
 	if (m_pPlayer->GetPlayerIndex() == 0)
 	{
 		// モーションセット
-		m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_DAMAGE, false, 0);
+		m_pPlayer->GetMotion()->SetMotion(CPlayer::PLAYERMOTION_DAMAGE, false, 0, false);
 
 		// 体力を減らす
 		m_pPlayer->HitDamage(m_nDamage);

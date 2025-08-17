@@ -9,6 +9,7 @@
 // インクルードファイル
 //**********************
 #include "bossstate.h"
+#include "bossattackstate.h"
 
 //===========================
 // コンストラクタ
@@ -49,7 +50,7 @@ CBossStateNeutral::~CBossStateNeutral()
 void CBossStateNeutral::OnStart(void)
 {
 	// モーションセット
-	m_pBoss->GetMotion()->SetMotion(CBoss::TYPE_NEUTRAL);
+	m_pBoss->GetMotion()->SetMotion(CBoss::TYPE_NEUTRAL,false,0,false);
 
 	// クールタイムセット
 	m_pBoss->SetCoolTime(m_CoolTime);
@@ -59,106 +60,35 @@ void CBossStateNeutral::OnStart(void)
 //===========================
 void CBossStateNeutral::OnUpdate(void)
 {
-	// フラグメント
-	static bool isCreating = false;
+	// 減算
+	m_pBoss->DecCoolTime();
 
-	// falseなら
-	if (!isCreating)
+	if (m_pBoss->GetCoolTime() <= 0)
 	{
-		// 乱数の種を一度だけ設定する
-		srand((int)time(NULL));
+		// ランダムでパターンを決定
+		int attackType = rand() % CBoss::PATTERN_MAX;
 
-		// 2回目に入らないようにフラグを有効化
-		isCreating = true;
-	}
-
-	if (m_CoolTime <= 0)
-	{
-		// クールタイムを初期化する
-		m_CoolTime = 0;
-
-		// ランダムでパターンを設定
-		if (m_nCurrentState == 0)
+		switch (attackType)
 		{
-			// 行動パターン番号を計算
-			m_nCurrentState = rand() % CBoss::PATTERN_MAX - 1;
+		case CBoss::PATTERN_HAND:  // 殴り
+			m_pBoss->ChangeState(new CBosshandAttack(), ID_ACTION);
+			return;
 
-			switch (m_nCurrentState)
-			{
-			case CBoss::PATTERN_HAND:
-
-				// ステート変更
-				m_pBoss->GetMotion()->SetResetFrame(0);
-
-				// モーション変更
-				m_pBoss->GetMotion()->SetMotion(CBoss::PATTERN_HAND);// 殴り攻撃
-
-				return;
-
-			case CBoss::PATTERN_IMPACT:
-
-				// ステート変更
-				m_pBoss->GetMotion()->SetResetFrame(0);
-
-				// モーション変更
-				m_pBoss->GetMotion()->SetMotion(CBoss::PATTERN_IMPACT); // 叩きつけ攻撃
-
-				return;
-			}
+		case CBoss::PATTERN_IMPACT: // 叩きつけ
+			m_pBoss->ChangeState(new CBossimpactAttack(), ID_ACTION);
+			return;
 		}
 	}
 	else
 	{
-		// ニュートラルモーションを更新
-		m_pBoss->GetMotion()->SetMotion(CBoss::TYPE_NEUTRAL, false, 0);
+		// クールタイム中はニュートラルモーション再生
+		m_pBoss->GetMotion()->SetMotion(CBoss::TYPE_NEUTRAL, false, 0,false);
 	}
 }
 //===========================
 // 待機状態終了処理
 //===========================
 void CBossStateNeutral::OnExit(void)
-{
-	// 無し
-}
-
-
-//===========================
-// 攻撃状態コンストラクタ
-//===========================
-CBossStateAttack::CBossStateAttack()
-{
-	// IDセット
-	SetID(ID_ACTION);
-}
-//===========================
-// 攻撃状態デストラクタ
-//===========================
-CBossStateAttack::~CBossStateAttack()
-{
-	// 無し
-}
-//===========================
-// 攻撃状態開始処理
-//===========================
-void CBossStateAttack::OnStart(void)
-{
-	// ここでランダムの値を使って攻撃番号モーションに設定
-
-}
-//===========================
-// 攻撃状態更新処理
-//===========================
-void CBossStateAttack::OnUpdate(void)
-{
-	// モーションの終了ができたら
-
-	// ニュートラルにする
-	m_pBoss->ChangeState(new CBossStateNeutral(60), ID_NEUTRAL);
-}
-//===========================
-// 攻撃状態終了処理
-//===========================
-void CBossStateAttack::OnExit(void)
 {
 	// 無し
 }
