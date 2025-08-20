@@ -89,12 +89,15 @@ void CResultManager::Update(void)
 			// フラグ有効化
 			m_isKeyDown = true;
 
-			// カメラの旋回off
-			pCamera->SetIsRotation(false);
-			pCamera->SetFinishRotation(false);
-
 			// シーン遷移
 			pFade->SetFade(new CTitle(true));
+
+			// カメラの設定を初期化する
+			pCamera->SetFinishRotation(false);
+			pCamera->SetIsRotation(false);
+
+			return;
+
 		}
 	}
 }

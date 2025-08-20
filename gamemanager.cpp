@@ -87,8 +87,8 @@ HRESULT CGameManager::Init(void)
 	// nullだったら
 	if (pSound == nullptr) return E_FAIL;
 
-	// サウンド再生
-	// pSound->PlaySound(CSound::SOUND_LABEL_GAMEBGM);
+	 // サウンド再生
+	 pSound->PlaySound(CSound::SOUND_LABEL_GAMEBGM);
 
 	//// uiマネージャー生成
 	//m_puimanager = new CUimanager;
