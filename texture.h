@@ -14,6 +14,17 @@
 class CTexture
 {
 public:
+	//*****************************
+	// テクスチャの種類
+	//*****************************
+	enum TYPE
+	{
+		TYPE_LOGO,
+		TYPE_TITLEMENU1,
+		TYPE_TITLEMENU2,
+		TYPE_MAX,
+	};
+
 	CTexture();
 	~CTexture();
 
@@ -21,6 +32,8 @@ public:
 	void UnLoad(void);
 	int Register(const char* pFileName);
 	LPDIRECT3DTEXTURE9 GetAddress(int nIdx);
+
+	void TextLoader(const char* pFileName);
 
 	static inline constexpr int NUM_TEXTURE = 128;	// 最大テクスチャ数
 
@@ -53,7 +66,8 @@ private:
 		"data\\TEXTURE\\playerlife_frame000.png",
 		"data\\TEXTURE\\playerlife_gage000.png",
 		"data\\TEXTURE\\time000.png",
-		"data\\TEXTURE\\effect001.png",
+		"data\\TEXTURE\\alert.png",
+		"data\\TEXTURE\\alert_frame.png",
 	};
 
 	LPDIRECT3DTEXTURE9 m_apTexture[NUM_TEXTURE];	// テクスチャポインタ

@@ -161,6 +161,7 @@ void CTime::Update(void)
 //===============================
 void CTime::Draw(void)
 {
+#if 0
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -176,6 +177,7 @@ void CTime::Draw(void)
 		// タイマー描画
 		m_pNumber[nCnt]->Draw();
 	}
+#endif
 }
 //===============================
 // テクスチャセット

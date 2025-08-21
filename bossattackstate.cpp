@@ -34,6 +34,9 @@ void CBosshandAttack::OnStart(void)
 	// フレーム初期化
 	m_pBoss->GetMotion()->SetResetFrame(NULL);
 
+	// 向かせる
+	m_pBoss->RollToPlayer();
+
 	// モーションセット
 	m_pBoss->GetMotion()->SetMotion(CBoss::PATTERN_HAND);
 
@@ -89,6 +92,9 @@ void CBossimpactAttack::OnStart(void)
 {
 	// フレーム初期化
 	m_pBoss->GetMotion()->SetResetFrame(NULL);
+
+	// 向かせる
+	m_pBoss->RollToPlayer();
 
 	// モーションセット
 	m_pBoss->GetMotion()->SetMotion(CBoss::PATTERN_IMPACT);

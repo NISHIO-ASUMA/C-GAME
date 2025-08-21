@@ -199,7 +199,7 @@ void CObject2D::SetUV(float TexU,float TexV)
 void CObject2D::SetFlash(const int nFirstcount,const int nEndcount)
 {
 	// 頂点情報のポインタ
-	VERTEX_2D* pVtx = NULL;		
+	VERTEX_2D* pVtx = NULL;
 
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
@@ -213,10 +213,10 @@ void CObject2D::SetFlash(const int nFirstcount,const int nEndcount)
 	if (m_nColorCount == nFirstcount)		// FirstCountと一致したとき
 	{
 		//頂点カラーの設定
-		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
-		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
-		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
-		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.2f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
 
 		// カラーセット
 		SetCol(col);

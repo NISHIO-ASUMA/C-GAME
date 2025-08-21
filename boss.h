@@ -85,6 +85,8 @@ public:
 
 	void ChangeState(CBossStateBace* pNewState, int Id); // ステート変更
 
+	void RollToPlayer(void);
+
 private:
 
 	static constexpr int NUMMODELS = 21; // 使うモデル数

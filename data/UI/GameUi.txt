@@ -18,11 +18,11 @@ NUM_UI = 1
 # [ 0 ]番目のポリゴン情報
 #--------------------------------
 SET_UI
-POS = 100.0 200.0 0.0 # 座標
-WIDTH = 150.00		  # 横幅
-HEIGHT = 150.00		  # 横幅
-ANCHORTYPE = 1		  # 頂点生成開始場所(中心点)
-TEXTURE_PASS = "data\TEXTURE\logo.png" 		# 適用するテクスチャパス
+POS = 640.0 65.0 0.0 	# 座標
+WIDTH = 65.00		  	# 横幅
+HEIGHT = 65.00		  	# 横幅
+ANCHORTYPE = 1		  	# 頂点生成開始場所(中心点)
+TEXTURE_PASS = "data\TEXTURE\alert_frame.png" 		# 適用するテクスチャパス
 END_SETUI
 
 END_SCRIPT	# テキスト終了

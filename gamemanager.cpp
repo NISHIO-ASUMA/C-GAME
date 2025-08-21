@@ -79,7 +79,7 @@ HRESULT CGameManager::Init(void)
 	CBossLifeGage::Create(D3DXVECTOR3(770.0f, 0.0f, 0.0f), SCREEN_WIDTH * 0.4f, 60.0f, CBossLifeGage::TYPE_FRAME);
 
 	// タイマー生成
-	m_pTime = CTime::Create(D3DXVECTOR3(680.0f, 50.0f, 0.0f), 100.0f, 50.0f);
+	m_pTime = CTime::Create(D3DXVECTOR3(680.0f, 50.0f, 0.0f), 80.0f, 50.0f);
 
 	// サウンド取得
 	CSound* pSound = CManager::GetSound();
@@ -90,14 +90,14 @@ HRESULT CGameManager::Init(void)
 	 // サウンド再生
 	 pSound->PlaySound(CSound::SOUND_LABEL_GAMEBGM);
 
-	//// uiマネージャー生成
-	//m_puimanager = new CUimanager;
+	// uiマネージャー生成
+	m_puimanager = new CUimanager;
 
-	//// nullじゃなかったら初期化
-	//if (m_puimanager != nullptr)
-	//{
-	//	m_puimanager->Init();
-	//}
+	// nullじゃなかったら初期化
+	if (m_puimanager != nullptr)
+	{
+		m_puimanager->Init();
+	}
 
 	// 初期化結果を返す
 	return S_OK;

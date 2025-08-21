@@ -18,6 +18,8 @@
 #include "particle.h"
 #include "bossstate.h"
 #include "state.h"
+#include "attacksign.h"
+#include "player.h"
 
 //****************************
 // 定数宣言
@@ -282,8 +284,26 @@ void CBoss::Draw(void)
 //====================================
 bool CBoss::CollisionRightHand(D3DXVECTOR3* pPos)
 {
+	// 生成フラグを作成
+	static bool isCreate = false;
+
 	// 一定フレーム内
-	if (m_pMotion->CheckFrame(110, 150, PATTERN_HAND) && m_isdaeth == false)
+	if (m_pMotion->CheckFrame(30, 30, PATTERN_HAND) && !isCreate)
+	{
+		// 攻撃サインを生成
+		CAttackSign::Create(50.0f, 50.0f);
+
+		// 生成フラグを有効化
+		isCreate = true;
+	}
+	else
+	{
+		// フレーム外ならリセット
+		isCreate = false;
+	}
+
+	// 一定フレーム内
+	if (m_pMotion->CheckFrame(100, 140, PATTERN_HAND) && m_isdaeth == false)
 	{
 		// モデルのパーツ取得
 		CModel* pRightHand = GetModelPartType(CModel::PARTTYPE_RIGHT_HAND); // 右手
@@ -335,7 +355,27 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 	// 手のワールドマトリックスを取得
 	D3DXMATRIX mtxRight = pRightHand->GetMtxWorld();
 	D3DXMATRIX mtxLeft = pLeftHand->GetMtxWorld();
+
+	// 頭のワールドマトリックス
 	D3DXMATRIX mtxHead = pHead->GetMtxWorld();
+
+	// 生成フラグを作成
+	static bool isCreate = false;
+
+	// 一定フレーム内
+	if (m_pMotion->CheckFrame(60, 60, PATTERN_IMPACT) && !isCreate)
+	{
+		// 攻撃サインを生成
+		CAttackSign::Create(50.0f, 50.0f);
+
+		// 生成フラグを有効化
+		isCreate = true;
+	}
+	else
+	{
+		// フレーム外ならリセット
+		isCreate = false;
+	}
 
 	// 一定フレーム内
 	if (m_pMotion->CheckFrame(120, 160, PATTERN_IMPACT) && m_isdaeth == false)
@@ -346,13 +386,6 @@ bool CBoss::CollisionImpactScal(D3DXVECTOR3* pPos)
 
 		// 両手の座標の中心点を計算
 		D3DXVECTOR3 HandCenterPos = (posRight + posLeft) * 0.5f;
-
-		// 確定フレーム内
-		if (m_pMotion->CheckFrame(130, 130, PATTERN_IMPACT))
-		{
-			// 両手の間から一個のメッシュインパクトを生成する
-			// CMeshImpact::Create(HandCenterPos, 100, 60.0f, 20.0f, 15.0f);
-		}
 
 		// プレイヤーとの距離を測定
 		const float fHitRadius = 25.0f * HITRANGE; // 判定半径
@@ -421,4 +454,27 @@ void CBoss::ChangeState(CBossStateBace* pNewState, int Id)
 
 	// 状態を変更する
 	m_pState->ChangeState(pNewState);
+}
+//====================================
+// 向きを回転させる処理
+//====================================
+void CBoss::RollToPlayer(void)
+{
+	// プレイヤーの取得
+	CPlayer* pPlayer = CPlayer::GetIdxPlayer(0);
+
+	// nullなら
+	if (pPlayer == nullptr) return;
+
+	// プレイヤーの座標を取得
+	D3DXVECTOR3 pPos = pPlayer->GetPos();
+
+	// ボスからプレイヤーに一本のベクトルを生成する
+	D3DXVECTOR3 VecPlayer = m_pos - pPos;
+
+	// 水平方向の角度(Yaw)だけ求める
+	float angle = atan2f(VecPlayer.x, VecPlayer.z);
+
+	// 計算した角度をセット
+	m_rot.y = angle;
 }

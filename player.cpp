@@ -834,7 +834,7 @@ void CPlayer::Collision(void)
 	if (GetStateMachine()->GetNowStateID() == CPlayerStateBase::ID_DAMAGE)
 		return;
 
-	//=============================
+//=============================
 // ボス右手の当たり判定
 //=============================
 	CBoss* pBoss = CGameManager::GetBoss();  // マネージャー経由でボスを取得する

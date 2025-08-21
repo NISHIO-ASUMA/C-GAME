@@ -19,7 +19,7 @@
 class CBillboard : public CObject
 {
 public:
-	CBillboard(int nPriority = 4);
+	CBillboard(int nPriority = static_cast<int>(CObject::PRIORITY::BILLBOARD));
 	~CBillboard();
 
 	HRESULT Init(void);
@@ -36,6 +36,9 @@ public:
 	void SetCol(D3DXCOLOR col) { m_col = col; }
 	void SetSize(float fWidth, float fHeight) { m_fWidth = fWidth, m_fHeight = fHeight; }
 	void SetTexture(void);
+	void SetEnableZtest(bool isflags) { m_isTests = isflags; }
+
+	void Flash(const int nMaxFlashTime,const int Digittime);
 
 	static CBillboard* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fWidth, float fHeight);
 
@@ -48,7 +51,9 @@ private:
 	D3DXCOLOR m_col;    // 色情報
 
 	int m_nIdxTexture;			// テクスチャインデックス
+	int m_FlashCount;
 	float m_fHeight, m_fWidth;  // 横幅,高さ
+	bool m_isTests;			// Zテストするかどうか
 };
 
 #endif

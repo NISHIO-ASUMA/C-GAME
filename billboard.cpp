@@ -25,6 +25,8 @@ CBillboard::CBillboard(int nPriority) : CObject(nPriority)
 	m_mtxWorld = {};
 	m_fWidth = NULL;
 	m_fHeight = NULL;
+	m_isTests = false;
+	m_FlashCount = NULL;
 }
 //================================
 // デストラクタ
@@ -180,9 +182,12 @@ void CBillboard::Draw(void)
 	// ライトを無効にする
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-	//// Zテストを適用
-	//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	if (m_isTests)
+	{
+		// Zテストを適用
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	}
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
@@ -225,11 +230,14 @@ void CBillboard::Draw(void)
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
 	// テクスチャを戻す
-	 pDevice->SetTexture(0, NULL);
+	pDevice->SetTexture(0, NULL);
 
-	//// Zテストを戻す
-	//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	if (m_isTests)
+	{
+		// Zテストを戻す
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	}
 
 	// ライトを有効にする
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
@@ -244,4 +252,52 @@ void CBillboard::SetTexture(void)
 
 	// 割り当て
 	m_nIdxTexture = pTexture->Register("data\\TEXTURE\\billboard_wepon.png");
+}
+//================================
+// 点滅処理
+//================================
+void CBillboard::Flash(const int nMaxFlashTime, const int Digittime)
+{
+	// 頂点情報のポインタ
+	VERTEX_3D* pVtx = nullptr;
+
+	// 頂点バッファをロックし,頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	// 点滅カウントを加算
+	m_FlashCount++;
+
+	// カラー変数
+	D3DXCOLOR col = COLOR_WHITE;
+
+	// 点滅カウントと一致したとき
+	if (m_FlashCount == Digittime)		
+	{
+		//頂点カラーの設定
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 0.7f);
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 0.7f);
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 0.7f);
+		col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 0.7f);
+
+		// カラーセット
+		SetCol(col);
+	}
+	else if (m_FlashCount == nMaxFlashTime)	// 最大継続時間と一致したとき
+	{
+		//頂点カラーの設定
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+
+		// カラーセット
+		SetCol(col);
+
+		// 初期値に戻す
+		m_FlashCount = NULL;
+	}
+
+	//アンロック
+	m_pVtxBuff->Unlock();
+
 }

@@ -11,12 +11,17 @@
 //**********************
 // インクルードファイル
 //**********************
-#include "billboard.h"
+#include "object2d.h"
+
+//**********************
+// 前方宣言
+//**********************
+class CObject;
 
 //**********************
 // 攻撃前兆クラスを定義
 //**********************
-class CAttackSign : public CBillboard
+class CAttackSign : public CObject2D
 {
 public:
 	// コンストラクタ・デストラクタ
@@ -33,10 +38,11 @@ public:
 	void SetTexture(void);
 
 	// 静的メンバ関数
-	static CAttackSign* Create(D3DXVECTOR3 pos, float fWidth, float fHeight);
+	static CAttackSign* Create(float fWidth, float fHeight);
 
 private:
 	int m_nidxTex;		// テクスチャインデックス
+	int m_nLife;		// 寿命
 };
 
 #endif

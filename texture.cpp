@@ -10,6 +10,10 @@
 //**********************
 #include "texture.h"
 #include "manager.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <sstream>
 
 //**********************
 // 静的メンバ変数
@@ -88,12 +92,6 @@ void CTexture::UnLoad(void)
 //===============================
 int CTexture::Register(const char* pFileName)
 {
-	// インデックス用の変数
-	int nIdx = -1;
-
-	// インデックス番号を加算
-	nIdx++;
-
 	for (int nCnt = 0; nCnt < NUM_TEXTURE; nCnt++)
 	{
 		// nullptrチェック
@@ -102,17 +100,14 @@ int CTexture::Register(const char* pFileName)
 			// ファイルパス名が一致していたら
 			if (strcmp(pFileName, TexName[nCnt]) == 0)
 			{
-				// カウント番号を代入
-				nIdx = nCnt;
-
-				// for文抜ける
-				break;
+				// 番号を返す
+				return nCnt;
 			}
 		}
 	}
 
-	// インデックス番号を返す
-	return nIdx;
+	// テクスチャがない場合
+	return -1;
 }
 //===============================
 // テクスチャ番号取得
@@ -124,4 +119,60 @@ LPDIRECT3DTEXTURE9 CTexture::GetAddress(int nIdx)
 
 	// テクスチャ番号を取得
 	return m_apTexture[nIdx];
+}
+//===============================
+// テクスチャ外部読み込み処理
+//===============================
+void CTexture::TextLoader(const char* pFileName)
+{
+	// ファイル設定
+	std::ifstream file(pFileName);
+
+	// ファイル例外チェック
+	if (!file)
+	{
+		MessageBox(NULL, "ファイルオープン失敗", pFileName, MB_OK);
+		// 失敗結果を返す
+		return;
+	}
+
+	// 一行読み込む
+	std::string line;
+
+	int nIdx = 0;
+
+	while (std::getline(file, line))
+	{
+		// コメント行や空行をスキップ
+		if (line.empty() || line[0] == '#')
+			continue;
+
+		// "FILENAME =" を探す
+		const std::string key = "FILENAME =";
+		size_t pos = line.find(key);
+
+		if (pos == std::string::npos)
+			continue;
+
+		// ダブルクォートで囲まれた部分を抽出
+		size_t firstQuote = line.find('"', pos);
+		size_t lastQuote = line.find_last_of('"');
+
+		if (firstQuote != std::string::npos && lastQuote != std::string::npos && lastQuote > firstQuote)
+		{
+			std::string path = line.substr(firstQuote + 1, lastQuote - firstQuote - 1);
+
+			if (nIdx < NUM_TEXTURE)
+			{
+				// strdupでコピーして格納
+				TexName[nIdx] = _strdup(path.c_str());
+
+				// インデックス番号を加算
+				nIdx++;
+			}
+		}
+	}
+
+	// ファイルを閉じる
+	file.close();
 }
